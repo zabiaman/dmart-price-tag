@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>بارکوډ سکنر</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+body { background: #000; color: white; overflow: hidden; height: 100vh; }
+
+#scanner-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+}
+
+#video {
+    width: 100%; height: 100%; object-fit: cover;
+}
+
+.scanner-header {
+    position: absolute; top: 0; left: 0; right: 0;
+    padding: 20px; display: flex; justify-content: space-between;
+    align-items: center; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+    z-index: 10;
+}
+.scanner-header h2 { font-size: 18px; }
+.close-btn {
+    background: rgba(255,255,255,0.2); color: white; border: none;
+    width: 40px; height: 40px; border-radius: 50%; font-size: 20px;
+    cursor: pointer; display: flex; justify-content: center; align-items: center;
+}
+
+.scanner-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: center; pointer-events: none;
+}
+
+.scan-frame {
+    width: 80%; max-width: 350px; height: 220px;
+    border: 3px solid #7bbf6a; border-radius: 15px;
+    position: relative; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+}
+.scan-frame::before, .scan-frame::after {
+    content: ''; position: absolute; width: 30px; height: 30px;
+    border: 4px solid #7bbf6a;
+}
+.scan-frame::before {
+    top: -4px; right: -4px; border-left: none; border-bottom: none;
+    border-radius: 0 15px 0 0;
+}
+.scan-frame::after {
+    bottom: -4px; left: -4px; border-right: none; border-top: none;
+    border-radius: 0 0 0 15px;
+}
+.scan-line {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: #7bbf6a; box-shadow: 0 0 10px #7bbf6a;
+    animation: scan 2s linear infinite;
+}
+@keyframes scan {
+    0% { top: 0; }
+    50% { top: calc(100% - 3px); }
+    100% { top: 0; }
+}
+
+.scanner-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 30px 20px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    text-align: center; z-index: 10;
+}
+.scanner-footer p { font-size: 14px; opacity: 0.9; margin-bottom: 15px; }
+
+.manual-input { display: flex; gap: 10px; max-width: 400px; margin: 0 auto; }
+.manual-input input {
+    flex: 1; padding: 12px 15px; border: none; border-radius: 25px;
+    font-size: 15px; text-align: center;
+}
+.manual-input button {
+    background: #7bbf6a; color: white; border: none;
+    padding: 12px 20px; border-radius: 25px; font-size: 15px;
+    font-weight: bold; cursor: pointer;
+}
+
+.result-modal {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.9); z-index: 100;
+    display: none; justify-content: center; align-items: center;
+    padding: 20px;
+}
+.result-modal.active { display: flex; }
+.result-content {
+    background: white; color: #333; border-radius: 20px;
+    padding: 25px; max-width: 400px; width: 100%;
+    text-align: center;
+}
+.result-content h3 { color: #d9534f; margin-bottom: 15px; font-size: 20px; }
+.result-content .price {
+    background: #7bbf6a; color: white; padding: 15px;
+    border-radius: 10px; font-size: 32px; font-weight: bold;
+    margin: 15px 0;
+}
+.result-content .barcode-text {
+    font-family: monospace; color: #666; font-size: 14px;
+    margin-bottom: 20px;
+}
+.result-content button {
+    background: #d9534f; color: white; border: none;
+    padding: 12px 30px; border-radius: 10px;
+    font-size: 16px; font-weight: bold; cursor: pointer;
+    margin: 5px;
+}
+.result-content .btn-close {
+    background: #95a5a6;
+}
+</style>
+</head>
+<body>
+
+<div id="scanner-container">
+    <video id="video" autoplay playsinline muted></video>
+    
+    <div class="scanner-header">
+        <h2>📷 بارکوډ سکن کړه</h2>
+        <button class="close-btn" onclick="location.href='index.html'">✕</button>
+    </div>
+    
+    <div class="scanner-overlay">
+        <div class="scan-frame">
+            <div class="scan-line"></div>
+        </div>
+    </div>
+    
+    <div class="scanner-footer">
+        <p>بارکوډ د فریم دننه کېږده</p>
+        <div class="manual-input">
+            <input type="text" id="manualBarcode" placeholder="یا بارکوډ ولیکه...">
+            <button onclick="searchManual()">لټون</button>
+        </div>
+    </div>
+</div>
+
+<!-- د پایلې مودال -->
+<div id="resultModal" class="result-modal">
+    <div class="result-content" id="resultContent"></div>
+</div>
+
+<!-- د بارکوډ کتابتون -->
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
+
+<script>
+// د نمونې محصولات (د index.html سره سم)
+const products = [
+    { name: 'مهران معجون الزنجبيل', weight: '320 جرام', price: 5.95, currency: 'ر.س', barcode: '633152014535', icon: '🫙' },
+    { name: 'زيت الزيتون', weight: '1 لتر', price: 25.50, currency: 'ر.س', barcode: '633152014536', icon: '🫒' },
+    { name: 'عسل طبيعي', weight: '500 جرام', price: 45.00, currency: 'ر.س', barcode: '633152014537', icon: '🍯' },
+    { name: 'تمر مجدول', weight: '1 کیلو', price: 35.00, currency: 'ر.س', barcode: '633152014538', icon: '🌴' },
+];
+
+let codeReader = null;
+let lastScanned = '';
+let scanTimeout = null;
+
+// د سکنر پیل
+async function startScanner() {
+    try {
+        codeReader = new ZXing.BrowserMultiFormatReader();
+        const devices = await codeReader.listVideoInputDevices();
+        
+        if (devices.length === 0) {
+            alert('هیڅ کامره ونه موندل شوه');
+            return;
+        }
+        
+        // د شاته کامرې غوره کول
+        let selectedDevice = devices[0].deviceId;
+        const backCamera = devices.find(d => 
+            d.label.toLowerCase().includes('back') || 
+            d.label.toLowerCase().includes('rear') ||
+            d.label.toLowerCase().includes('environment')
+        );
+        if (backCamera) selectedDevice = backCamera.deviceId;
+        
+        codeReader.decodeFromVideoDevice(selectedDevice, 'video', (result, error) => {
+            if (result) {
+                const barcode = result.getText();
+                
+                // د تکراري سکن مخنیوی
+                if (barcode === lastScanned) return;
+                lastScanned = barcode;
+                clearTimeout(scanTimeout);
+                scanTimeout = setTimeout(() => { lastScanned = ''; }, 3000);
+                
+                handleScan(barcode);
+            }
+        });
+    } catch (err) {
+        console.error('خطا:', err);
+        alert('کامره نشي پرانیستل کیدای. اجازه ورکړه.');
+    }
+}
+
+// د سکن پایله
+function handleScan(barcode) {
+    if (navigator.vibrate) navigator.vibrate(200);
+    playBeep();
+    findProduct(barcode);
+}
+
+// د بیپ غږ
+function playBeep() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 800; osc.type = 'sine';
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.15);
+    } catch(e) {}
+}
+
+// د محصول لټون
+function findProduct(barcode) {
+    const product = products.find(p => p.barcode === barcode);
+    
+    if (product) {
+        showResult(product);
+    } else {
+        showNotFound(barcode);
+    }
+}
+
+// د پایلې ښودل
+function showResult(product) {
+    const modal = document.getElementById('resultModal');
+    document.getElementById('resultContent').innerHTML = `
+        <div style="font-size: 50px; margin-bottom: 10px;">${product.icon}</div>
+        <h3>${product.name}</h3>
+        <div style="color: #666; margin-bottom: 10px;">${product.weight}</div>
+        <div class="price">${product.price} ${product.currency}</div>
+        <div class="barcode-text">${product.barcode}</div>
+        <button onclick="location.href='index.html'">🏠 کور ته</button>
+        <button class="btn-close" onclick="closeResult()">بیرته سکن</button>
+    `;
+    modal.classList.add('active');
+}
+
+function showNotFound(barcode) {
+    const modal = document.getElementById('resultModal');
+    document.getElementById('resultContent').innerHTML = `
+        <div style="font-size: 50px; margin-bottom: 10px;">❌</div>
+        <h3 style="color: #d9534f;">محصول ونه موندل شو</h3>
+        <div class="barcode-text" style="font-size: 18px; margin: 15px 0;">${barcode}</div>
+        <p style="color: #666; margin-bottom: 20px;">دا بارکوډ زموږ په لیست کې نشته</p>
+        <button onclick="closeResult()">بیرته سکن</button>
+    `;
+    modal.classList.add('active');
+}
+
+function closeResult() {
+    document.getElementById('resultModal').classList.remove('active');
+    lastScanned = '';
+}
+
+// د لاسي لټون
+function searchManual() {
+    const barcode = document.getElementById('manualBarcode').value.trim();
+    if (barcode) findProduct(barcode);
+}
+
+document.getElementById('manualBarcode').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') searchManual();
+});
+
+// پیل
+window.addEventListener('load', startScanner);
+window.addEventListener('beforeunload', () => {
+    if (codeReader) codeReader.reset();
+});
+</script>
+</body>
+</html>
