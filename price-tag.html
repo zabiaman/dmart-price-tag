@@ -88,12 +88,13 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
 .btn-back { background: #95a5a6; color: white; }
 
 /* د چاپ وخت */
+/* د چاپ وخت */
 @media print {
     @page {
         size: A5;
-        margin: 5mm;
+        margin: 3mm;
     }
-    body { background: white; padding: 0; }
+    body { background: white; padding: 0; margin: 0; }
     .buttons { display: none; }
     .tag { box-shadow: none; max-width: 100%; border-radius: 8px; }
 }
