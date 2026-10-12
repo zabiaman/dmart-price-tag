@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>د مدیر پینل</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
+body { background: #f0f2f5; padding-bottom: 30px; }
+.header { background: #d9534f; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 18px; }
+.header a { color: white; text-decoration: none; font-size: 14px; }
+.tabs { display: flex; background: white; border-bottom: 1px solid #ddd; }
+.tabs button { flex: 1; padding: 15px; border: none; background: white; font-size: 14px; font-weight: bold; color: #666; cursor: pointer; }
+.tabs button.active { color: #d9534f; border-bottom: 3px solid #d9534f; }
+.container { padding: 20px; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: #333; font-weight: bold; }
+.form-group input, .form-group select { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; }
+.form-group input:focus { outline: none; border-color: #d9534f; }
+.btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+.btn-primary { background: #d9534f; color: white; }
+.btn-success { background: #7bbf6a; color: white; }
+.btn-danger { background: #e74c3c; color: white; }
+.product-item { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; }
+.product-icon { font-size: 32px; }
+.product-info { flex: 1; }
+.product-name { font-weight: bold; color: #b03a3a; font-size: 14px; }
+.product-details { font-size: 12px; color: #666; margin-top: 4px; }
+.product-actions { display: flex; gap: 8px; }
+.product-actions button { padding: 8px 12px; border: none; border-radius: 8px; font-size: 12px; cursor: pointer; }
+.empty { text-align: center; padding: 40px; color: #999; }
+.hidden { display: none; }
+.message { padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-size: 14px; }
+.message.success { background: #d4edda; color: #155724; }
+.message.error { background: #f8d7da; color: #721c24; }
+.stats { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-size: 14px; color: #333; }
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>👨‍💼 د مدیر پینل</h1>
+<a href="index.html">← بیرته</a>
+</div>
+
+<div class="tabs">
+<button id="tabList" class="active" onclick="showTab('list')">📦 محصولات</button>
+<button id="tabAdd" onclick="showTab('add')">➕ نوی محصول</button>
+<button id="tabSettings" onclick="showTab('settings')">⚙️ تنظیمات</button>
+</div>
+
+<div class="container">
+
+<div id="listTab">
+<div id="messageBox"></div>
+<div class="stats" id="statsBox"></div>
+<div id="productList"></div>
+</div>
+
+<div id="addTab" class="hidden">
+<div class="form-group">
+<label>د محصول نوم *</label>
+<input type="text" id="name" placeholder="زعفران">
+</div>
+<div class="form-group">
+<label>د محصول نوم (انګلیسي)</label>
+<input type="text" id="nameEn" placeholder="Saffron">
+</div>
+<div class="form-group">
+<label>وزن / حجم</label>
+<input type="text" id="weight" placeholder="10 جرام">
+</div>
+<div class="form-group">
+<label>قیمت *</label>
+<input type="number" id="price" step="0.01" placeholder="85">
+</div>
+<div class="form-group">
+<label>د پیسو واحد</label>
+<select id="currency">
+<option value="ر.س">ر.س (سعودي ریال)</option>
+<option value="د.إ">د.إ (اماراتي درهم)</option>
+<option value="ج.م">ج.م (مصري جنيه)</option>
+<option value="د.ع">د.ع (عراقي دینار)</option>
+<option value="افغانی">افغانی</option>
+<option value="پاکستانۍ روپۍ">پاکستانۍ روپۍ</option>
+</select>
+</div>
+<div class="form-group">
+<label>بارکوډ *</label>
+<input type="text" id="barcode" placeholder="633152014541">
+</div>
+<div class="form-group">
+<label>کټګوري</label>
+<input type="text" id="category" placeholder="توابل">
+</div>
+<div class="form-group">
+<label>ایکون (ایموجي)</label>
+<input type="text" id="icon" placeholder="🌸" maxlength="4">
+</div>
+<button class="btn btn-success" onclick="addProduct()">💾 خوندي کړه</button>
+<button class="btn btn-primary" onclick="showTab('list')">← بیرته</button>
+</div>
+
+<div id="settingsTab" class="hidden">
+<h3 style="margin-bottom:15px;">⚙️ تنظیمات</h3>
+<button class="btn btn-danger" onclick="exportData()">📥 د معلوماتو صادرول (Backup)</button>
+<button class="btn btn-primary" onclick="importData()">📤 د معلوماتو واردول (Restore)</button>
+<button class="btn btn-danger" onclick="clearAll()">🗑️ ټول معلومات ړنګول</button>
+<input type="file" id="importFile" accept=".json" style="display:none;" onchange="handleImport(event)">
+<div style="margin-top:20px; padding:15px; background:#fff; border-radius:10px; font-size:13px; color:#666;">
+<strong>💡 یادونه:</strong> ټول معلومات په دې موبایل کې خوندي کیږي (localStorage). د بیک اپ لپاره "صادرول" تڼۍ وکاروه.
+</div>
+</div>
+
+</div>
+
+<script>
+var STORAGE_KEY = 'dmart_products';
+
+var defaultProducts = [
+{ id: 1, name: "مهران معجون الزنجبيل", weight: "320 جرام", price: 5.95, currency: "ر.س", icon: "🫙", barcode: "633152014535", category: "عرض خاص" },
+{ id: 2, name: "زيت الزيتون", weight: "1 لتر", price: 25.50, currency: "ر.س", icon: "🫒", barcode: "633152014536", category: "زيوت" },
+{ id: 3, name: "عسل طبيعي", weight: "500 جرام", price: 45.00, currency: "ر.س", icon: "🍯", barcode: "633152014537", category: "عسل" },
+{ id: 4, name: "تمر مجدول", weight: "1 کیلو", price: 35.00, currency: "ر.س", icon: "🌴", barcode: "633152014538", category: "تمور" },
+{ id: 5, name: "مياه معدنية", weight: "1.5 لتر", price: 3.00, currency: "ر.س", icon: "💧", barcode: "633152014539", category: "مشروبات" },
+{ id: 6, name: "شاي أخضر", weight: "250 جرام", price: 18.50, currency: "ر.س", icon: "🍵", barcode: "633152014540", category: "شاي" }
+];
+
+// د localStorage څخه معلومات راوړل
+function loadProducts() {
+var data = localStorage.getItem(STORAGE_KEY);
+if (data) {
+try {
+var parsed = JSON.parse(data);
+if (Array.isArray(parsed) && parsed.length > 0) {
+return parsed;
+}
+} catch(e) {}
+}
+localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultProducts));
+return defaultProducts;
+}
+
+function saveProducts(list) {
+localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+function showMessage(text, type) {
+var box = document.getElementById('messageBox');
+box.innerHTML = '<div class="message ' + type + '">' + text + '</div>';
+setTimeout(function() { box.innerHTML = ''; }, 3000);
+}
+
+function renderProducts() {
+var products = loadProducts();
+var container = document.getElementById('productList');
+
+document.getElementById('statsBox').innerHTML = '📊 ټول محصولات: <strong>' + products.length + '</strong>';
+
+if (products.length === 0) {
+container.innerHTML = '<div class="empty">😕 هیڅ محصول نشته<br><br>د "نوی محصول" ټب څخه یو اضافه کړه</div>';
+return;
+}
+
+var html = '';
+for (var i = 0; i < products.length; i++) {
+var p = products[i];
+html += '<div class="product-item">' +
+'<div class="product-icon">' + (p.icon || '📦') + '</div>' +
+'<div class="product-info">' +
+'<div class="product-name">' + p.name + '</div>' +
+'<div class="product-details">' + (p.weight || '') + ' • ' + p.price + ' ' + p.currency + '</div>' +
+'<div class="product-details" style="font-family:monospace;">' + p.barcode + '</div>' +
+'</div>' +
+'<div class="product-actions">' +
+'<button style="background:#7bbf6a;color:white;" onclick="editProduct(' + p.id + ')">✏️</button>' +
+'<button style="background:#e74c3c;color:white;" onclick="deleteProduct(' + p.id + ')">🗑️</button>' +
+'</div>' +
+'</div>';
+}
+container.innerHTML = html;
+}
+
+function addProduct() {
+var name = document.getElementById('name').value.trim();
+var price = parseFloat(document.getElementById('price').value);
+var barcode = document.getElementById('barcode').value.trim();
+
+if (!name || !price || !barcode) {
+showMessage('❌ نوم، قیمت او بارکوډ اړین دي', 'error');
+return;
+}
+
+var products = loadProducts();
+
+for (var i = 0; i < products.length; i++) {
+if (products[i].barcode === barcode) {
+showMessage('❌ دا بارکوډ دمخه شتون لري', 'error');
+return;
+}
+}
+
+var newProduct = {
+id: Date.now(),
+name: name,
+name_en: document.getElementById('nameEn').value.trim(),
+weight: document.getElementById('weight').value.trim(),
+price: price,
+currency: document.getElementById('currency').value,
+barcode: barcode,
+category: document.getElementById('category').value.trim(),
+icon: document.getElementById('icon').value.trim() || '📦'
+};
+
+products.unshift(newProduct);
+saveProducts(products);
+
+showMessage('✅ محصول په بریالیتوب سره اضافه شو (' + products.length + ' ټول)', 'success');
+clearForm();
+renderProducts();
+setTimeout(function() { showTab('list'); }, 800);
+}
+
+function clearForm() {
+document.getElementById('name').value = '';
+document.getElementById('nameEn').value = '';
+document.getElementById('weight').value = '';
+document.getElementById('price').value = '';
+document.getElementById('barcode').value = '';
+document.getElementById('category').value = '';
+document.getElementById('icon').value = '';
+}
+
+function editProduct(id) {
+var products = loadProducts();
+var p = null;
+for (var i = 0; i < products.length; i++) {
+if (products[i].id === id) { p = products[i]; break; }
+}
+if (!p) return;
+
+var newName = prompt('د محصول نوم:', p.name);
+if (newName === null) return;
+var newPrice = prompt('قیمت:', p.price);
+if (newPrice === null) return;
+var newBarcode = prompt('بارکوډ:', p.barcode);
+if (newBarcode === null) return;
+
+p.name = newName || p.name;
+p.price = parseFloat(newPrice) || p.price;
+p.barcode = newBarcode || p.barcode;
+
+saveProducts(products);
+showMessage('✅ محصول سم شو', 'success');
+renderProducts();
+}
+
+function deleteProduct(id) {
+if (!confirm('ایا ډاډه یې چې دا محصول ړنګ کړې؟')) return;
+
+var products = loadProducts();
+var filtered = [];
+for (var i = 0; i < products.length; i++) {
+if (products[i].id !== id) filtered.push(products[i]);
+}
+saveProducts(filtered);
+showMessage('🗑️ محصول ړنګ شو', 'success');
+renderProducts();
+}
+
+function showTab(tab) {
+document.getElementById('listTab').classList.add('hidden');
+document.getElementById('addTab').classList.add('hidden');
+document.getElementById('settingsTab').classList.add('hidden');
+document.getElementById('tabList').classList.remove('active');
+document.getElementById('tabAdd').classList.remove('active');
+document.getElementById('tabSettings').classList.remove('active');
+
+if (tab === 'list') {
+document.getElementById('listTab').classList.remove('hidden');
+document.getElementById('tabList').classList.add('active');
+renderProducts();
+} else if (tab === 'add') {
+document.getElementById('addTab').classList.remove('hidden');
+document.getElementById('tabAdd').classList.add('active');
+} else if (tab === 'settings') {
+document.getElementById('settingsTab').classList.remove('hidden');
+document.getElementById('tabSettings').classList.add('active');
+}
+}
+
+function exportData() {
+var products = loadProducts();
+var dataStr = JSON.stringify(products, null, 2);
+var blob = new Blob([dataStr], { type: 'application/json' });
+var url = URL.createObjectURL(blob);
+var a = document.createElement('a');
+a.href = url;
+a.download = 'dmart-backup-' + new Date().toISOString().slice(0,10) + '.json';
+a.click();
+showMessage('📥 بیک اپ ډاونلوډ شو (' + products.length + ' محصولات)', 'success');
+}
+
+function importData() {
+document.getElementById('importFile').click();
+}
+
+function handleImport(event) {
+var file = event.target.files[0];
+if (!file) return;
+var reader = new FileReader();
+reader.onload = function(e) {
+try {
+var products = JSON.parse(e.target.result);
+if (Array.isArray(products)) {
+saveProducts(products);
+showMessage('✅ معلومات وارد شول (' + products.length + ' محصولات)', 'success');
+renderProducts();
+} else {
+showMessage('❌ ناسم فایل', 'error');
+}
+} catch(err) {
+showMessage('❌ د فایل لوستلو خطا', 'error');
+}
+};
+reader.readAsText(file);
+}
+
+function clearAll() {
+if (!confirm('⚠️ ایا ډاډه یې چې ټول معلومات ړنګ کړې؟ دا عمل بېرته نه راګرځي!')) return;
+if (!confirm('⚠️ دا واقعیا خطرناکه ده! دوهم ځل تصدیق:')) return;
+localStorage.removeItem(STORAGE_KEY);
+showMessage('🗑️ ټول معلومات ړنګ شول', 'success');
+renderProducts();
+}
+
+// پیل
+renderProducts();
+</script>
+</body>
+</html>
