@@ -135,7 +135,8 @@ container.innerHTML = html;
 
 // ===== لټون (د نوم او بارکوډ دواړو له مخې) =====
 document.getElementById("searchInput").addEventListener("input", function(e) {
-var q = e.target.value.toLowerCase().trim();
+var q = e.target.value.trim();
+var qLower = q.toLowerCase();
 var filtered = [];
 
 if (q === "") {
@@ -143,8 +144,11 @@ filtered = products;
 } else {
 for (var i = 0; i < products.length; i++) {
 var p = products[i];
-var nameMatch = p.name.toLowerCase().indexOf(q) !== -1;
-var barcodeMatch = p.barcode.indexOf(q) !== -1;
+var nameMatch = p.name.toLowerCase().indexOf(qLower) !== -1;
+var barcodeMatch = false;
+if (p.barcode) {
+barcodeMatch = p.barcode.indexOf(q) !== -1;
+}
 if (nameMatch || barcodeMatch) {
 filtered.push(p);
 }
@@ -152,7 +156,6 @@ filtered.push(p);
 }
 displayProducts(filtered);
 });
-
 // ===== پیل =====
 displayProducts(products);
 
