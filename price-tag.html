@@ -89,9 +89,13 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
 
 /* د چاپ وخت */
 @media print {
+    @page {
+        size: A5;
+        margin: 5mm;
+    }
     body { background: white; padding: 0; }
     .buttons { display: none; }
-    .tag { box-shadow: none; max-width: 100%; border-radius: 0; }
+    .tag { box-shadow: none; max-width: 100%; border-radius: 8px; }
 }
 </style>
 </head>
