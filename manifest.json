@@ -1,0 +1,26 @@
+{
+  "name": "سوپر مارکیټ - د قیمت ټګ سیسټم",
+  "short_name": "Dmart",
+  "description": "د سوپر مارکیټ لپاره د قیمت ټګ جوړولو سیسټم",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#d9534f",
+  "theme_color": "#d9534f",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192/d9534f/ffffff?text=D",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/d9534f/ffffff?text=D",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
