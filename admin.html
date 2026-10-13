@@ -30,6 +30,7 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .product-info { flex: 1; }
 .product-name { font-weight: bold; color: #b03a3a; font-size: 14px; }
 .product-details { font-size: 12px; color: #666; margin-top: 4px; }
+.profit-line { font-size: 12px; margin-top: 4px; font-weight: bold; }
 .product-actions { display: flex; gap: 8px; }
 .product-actions button { padding: 8px 12px; border: none; border-radius: 8px; font-size: 12px; cursor: pointer; }
 .empty { text-align: center; padding: 40px; color: #999; }
@@ -38,12 +39,13 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .message.success { background: #d4edda; color: #155724; }
 .message.error { background: #f8d7da; color: #721c24; }
 .stats { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-size: 14px; color: #333; }
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.stats-grid div { padding: 8px; background: #f8f9fa; border-radius: 8px; }
 .welcome { background: linear-gradient(135deg, #7bbf6a, #5ea04f); color: white; padding: 12px 20px; text-align: center; font-size: 14px; }
 </style>
 </head>
 <body>
 
-<!-- د لاګین ساتنه -->
 <script>
 (function() {
     var SESSION_KEY = 'dmart_session';
@@ -92,8 +94,12 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 <input type="text" id="weight" placeholder="10 جرام">
 </div>
 <div class="form-group">
-<label>قیمت *</label>
+<label>د پلور قیمت *</label>
 <input type="number" id="price" step="0.01" placeholder="85">
+</div>
+<div class="form-group">
+<label>د پیرود قیمت (Cost) 💰</label>
+<input type="number" id="costPrice" step="0.01" placeholder="70">
 </div>
 <div class="form-group">
 <label>د پیسو واحد</label>
@@ -141,12 +147,12 @@ var STORAGE_KEY = 'dmart_products';
 var SESSION_KEY = 'dmart_session';
 
 var defaultProducts = [
-{ id: 1, name: "مهران معجون الزنجبيل", weight: "320 جرام", price: 5.95, currency: "ر.س", icon: "🫙", barcode: "633152014535", category: "عرض خاص" },
-{ id: 2, name: "زيت الزيتون", weight: "1 لتر", price: 25.50, currency: "ر.س", icon: "🫒", barcode: "633152014536", category: "زيوت" },
-{ id: 3, name: "عسل طبيعي", weight: "500 جرام", price: 45.00, currency: "ر.س", icon: "🍯", barcode: "633152014537", category: "عسل" },
-{ id: 4, name: "تمر مجدول", weight: "1 کیلو", price: 35.00, currency: "ر.س", icon: "🌴", barcode: "633152014538", category: "تمور" },
-{ id: 5, name: "مياه معدنية", weight: "1.5 لتر", price: 3.00, currency: "ر.س", icon: "💧", barcode: "633152014539", category: "مشروبات" },
-{ id: 6, name: "شاي أخضر", weight: "250 جرام", price: 18.50, currency: "ر.س", icon: "🍵", barcode: "633152014540", category: "شاي" }
+{ id: 1, name: "مهران معجون الزنجبيل", weight: "320 جرام", price: 5.95, costPrice: 4.00, currency: "ر.س", icon: "🫙", barcode: "633152014535", category: "عرض خاص" },
+{ id: 2, name: "زيت الزيتون", weight: "1 لتر", price: 25.50, costPrice: 20.00, currency: "ر.س", icon: "🫒", barcode: "633152014536", category: "زيوت" },
+{ id: 3, name: "عسل طبيعي", weight: "500 جرام", price: 45.00, costPrice: 35.00, currency: "ر.س", icon: "🍯", barcode: "633152014537", category: "عسل" },
+{ id: 4, name: "تمر مجدول", weight: "1 کیلو", price: 35.00, costPrice: 25.00, currency: "ر.س", icon: "🌴", barcode: "633152014538", category: "تمور" },
+{ id: 5, name: "مياه معدنية", weight: "1.5 لتر", price: 3.00, costPrice: 2.00, currency: "ر.س", icon: "💧", barcode: "633152014539", category: "مشروبات" },
+{ id: 6, name: "شاي أخضر", weight: "250 جرام", price: 18.50, costPrice: 12.00, currency: "ر.س", icon: "🍵", barcode: "633152014540", category: "شاي" }
 ];
 
 function loadProducts() {
@@ -156,9 +162,7 @@ function loadProducts() {
     return defaultProducts;
 }
 
-function saveProducts(list) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-}
+function saveProducts(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
 
 function showMessage(text, type) {
     var box = document.getElementById('messageBox');
@@ -169,15 +173,45 @@ function showMessage(text, type) {
 function renderProducts() {
     var products = loadProducts();
     var container = document.getElementById('productList');
-    document.getElementById('statsBox').innerHTML = '📊 ټول محصولات: <strong>' + products.length + '</strong>';
+    
+    var totalProfit = 0;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].costPrice) totalProfit += (products[i].price - products[i].costPrice);
+    }
+    
+    document.getElementById('statsBox').innerHTML = 
+        '<div class="stats-grid">' +
+        '<div>📦 ټول: <strong>' + products.length + '</strong></div>' +
+        '<div>💰 ټوله ګټه: <strong style="color:#27ae60;">' + totalProfit.toFixed(2) + '</strong></div>' +
+        '</div>';
+    
     if (products.length === 0) {
         container.innerHTML = '<div class="empty">😕 هیڅ محصول نشته</div>';
         return;
     }
+    
     var html = '';
     for (var i = 0; i < products.length; i++) {
         var p = products[i];
-        html += '<div class="product-item"><div class="product-icon">' + (p.icon || '📦') + '</div><div class="product-info"><div class="product-name">' + p.name + '</div><div class="product-details">' + (p.weight || '') + ' • ' + p.price + ' ' + p.currency + '</div><div class="product-details" style="font-family:monospace;">' + p.barcode + '</div></div><div class="product-actions"><button style="background:#7bbf6a;color:white;" onclick="editProduct(' + p.id + ')">✏️</button><button style="background:#e74c3c;color:white;" onclick="deleteProduct(' + p.id + ')">🗑️</button></div></div>';
+        var profitText = '';
+        if (p.costPrice && p.costPrice > 0) {
+            var profit = p.price - p.costPrice;
+            var profitColor = profit >= 0 ? '#27ae60' : '#e74c3c';
+            profitText = '<div class="profit-line" style="color:' + profitColor + ';">💰 ګټه: ' + profit.toFixed(2) + ' ' + p.currency + ' (پیرود: ' + p.costPrice + ')</div>';
+        }
+        html += '<div class="product-item">' +
+            '<div class="product-icon">' + (p.icon || '📦') + '</div>' +
+            '<div class="product-info">' +
+            '<div class="product-name">' + p.name + '</div>' +
+            '<div class="product-details">' + (p.weight || '') + ' • پلور: ' + p.price + ' ' + p.currency + '</div>' +
+            profitText +
+            '<div class="product-details" style="font-family:monospace;">' + p.barcode + '</div>' +
+            '</div>' +
+            '<div class="product-actions">' +
+            '<button style="background:#7bbf6a;color:white;" onclick="editProduct(' + p.id + ')">✏️</button>' +
+            '<button style="background:#e74c3c;color:white;" onclick="deleteProduct(' + p.id + ')">🗑️</button>' +
+            '</div>' +
+            '</div>';
     }
     container.innerHTML = html;
 }
@@ -185,17 +219,22 @@ function renderProducts() {
 function addProduct() {
     var name = document.getElementById('name').value.trim();
     var price = parseFloat(document.getElementById('price').value);
+    var costPrice = parseFloat(document.getElementById('costPrice').value) || 0;
     var barcode = document.getElementById('barcode').value.trim();
+    
     if (!name || !price || !barcode) { showMessage('❌ نوم، قیمت او بارکوډ اړین دي', 'error'); return; }
+    
     var products = loadProducts();
     for (var i = 0; i < products.length; i++) {
         if (products[i].barcode === barcode) { showMessage('❌ دا بارکوډ دمخه شتون لري', 'error'); return; }
     }
+    
     var newProduct = {
         id: Date.now(), name: name,
         name_en: document.getElementById('nameEn').value.trim(),
         weight: document.getElementById('weight').value.trim(),
         price: price,
+        costPrice: costPrice,
         currency: document.getElementById('currency').value,
         barcode: barcode,
         category: document.getElementById('category').value.trim(),
@@ -203,7 +242,7 @@ function addProduct() {
     };
     products.unshift(newProduct);
     saveProducts(products);
-    showMessage('✅ محصول په بریالیتوب سره اضافه شو (' + products.length + ' ټول)', 'success');
+    showMessage('✅ محصول اضافه شو (' + products.length + ' ټول)', 'success');
     clearForm();
     renderProducts();
     setTimeout(function() { showTab('list'); }, 800);
@@ -214,6 +253,7 @@ function clearForm() {
     document.getElementById('nameEn').value = '';
     document.getElementById('weight').value = '';
     document.getElementById('price').value = '';
+    document.getElementById('costPrice').value = '';
     document.getElementById('barcode').value = '';
     document.getElementById('category').value = '';
     document.getElementById('icon').value = '';
@@ -225,10 +265,12 @@ function editProduct(id) {
     for (var i = 0; i < products.length; i++) { if (products[i].id === id) { p = products[i]; break; } }
     if (!p) return;
     var newName = prompt('د محصول نوم:', p.name); if (newName === null) return;
-    var newPrice = prompt('قیمت:', p.price); if (newPrice === null) return;
+    var newPrice = prompt('د پلور قیمت:', p.price); if (newPrice === null) return;
+    var newCost = prompt('د پیرود قیمت:', p.costPrice || 0); if (newCost === null) return;
     var newBarcode = prompt('بارکوډ:', p.barcode); if (newBarcode === null) return;
     p.name = newName || p.name;
     p.price = parseFloat(newPrice) || p.price;
+    p.costPrice = parseFloat(newCost) || 0;
     p.barcode = newBarcode || p.barcode;
     saveProducts(products);
     showMessage('✅ محصول سم شو', 'success');
@@ -311,7 +353,6 @@ function doLogout() {
     }
 }
 
-// د ښه راغلاست ښودل
 (function() {
     var session = localStorage.getItem(SESSION_KEY);
     if (session) {
