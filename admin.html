@@ -3,13 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#d9534f">
 <title>د مدیر پینل</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
 body { background: #f0f2f5; padding-bottom: 30px; }
 .header { background: #d9534f; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
 .header h1 { font-size: 18px; }
-.header a { color: white; text-decoration: none; font-size: 14px; }
+.header-right { display: flex; gap: 12px; align-items: center; }
+.header-right a { color: white; text-decoration: none; font-size: 13px; padding: 6px 10px; background: rgba(255,255,255,0.15); border-radius: 8px; }
 .tabs { display: flex; background: white; border-bottom: 1px solid #ddd; }
 .tabs button { flex: 1; padding: 15px; border: none; background: white; font-size: 14px; font-weight: bold; color: #666; cursor: pointer; }
 .tabs button.active { color: #d9534f; border-bottom: 3px solid #d9534f; }
@@ -22,6 +24,7 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .btn-primary { background: #d9534f; color: white; }
 .btn-success { background: #7bbf6a; color: white; }
 .btn-danger { background: #e74c3c; color: white; }
+.btn-warning { background: #f39c12; color: white; }
 .product-item { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; }
 .product-icon { font-size: 32px; }
 .product-info { flex: 1; }
@@ -35,14 +38,31 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .message.success { background: #d4edda; color: #155724; }
 .message.error { background: #f8d7da; color: #721c24; }
 .stats { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-size: 14px; color: #333; }
+.welcome { background: linear-gradient(135deg, #7bbf6a, #5ea04f); color: white; padding: 12px 20px; text-align: center; font-size: 14px; }
 </style>
 </head>
 <body>
 
+<!-- د لاګین ساتنه -->
+<script>
+(function() {
+    var SESSION_KEY = 'dmart_session';
+    var session = localStorage.getItem(SESSION_KEY);
+    if (!session) {
+        window.location.href = 'login.html';
+    }
+})();
+</script>
+
 <div class="header">
 <h1>👨‍💼 د مدیر پینل</h1>
+<div class="header-right">
 <a href="index.html">← بیرته</a>
+<a href="#" onclick="doLogout();return false;">🚪 وتل</a>
 </div>
+</div>
+
+<div class="welcome" id="welcomeBox">👋 ښه راغلاست!</div>
 
 <div class="tabs">
 <button id="tabList" class="active" onclick="showTab('list')">📦 محصولات</button>
@@ -106,10 +126,11 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 <h3 style="margin-bottom:15px;">⚙️ تنظیمات</h3>
 <button class="btn btn-danger" onclick="exportData()">📥 د معلوماتو صادرول (Backup)</button>
 <button class="btn btn-primary" onclick="importData()">📤 د معلوماتو واردول (Restore)</button>
+<button class="btn btn-warning" onclick="showUsers()">👥 د کاروونکو مدیریت</button>
 <button class="btn btn-danger" onclick="clearAll()">🗑️ ټول معلومات ړنګول</button>
 <input type="file" id="importFile" accept=".json" style="display:none;" onchange="handleImport(event)">
 <div style="margin-top:20px; padding:15px; background:#fff; border-radius:10px; font-size:13px; color:#666;">
-<strong>💡 یادونه:</strong> ټول معلومات په دې موبایل کې خوندي کیږي (localStorage). د بیک اپ لپاره "صادرول" تڼۍ وکاروه.
+<strong>💡 یادونه:</strong> ټول معلومات په دې موبایل کې خوندي کیږي (localStorage).
 </div>
 </div>
 
@@ -117,6 +138,7 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 
 <script>
 var STORAGE_KEY = 'dmart_products';
+var SESSION_KEY = 'dmart_session';
 
 var defaultProducts = [
 { id: 1, name: "مهران معجون الزنجبيل", weight: "320 جرام", price: 5.95, currency: "ر.س", icon: "🫙", barcode: "633152014535", category: "عرض خاص" },
@@ -127,216 +149,181 @@ var defaultProducts = [
 { id: 6, name: "شاي أخضر", weight: "250 جرام", price: 18.50, currency: "ر.س", icon: "🍵", barcode: "633152014540", category: "شاي" }
 ];
 
-// د localStorage څخه معلومات راوړل
 function loadProducts() {
-var data = localStorage.getItem(STORAGE_KEY);
-if (data) {
-try {
-var parsed = JSON.parse(data);
-if (Array.isArray(parsed) && parsed.length > 0) {
-return parsed;
-}
-} catch(e) {}
-}
-localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultProducts));
-return defaultProducts;
+    var data = localStorage.getItem(STORAGE_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return defaultProducts; } }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultProducts));
+    return defaultProducts;
 }
 
 function saveProducts(list) {
-localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
 }
 
 function showMessage(text, type) {
-var box = document.getElementById('messageBox');
-box.innerHTML = '<div class="message ' + type + '">' + text + '</div>';
-setTimeout(function() { box.innerHTML = ''; }, 3000);
+    var box = document.getElementById('messageBox');
+    box.innerHTML = '<div class="message ' + type + '">' + text + '</div>';
+    setTimeout(function() { box.innerHTML = ''; }, 3000);
 }
 
 function renderProducts() {
-var products = loadProducts();
-var container = document.getElementById('productList');
-
-document.getElementById('statsBox').innerHTML = '📊 ټول محصولات: <strong>' + products.length + '</strong>';
-
-if (products.length === 0) {
-container.innerHTML = '<div class="empty">😕 هیڅ محصول نشته<br><br>د "نوی محصول" ټب څخه یو اضافه کړه</div>';
-return;
-}
-
-var html = '';
-for (var i = 0; i < products.length; i++) {
-var p = products[i];
-html += '<div class="product-item">' +
-'<div class="product-icon">' + (p.icon || '📦') + '</div>' +
-'<div class="product-info">' +
-'<div class="product-name">' + p.name + '</div>' +
-'<div class="product-details">' + (p.weight || '') + ' • ' + p.price + ' ' + p.currency + '</div>' +
-'<div class="product-details" style="font-family:monospace;">' + p.barcode + '</div>' +
-'</div>' +
-'<div class="product-actions">' +
-'<button style="background:#7bbf6a;color:white;" onclick="editProduct(' + p.id + ')">✏️</button>' +
-'<button style="background:#e74c3c;color:white;" onclick="deleteProduct(' + p.id + ')">🗑️</button>' +
-'</div>' +
-'</div>';
-}
-container.innerHTML = html;
+    var products = loadProducts();
+    var container = document.getElementById('productList');
+    document.getElementById('statsBox').innerHTML = '📊 ټول محصولات: <strong>' + products.length + '</strong>';
+    if (products.length === 0) {
+        container.innerHTML = '<div class="empty">😕 هیڅ محصول نشته</div>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < products.length; i++) {
+        var p = products[i];
+        html += '<div class="product-item"><div class="product-icon">' + (p.icon || '📦') + '</div><div class="product-info"><div class="product-name">' + p.name + '</div><div class="product-details">' + (p.weight || '') + ' • ' + p.price + ' ' + p.currency + '</div><div class="product-details" style="font-family:monospace;">' + p.barcode + '</div></div><div class="product-actions"><button style="background:#7bbf6a;color:white;" onclick="editProduct(' + p.id + ')">✏️</button><button style="background:#e74c3c;color:white;" onclick="deleteProduct(' + p.id + ')">🗑️</button></div></div>';
+    }
+    container.innerHTML = html;
 }
 
 function addProduct() {
-var name = document.getElementById('name').value.trim();
-var price = parseFloat(document.getElementById('price').value);
-var barcode = document.getElementById('barcode').value.trim();
-
-if (!name || !price || !barcode) {
-showMessage('❌ نوم، قیمت او بارکوډ اړین دي', 'error');
-return;
-}
-
-var products = loadProducts();
-
-for (var i = 0; i < products.length; i++) {
-if (products[i].barcode === barcode) {
-showMessage('❌ دا بارکوډ دمخه شتون لري', 'error');
-return;
-}
-}
-
-var newProduct = {
-id: Date.now(),
-name: name,
-name_en: document.getElementById('nameEn').value.trim(),
-weight: document.getElementById('weight').value.trim(),
-price: price,
-currency: document.getElementById('currency').value,
-barcode: barcode,
-category: document.getElementById('category').value.trim(),
-icon: document.getElementById('icon').value.trim() || '📦'
-};
-
-products.unshift(newProduct);
-saveProducts(products);
-
-showMessage('✅ محصول په بریالیتوب سره اضافه شو (' + products.length + ' ټول)', 'success');
-clearForm();
-renderProducts();
-setTimeout(function() { showTab('list'); }, 800);
+    var name = document.getElementById('name').value.trim();
+    var price = parseFloat(document.getElementById('price').value);
+    var barcode = document.getElementById('barcode').value.trim();
+    if (!name || !price || !barcode) { showMessage('❌ نوم، قیمت او بارکوډ اړین دي', 'error'); return; }
+    var products = loadProducts();
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].barcode === barcode) { showMessage('❌ دا بارکوډ دمخه شتون لري', 'error'); return; }
+    }
+    var newProduct = {
+        id: Date.now(), name: name,
+        name_en: document.getElementById('nameEn').value.trim(),
+        weight: document.getElementById('weight').value.trim(),
+        price: price,
+        currency: document.getElementById('currency').value,
+        barcode: barcode,
+        category: document.getElementById('category').value.trim(),
+        icon: document.getElementById('icon').value.trim() || '📦'
+    };
+    products.unshift(newProduct);
+    saveProducts(products);
+    showMessage('✅ محصول په بریالیتوب سره اضافه شو (' + products.length + ' ټول)', 'success');
+    clearForm();
+    renderProducts();
+    setTimeout(function() { showTab('list'); }, 800);
 }
 
 function clearForm() {
-document.getElementById('name').value = '';
-document.getElementById('nameEn').value = '';
-document.getElementById('weight').value = '';
-document.getElementById('price').value = '';
-document.getElementById('barcode').value = '';
-document.getElementById('category').value = '';
-document.getElementById('icon').value = '';
+    document.getElementById('name').value = '';
+    document.getElementById('nameEn').value = '';
+    document.getElementById('weight').value = '';
+    document.getElementById('price').value = '';
+    document.getElementById('barcode').value = '';
+    document.getElementById('category').value = '';
+    document.getElementById('icon').value = '';
 }
 
 function editProduct(id) {
-var products = loadProducts();
-var p = null;
-for (var i = 0; i < products.length; i++) {
-if (products[i].id === id) { p = products[i]; break; }
-}
-if (!p) return;
-
-var newName = prompt('د محصول نوم:', p.name);
-if (newName === null) return;
-var newPrice = prompt('قیمت:', p.price);
-if (newPrice === null) return;
-var newBarcode = prompt('بارکوډ:', p.barcode);
-if (newBarcode === null) return;
-
-p.name = newName || p.name;
-p.price = parseFloat(newPrice) || p.price;
-p.barcode = newBarcode || p.barcode;
-
-saveProducts(products);
-showMessage('✅ محصول سم شو', 'success');
-renderProducts();
+    var products = loadProducts();
+    var p = null;
+    for (var i = 0; i < products.length; i++) { if (products[i].id === id) { p = products[i]; break; } }
+    if (!p) return;
+    var newName = prompt('د محصول نوم:', p.name); if (newName === null) return;
+    var newPrice = prompt('قیمت:', p.price); if (newPrice === null) return;
+    var newBarcode = prompt('بارکوډ:', p.barcode); if (newBarcode === null) return;
+    p.name = newName || p.name;
+    p.price = parseFloat(newPrice) || p.price;
+    p.barcode = newBarcode || p.barcode;
+    saveProducts(products);
+    showMessage('✅ محصول سم شو', 'success');
+    renderProducts();
 }
 
 function deleteProduct(id) {
-if (!confirm('ایا ډاډه یې چې دا محصول ړنګ کړې؟')) return;
-
-var products = loadProducts();
-var filtered = [];
-for (var i = 0; i < products.length; i++) {
-if (products[i].id !== id) filtered.push(products[i]);
-}
-saveProducts(filtered);
-showMessage('🗑️ محصول ړنګ شو', 'success');
-renderProducts();
+    if (!confirm('ایا ډاډه یې چې دا محصول ړنګ کړې؟')) return;
+    var products = loadProducts();
+    var filtered = [];
+    for (var i = 0; i < products.length; i++) { if (products[i].id !== id) filtered.push(products[i]); }
+    saveProducts(filtered);
+    showMessage('🗑️ محصول ړنګ شو', 'success');
+    renderProducts();
 }
 
 function showTab(tab) {
-document.getElementById('listTab').classList.add('hidden');
-document.getElementById('addTab').classList.add('hidden');
-document.getElementById('settingsTab').classList.add('hidden');
-document.getElementById('tabList').classList.remove('active');
-document.getElementById('tabAdd').classList.remove('active');
-document.getElementById('tabSettings').classList.remove('active');
-
-if (tab === 'list') {
-document.getElementById('listTab').classList.remove('hidden');
-document.getElementById('tabList').classList.add('active');
-renderProducts();
-} else if (tab === 'add') {
-document.getElementById('addTab').classList.remove('hidden');
-document.getElementById('tabAdd').classList.add('active');
-} else if (tab === 'settings') {
-document.getElementById('settingsTab').classList.remove('hidden');
-document.getElementById('tabSettings').classList.add('active');
-}
+    document.getElementById('listTab').classList.add('hidden');
+    document.getElementById('addTab').classList.add('hidden');
+    document.getElementById('settingsTab').classList.add('hidden');
+    document.getElementById('tabList').classList.remove('active');
+    document.getElementById('tabAdd').classList.remove('active');
+    document.getElementById('tabSettings').classList.remove('active');
+    if (tab === 'list') { document.getElementById('listTab').classList.remove('hidden'); document.getElementById('tabList').classList.add('active'); renderProducts(); }
+    else if (tab === 'add') { document.getElementById('addTab').classList.remove('hidden'); document.getElementById('tabAdd').classList.add('active'); }
+    else if (tab === 'settings') { document.getElementById('settingsTab').classList.remove('hidden'); document.getElementById('tabSettings').classList.add('active'); }
 }
 
 function exportData() {
-var products = loadProducts();
-var dataStr = JSON.stringify(products, null, 2);
-var blob = new Blob([dataStr], { type: 'application/json' });
-var url = URL.createObjectURL(blob);
-var a = document.createElement('a');
-a.href = url;
-a.download = 'dmart-backup-' + new Date().toISOString().slice(0,10) + '.json';
-a.click();
-showMessage('📥 بیک اپ ډاونلوډ شو (' + products.length + ' محصولات)', 'success');
+    var products = loadProducts();
+    var dataStr = JSON.stringify(products, null, 2);
+    var blob = new Blob([dataStr], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'dmart-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    showMessage('📥 بیک اپ ډاونلوډ شو (' + products.length + ' محصولات)', 'success');
 }
 
-function importData() {
-document.getElementById('importFile').click();
-}
+function importData() { document.getElementById('importFile').click(); }
 
 function handleImport(event) {
-var file = event.target.files[0];
-if (!file) return;
-var reader = new FileReader();
-reader.onload = function(e) {
-try {
-var products = JSON.parse(e.target.result);
-if (Array.isArray(products)) {
-saveProducts(products);
-showMessage('✅ معلومات وارد شول (' + products.length + ' محصولات)', 'success');
-renderProducts();
-} else {
-showMessage('❌ ناسم فایل', 'error');
-}
-} catch(err) {
-showMessage('❌ د فایل لوستلو خطا', 'error');
-}
-};
-reader.readAsText(file);
+    var file = event.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            var products = JSON.parse(e.target.result);
+            if (Array.isArray(products)) {
+                saveProducts(products);
+                showMessage('✅ معلومات وارد شول (' + products.length + ' محصولات)', 'success');
+                renderProducts();
+            } else { showMessage('❌ ناسم فایل', 'error'); }
+        } catch(err) { showMessage('❌ د فایل لوستلو خطا', 'error'); }
+    };
+    reader.readAsText(file);
 }
 
 function clearAll() {
-if (!confirm('⚠️ ایا ډاډه یې چې ټول معلومات ړنګ کړې؟ دا عمل بېرته نه راګرځي!')) return;
-if (!confirm('⚠️ دا واقعیا خطرناکه ده! دوهم ځل تصدیق:')) return;
-localStorage.removeItem(STORAGE_KEY);
-showMessage('🗑️ ټول معلومات ړنګ شول', 'success');
-renderProducts();
+    if (!confirm('⚠️ ایا ډاډه یې چې ټول معلومات ړنګ کړې؟')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    showMessage('🗑️ ټول معلومات ړنګ شول', 'success');
+    renderProducts();
 }
 
-// پیل
+function showUsers() {
+    var users = JSON.parse(localStorage.getItem('dmart_users') || '[]');
+    var msg = '👥 کاروونکي:\n\n';
+    for (var i = 0; i < users.length; i++) {
+        msg += '👤 ' + users[i].username + ' (' + users[i].name + ')\n';
+    }
+    alert(msg);
+}
+
+function doLogout() {
+    if (confirm('ایا ډاډه یې چې وتل غواړې؟')) {
+        localStorage.removeItem(SESSION_KEY);
+        window.location.href = 'login.html';
+    }
+}
+
+// د ښه راغلاست ښودل
+(function() {
+    var session = localStorage.getItem(SESSION_KEY);
+    if (session) {
+        try {
+            var s = JSON.parse(session);
+            document.getElementById('welcomeBox').innerHTML = '👋 ښه راغلاست، ' + (s.name || s.username) + '!';
+        } catch(e) {}
+    }
+})();
+
 renderProducts();
 </script>
+
 </body>
 </html>
