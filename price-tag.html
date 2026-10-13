@@ -81,8 +81,31 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
     gap: 15px;
 }
 
-/* د قیمت برخه (کیڼ اړخ) */
-.price-section { flex: 1; }
+/* د محصول معلومات (کیڼ اړخ) */
+.info-section {
+    flex: 1;
+    text-align: left;
+    padding-left: 5px;
+}
+.product-name {
+    color: #b03a3a;
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 1.35;
+    margin-bottom: 8px;
+}
+.product-weight {
+    color: #b03a3a;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* د قیمت برخه (ښي اړخ) */
+.price-section {
+    flex: 1.2;
+    text-align: right;
+}
 .price-label {
     color: #2d7a4f;
     font-weight: bold;
@@ -112,22 +135,6 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
     font-weight: bold;
 }
 
-/* د محصول معلومات (ښي اړخ) */
-.info-section { flex: 1.2; text-align: right; }
-.product-name {
-    color: #b03a3a;
-    font-size: 22px;
-    font-weight: bold;
-    line-height: 1.35;
-    margin-bottom: 8px;
-}
-.product-weight {
-    color: #b03a3a;
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 5px;
-}
-
 /* ===== فوټر (بارکوډ + نیټې) ===== */
 .tag-footer {
     padding: 5px 22px 20px;
@@ -137,7 +144,22 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
     gap: 15px;
 }
 
-/* بارکوډ (کیڼ اړخ) */
+/* نیټې (کیڼ اړخ) */
+.dates {
+    font-size: 11px;
+    color: #cc4b44;
+    line-height: 1.6;
+    text-align: left;
+    font-weight: bold;
+}
+.dates .date-line {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: flex-start;
+}
+
+/* بارکوډ (ښي اړخ) */
 .barcode-box { text-align: center; }
 .barcode-lines {
     width: 170px;
@@ -158,21 +180,6 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
     margin-top: 5px;
     color: #000;
     font-weight: bold;
-}
-
-/* نیټې (ښي اړخ) */
-.dates {
-    font-size: 11px;
-    color: #cc4b44;
-    line-height: 1.6;
-    text-align: right;
-    font-weight: bold;
-}
-.dates .date-line {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    justify-content: flex-end;
 }
 
 /* ===== تڼۍ ===== */
@@ -243,28 +250,28 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
 
     <!-- بدنه -->
     <div class="tag-body">
-    <div class="info-section">
-        <div class="product-name" id="productName">...</div>
-        <div class="product-weight" id="productWeight"></div>
-    </div>
-    <div class="price-section">
-        <div class="price-label">الحبة بسعر</div>
-        <div class="price-value">
-            <span class="num" id="priceNum">0</span>
-            <span class="cur" id="priceCur">ر.س</span>
+        <div class="info-section">
+            <div class="product-name" id="productName">...</div>
+            <div class="product-weight" id="productWeight"></div>
+        </div>
+        <div class="price-section">
+            <div class="price-label">الحبة بسعر</div>
+            <div class="price-value">
+                <span class="num" id="priceNum">0</span>
+                <span class="cur" id="priceCur">ر.س</span>
+            </div>
         </div>
     </div>
-</div>
 
     <!-- فوټر -->
     <div class="tag-footer">
-        <div class="barcode-box">
-            <div class="barcode-lines"></div>
-            <div class="barcode-num" id="barcodeNum"></div>
-        </div>
         <div class="dates">
             <div class="date-line"><span id="startDate"></span></div>
             <div class="date-line"><span id="endDate"></span></div>
+        </div>
+        <div class="barcode-box">
+            <div class="barcode-lines"></div>
+            <div class="barcode-num" id="barcodeNum"></div>
         </div>
     </div>
 
