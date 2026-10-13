@@ -60,7 +60,7 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <a href="scanner.html"><span class="icon">📷</span><span>سکنر</span></a>
 <a href="#"><span class="icon">📦</span><span>محصولات</span></a>
 <a href="admin.html"><span class="icon">➕</span><span>مدیر</span></a>
-<a href="#"><span class="icon">📊</span><span>راپور</span></a>
+<a href="reports.html"><span class="icon">📊</span><span>راپور</span></a>
 </div>
 
 <div class="section-title">📋 نوي محصولات</div>
@@ -70,7 +70,7 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <a href="index.html" class="active"><span class="icon">🏠</span><span>کور</span></a>
 <a href="scanner.html"><span class="icon">📷</span><span>سکنر</span></a>
 <a href="#"><span class="icon">📦</span><span>محصولات</span></a>
-<a href="#"><span class="icon">📊</span><span>راپور</span></a>
+<a href="reports.html"><span class="icon">📊</span><span>راپور</span></a>
 <a href="admin.html"><span class="icon">⚙️</span><span>مدیر</span></a>
 </nav>
 
@@ -86,84 +86,54 @@ var defaultProducts = [
 ];
 
 function loadProducts() {
-var data = localStorage.getItem(STORAGE_KEY);
-if (data) {
-try { return JSON.parse(data); } catch(e) { return defaultProducts; }
-}
-localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultProducts));
-return defaultProducts;
+    var data = localStorage.getItem(STORAGE_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return defaultProducts; } }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultProducts));
+    return defaultProducts;
 }
 
 var products = loadProducts();
 
 function displayProducts(list) {
-var container = document.getElementById("productList");
-if (list.length === 0) {
-container.innerHTML = '<div class="empty"><div class="icon">😕</div><div>هیڅ محصول ونه موندل شو</div></div>';
-return;
-}
-var html = "";
-for (var i = 0; i < list.length; i++) {
-var p = list[i];
-html = html + '<div class="card">' +
-'<div class="card-img">' + p.icon + '</div>' +
-'<div class="card-info">' +
-'<div>' +
-'<div class="card-name">' + p.name + '</div>' +
-'<div class="card-weight">' + p.weight + '</div>' +
-'</div>' +
-'<div class="card-bottom">' +
-'<div class="card-price">' + p.price + ' ' + p.currency + '</div>' +
-'<a href="price-tag.html?barcode=' + p.barcode + '" class="card-print">🖨️ چاپ</a>' +
-'</div>' +
-'</div>' +
-'</div>';
-}
-container.innerHTML = html;
+    var container = document.getElementById("productList");
+    if (list.length === 0) {
+        container.innerHTML = '<div class="empty"><div class="icon">😕</div><div>هیڅ محصول ونه موندل شو</div></div>';
+        return;
+    }
+    var html = "";
+    for (var i = 0; i < list.length; i++) {
+        var p = list[i];
+        html += '<div class="card"><div class="card-img">' + p.icon + '</div><div class="card-info"><div><div class="card-name">' + p.name + '</div><div class="card-weight">' + p.weight + '</div></div><div class="card-bottom"><div class="card-price">' + p.price + ' ' + p.currency + '</div><a href="price-tag.html?barcode=' + p.barcode + '" class="card-print">🖨️ چاپ</a></div></div></div>';
+    }
+    container.innerHTML = html;
 }
 
 function doSearch() {
-var input = document.getElementById("searchInput");
-var q = input.value.trim();
-var qLower = q.toLowerCase();
-var filtered = [];
-if (q === "") {
-filtered = products;
-} else {
-for (var i = 0; i < products.length; i++) {
-var p = products[i];
-var nameMatch = p.name.toLowerCase().indexOf(qLower) !== -1;
-var barcodeMatch = false;
-if (p.barcode) {
-barcodeMatch = p.barcode.indexOf(q) !== -1;
-}
-if (nameMatch || barcodeMatch) {
-filtered.push(p);
-}
-}
-}
-displayProducts(filtered);
+    var q = document.getElementById("searchInput").value.trim();
+    var qLower = q.toLowerCase();
+    var filtered = [];
+    if (q === "") { filtered = products; }
+    else {
+        for (var i = 0; i < products.length; i++) {
+            var p = products[i];
+            var nameMatch = p.name.toLowerCase().indexOf(qLower) !== -1;
+            var barcodeMatch = p.barcode ? p.barcode.indexOf(q) !== -1 : false;
+            if (nameMatch || barcodeMatch) { filtered.push(p); }
+        }
+    }
+    displayProducts(filtered);
 }
 
 document.getElementById("searchInput").addEventListener("input", doSearch);
-document.getElementById("searchInput").addEventListener("keyup", doSearch);
-
-// مهمه: هر ځل چې پاڼه پرانیستل شي، د localStorage څخه تازه معلومات راوړي
-window.addEventListener('focus', function() {
-products = loadProducts();
-displayProducts(products);
-});
-
-window.addEventListener('pageshow', function() {
-products = loadProducts();
-displayProducts(products);
-});
+window.addEventListener('focus', function() { products = loadProducts(); displayProducts(products); });
+window.addEventListener('pageshow', function() { products = loadProducts(); displayProducts(products); });
 
 displayProducts(products);
 
 if ("serviceWorker" in navigator) {
-navigator.serviceWorker.register("service-worker.js");
+    navigator.serviceWorker.register("service-worker.js");
 }
 </script>
+
 </body>
 </html>
