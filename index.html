@@ -9,19 +9,30 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
 body { background: #f0f2f5; padding-bottom: 80px; }
+
+/* د سر برخه */
 .header { background: #d9534f; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
 .header-left { display: flex; align-items: center; gap: 12px; }
 .logo { background: white; color: #d9534f; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 22px; }
 .title { font-size: 18px; font-weight: bold; }
 .subtitle { font-size: 11px; opacity: 0.9; }
+
+/* د لټون */
 .search { padding: 15px 20px; background: white; }
 .search input { width: 100%; padding: 14px 20px; border: 2px solid #e0e0e0; border-radius: 30px; font-size: 15px; background: #f8f9fa; }
 .search input:focus { outline: none; border-color: #d9534f; background: white; }
-.menu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px 20px; background: white; margin-bottom: 15px; }
-.menu a { background: #f8f9fa; padding: 15px 5px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; text-decoration: none; color: #333; }
-.menu a:active { background: #d9534f; color: white; }
+
+/* ===== د مینو ۱۲ تڼۍ (6 × 2) ===== */
+.menu { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 12px; background: white; margin-bottom: 15px; }
+.menu a { background: #f8f9fa; padding: 12px 3px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; text-decoration: none; color: #333; transition: all 0.2s; }
+.menu a:active { background: #d9534f; color: white; transform: scale(0.95); }
 .menu .icon { font-size: 24px; }
-.section-title { padding: 15px 20px 10px; font-size: 16px; color: #333; font-weight: bold; }
+
+/* د برخې سرلیک */
+.section-title { padding: 15px 20px 10px; font-size: 16px; color: #333; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.section-title a { color: #d9534f; text-decoration: none; font-size: 13px; }
+
+/* د محصولاتو لیست */
 .products { padding: 0 15px; display: flex; flex-direction: column; gap: 12px; }
 .card { background: white; border-radius: 15px; padding: 15px; display: flex; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .card-img { width: 70px; height: 70px; border-radius: 12px; background: #f0f2f5; display: flex; justify-content: center; align-items: center; font-size: 32px; flex-shrink: 0; }
@@ -31,12 +42,22 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 .card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
 .card-price { background: #7bbf6a; color: white; padding: 6px 14px; border-radius: 20px; font-size: 15px; font-weight: bold; }
 .card-print { background: #d9534f; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; }
+
+/* د ښکته مینو */
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
 .nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
 .nav .icon { font-size: 22px; }
 .nav a.active { color: #d9534f; }
+
 .empty { text-align: center; padding: 40px 20px; color: #999; }
 .empty .icon { font-size: 50px; margin-bottom: 15px; }
+
+/* د کوچنیو سکرینونو لپاره */
+@media (max-width: 400px) {
+    .menu { grid-template-columns: repeat(4, 1fr); }
+    .menu .icon { font-size: 22px; }
+    .menu a { font-size: 9px; padding: 10px 2px; }
+}
 </style>
 </head>
 <body>
@@ -56,14 +77,26 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <input type="text" id="searchInput" placeholder="🔍 د محصول نوم یا بارکوډ...">
 </div>
 
+<!-- ===== د مینو ۱۲ تڼۍ ===== -->
 <div class="menu">
 <a href="scanner.html"><span class="icon">📷</span><span>سکنر</span></a>
 <a href="inventory.html"><span class="icon">📦</span><span>موجودي</span></a>
 <a href="dashboard.html"><span class="icon">📊</span><span>ډشبورډ</span></a>
 <a href="sales.html"><span class="icon">📈</span><span>پلور</span></a>
+<a href="print-all.html"><span class="icon">🖨️</span><span>چاپ ټول</span></a>
+<a href="reports.html"><span class="icon">📋</span><span>راپور</span></a>
+<a href="login.html"><span class="icon">➕</span><span>نوی محصول</span></a>
+<a href="login.html"><span class="icon">⚙️</span><span>تنظیمات</span></a>
+<a href="login.html"><span class="icon">👥</span><span>کاروونکي</span></a>
+<a href="sales.html"><span class="icon">💰</span><span>ګټه</span></a>
+<a href="inventory.html"><span class="icon">⚠️</span><span>کم موجودي</span></a>
+<a href="dashboard.html"><span class="icon">📈</span><span>احصایې</span></a>
 </div>
 
-<div class="section-title">📋 نوي محصولات</div>
+<div class="section-title">
+<span>📋 نوي محصولات</span>
+<a href="admin.html">ټول وګوره ←</a>
+</div>
 <div id="productList" class="products"></div>
 
 <nav class="nav">
