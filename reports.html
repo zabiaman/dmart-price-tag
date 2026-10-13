@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>د راپورونو پاڼه</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
+body { background: #f0f2f5; padding-bottom: 30px; }
+.header { background: #d9534f; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 18px; }
+.header a { color: white; text-decoration: none; font-size: 14px; }
+.container { padding: 20px; }
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: white; border-radius: 12px; padding: 18px 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.stat-card .icon { font-size: 28px; margin-bottom: 8px; }
+.stat-card .value { font-size: 26px; font-weight: bold; color: #d9534f; line-height: 1; }
+.stat-card .label { font-size: 12px; color: #666; margin-top: 6px; }
+.stat-card.green .value { color: #7bbf6a; }
+.stat-card.blue .value { color: #3498db; }
+.stat-card.orange .value { color: #f39c12; }
+.section-title { font-size: 16px; color: #333; font-weight: bold; margin: 20px 0 12px; border-right: 4px solid #d9534f; padding-right: 10px; }
+.product-list { display: flex; flex-direction: column; gap: 10px; }
+.product-item { background: white; border-radius: 10px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+.product-item .info { flex: 1; }
+.product-item .name { font-size: 14px; font-weight: bold; color: #b03a3a; }
+.product-item .meta { font-size: 11px; color: #999; margin-top: 4px; }
+.product-item .price { background: #7bbf6a; color: white; padding: 5px 12px; border-radius: 15px; font-size: 13px; font-weight: bold; }
+.print-item { background: white; border-radius: 10px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-right: 4px solid #d9534f; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+.print-item .info { flex: 1; }
+.print-item .name { font-size: 14px; font-weight: bold; color: #333; }
+.print-item .time { font-size: 11px; color: #999; margin-top: 4px; }
+.empty { text-align: center; padding: 30px; color: #999; background: white; border-radius: 10px; font-size: 14px; }
+.category-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.category-tag { background: white; padding: 8px 15px; border-radius: 20px; font-size: 13px; color: #333; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+.category-tag .count { background: #d9534f; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-right: 5px; }
+.nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
+.nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
+.nav .icon { font-size: 22px; }
+.nav a.active { color: #d9534f; }
+.refresh-btn { width: 100%; padding: 14px; background: #d9534f; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>📊 د راپورونو پاڼه</h1>
+<a href="index.html">← بیرته</a>
+</div>
+
+<div class="container">
+<div class="stats-grid">
+<div class="stat-card"><div class="icon">📦</div><div class="value" id="totalProducts">0</div><div class="label">ټول محصولات</div></div>
+<div class="stat-card green"><div class="icon">💰</div><div class="value" id="totalValue">0</div><div class="label">ټول ارزښت (ر.س)</div></div>
+<div class="stat-card blue"><div class="icon">🖨️</div><div class="value" id="todayPrints">0</div><div class="label">نن چاپ شوي</div></div>
+<div class="stat-card orange"><div class="icon">📂</div><div class="value" id="totalCategories">0</div><div class="label">کټګورۍ</div></div>
+</div>
+
+<div class="section-title">🖨️ نن ورځې چاپ شوي</div>
+<div id="todayPrintsList" class="product-list"></div>
+
+<div class="section-title">📦 ټول محصولات</div>
+<div id="allProductsList" class="product-list"></div>
+
+<div class="section-title">📂 کټګورۍ</div>
+<div id="categoriesList" class="category-list"></div>
+
+<button class="refresh-btn" onclick="location.reload()">🔄 تازه کړه</button>
+</div>
+
+<nav class="nav">
+<a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
+<a href="scanner.html"><span class="icon">📷</span><span>سکنر</span></a>
+<a href="admin.html"><span class="icon">📦</span><span>محصولات</span></a>
+<a href="reports.html" class="active"><span class="icon">📊</span><span>راپور</span></a>
+<a href="admin.html"><span class="icon">⚙️</span><span>مدیر</span></a>
+</nav>
+
+<script>
+var STORAGE_KEY = 'dmart_products';
+var PRINTS_KEY = 'dmart_prints';
+
+function loadProducts() {
+    var data = localStorage.getItem(STORAGE_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function loadPrints() {
+    var data = localStorage.getItem(PRINTS_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function updateStats() {
+    var products = loadProducts();
+    var prints = loadPrints();
+    document.getElementById('totalProducts').textContent = products.length;
+    var total = 0;
+    for (var i = 0; i < products.length; i++) { total += parseFloat(products[i].price) || 0; }
+    document.getElementById('totalValue').textContent = total.toFixed(2);
+    var today = new Date().toDateString();
+    var todayPrints = 0;
+    for (var i = 0; i < prints.length; i++) { if (new Date(prints[i].time).toDateString() === today) todayPrints++; }
+    document.getElementById('todayPrints').textContent = todayPrints;
+    var cats = {};
+    for (var i = 0; i < products.length; i++) {
+        var cat = products[i].category || 'نامعلوم';
+        cats[cat] = (cats[cat] || 0) + 1;
+    }
+    document.getElementById('totalCategories').textContent = Object.keys(cats).length;
+    var catHtml = '';
+    for (var c in cats) { catHtml += '<div class="category-tag">' + c + ' <span class="count">' + cats[c] + '</span></div>'; }
+    document.getElementById('categoriesList').innerHTML = catHtml || '<div class="empty">هیڅ کټګوري نشته</div>';
+}
+
+function showTodayPrints() {
+    var prints = loadPrints();
+    var today = new Date().toDateString();
+    var todayList = [];
+    for (var i = prints.length - 1; i >= 0; i--) {
+        if (new Date(prints[i].time).toDateString() === today) todayList.push(prints[i]);
+    }
+    var container = document.getElementById('todayPrintsList');
+    if (todayList.length === 0) {
+        container.innerHTML = '<div class="empty">📭 نن ورځ هیڅ محصول نه دی چاپ شوی</div>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < todayList.length; i++) {
+        var p = todayList[i];
+        var time = new Date(p.time);
+        var timeStr = time.getHours() + ':' + (time.getMinutes() < 10 ? '0' : '') + time.getMinutes();
+        html += '<div class="print-item"><div class="info"><div class="name">🖨️ ' + p.name + '</div><div class="time">' + timeStr + ' • ' + p.price + ' ' + (p.currency || 'ر.س') + '</div></div></div>';
+    }
+    container.innerHTML = html;
+}
+
+function showAllProducts() {
+    var products = loadProducts();
+    var container = document.getElementById('allProductsList');
+    if (products.length === 0) {
+        container.innerHTML = '<div class="empty">😕 هیڅ محصول نشته</div>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < products.length; i++) {
+        var p = products[i];
+        html += '<div class="product-item"><div class="info"><div class="name">' + (p.icon || '📦') + ' ' + p.name + '</div><div class="meta">' + (p.weight || '') + ' • ' + (p.barcode || '') + '</div></div><div class="price">' + p.price + ' ' + (p.currency || 'ر.س') + '</div></div>';
+    }
+    container.innerHTML = html;
+}
+
+updateStats();
+showTodayPrints();
+showAllProducts();
+</script>
+
+</body>
+</html>
