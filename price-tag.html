@@ -7,233 +7,47 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
 body { background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-
-.tag {
-    width: 100%;
-    max-width: 480px;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
-}
-
-/* ===== سر بینر ===== */
-.tag-header {
-    background: #cc4b44;
-    color: white;
-    padding: 18px 22px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-}
-.tag-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(to right, #2d7a4f, #7bbf6a, #2d7a4f);
-}
-
-/* لوګو او نوم (ښي اړخ) */
+.tag { width: 100%; max-width: 480px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 25px rgba(0,0,0,0.2); }
+.tag-header { background: #cc4b44; color: white; padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; position: relative; }
+.tag-header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(to right, #2d7a4f, #7bbf6a, #2d7a4f); }
 .brand { display: flex; align-items: center; gap: 12px; }
-.brand-logo {
-    background: white;
-    color: #cc4b44;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    font-size: 24px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
+.brand-logo { background: white; color: #cc4b44; width: 48px; height: 48px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
 .brand-text .ar { font-size: 16px; font-weight: bold; }
 .brand-text .en { font-size: 11px; opacity: 0.95; letter-spacing: 0.5px; }
-
-/* د "عرض خاص" برخه (چپ اړخ) */
 .promo { text-align: left; line-height: 1.1; }
-.promo h2 {
-    font-size: 28px;
-    font-weight: bold;
-    margin: 0;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-}
-.promo p {
-    font-size: 11px;
-    margin: 2px 0 0 0;
-    text-align: center;
-    letter-spacing: 1px;
-    opacity: 0.95;
-}
-
-/* ===== بدنه ===== */
-.tag-body {
-    padding: 25px 22px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-}
-
-/* د محصول معلومات (کیڼ اړخ) */
-.info-section {
-    flex: 1;
-    text-align: left;
-    padding-left: 5px;
-}
-.product-name {
-    color: #b03a3a;
-    font-size: 22px;
-    font-weight: bold;
-    line-height: 1.35;
-    margin-bottom: 8px;
-}
-.product-weight {
-    color: #b03a3a;
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 5px;
-}
-
-/* د قیمت برخه (ښي اړخ) */
-.price-section {
-    flex: 1.2;
-    text-align: right;
-}
-.price-label {
-    color: #2d7a4f;
-    font-weight: bold;
-    margin-bottom: 8px;
-    font-size: 16px;
-    text-align: center;
-}
-.price-value {
-    background: linear-gradient(135deg, #7bbf6a, #5ea04f);
-    color: white;
-    padding: 18px 10px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: baseline;
-    gap: 6px;
-    box-shadow: 0 4px 12px rgba(123, 191, 106, 0.3);
-}
-.price-value .num {
-    font-size: 52px;
-    font-weight: bold;
-    line-height: 1;
-    text-shadow: 1px 2px 4px rgba(0,0,0,0.15);
-}
-.price-value .cur {
-    font-size: 22px;
-    font-weight: bold;
-}
-
-/* ===== فوټر (بارکوډ + نیټې) ===== */
-.tag-footer {
-    padding: 5px 22px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 15px;
-}
-
-/* نیټې (کیڼ اړخ) */
-.dates {
-    font-size: 11px;
-    color: #cc4b44;
-    line-height: 1.6;
-    text-align: left;
-    font-weight: bold;
-}
-.dates .date-line {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    justify-content: flex-start;
-}
-
-/* بارکوډ (ښي اړخ) */
+.promo h2 { font-size: 28px; font-weight: bold; margin: 0; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
+.promo p { font-size: 11px; margin: 2px 0 0 0; text-align: center; letter-spacing: 1px; opacity: 0.95; }
+.tag-body { padding: 25px 22px 20px; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+.info-section { flex: 1; text-align: left; padding-left: 5px; }
+.product-name { color: #b03a3a; font-size: 22px; font-weight: bold; line-height: 1.35; margin-bottom: 8px; }
+.product-weight { color: #b03a3a; font-size: 16px; font-weight: bold; margin-top: 5px; }
+.price-section { flex: 1.2; text-align: right; }
+.price-label { color: #2d7a4f; font-weight: bold; margin-bottom: 8px; font-size: 16px; text-align: center; }
+.price-value { background: linear-gradient(135deg, #7bbf6a, #5ea04f); color: white; padding: 18px 10px; border-radius: 12px; display: flex; justify-content: center; align-items: baseline; gap: 6px; box-shadow: 0 4px 12px rgba(123, 191, 106, 0.3); }
+.price-value .num { font-size: 52px; font-weight: bold; line-height: 1; text-shadow: 1px 2px 4px rgba(0,0,0,0.15); }
+.price-value .cur { font-size: 22px; font-weight: bold; }
+.tag-footer { padding: 5px 22px 20px; display: flex; justify-content: space-between; align-items: flex-end; gap: 15px; }
+.dates { font-size: 11px; color: #cc4b44; line-height: 1.6; text-align: left; font-weight: bold; }
+.dates .date-line { display: flex; align-items: center; gap: 4px; justify-content: flex-start; }
 .barcode-box { text-align: center; }
-.barcode-lines {
-    width: 170px;
-    height: 50px;
-    background: repeating-linear-gradient(90deg,
-        #000 0px, #000 2px, #fff 2px, #fff 3px,
-        #000 3px, #000 5px, #fff 5px, #fff 6px,
-        #000 6px, #000 9px, #fff 9px, #fff 10px,
-        #000 10px, #000 12px, #fff 12px, #fff 13px,
-        #000 13px, #000 15px, #fff 15px, #fff 16px,
-        #000 16px, #000 18px, #fff 18px, #fff 20px,
-        #000 20px, #000 21px, #fff 21px, #fff 23px);
-}
-.barcode-num {
-    font-size: 13px;
-    font-family: 'Courier New', monospace;
-    letter-spacing: 3px;
-    margin-top: 5px;
-    color: #000;
-    font-weight: bold;
-}
-
-/* ===== تڼۍ ===== */
-.buttons {
-    display: flex;
-    gap: 12px;
-    padding: 15px 22px;
-    background: #f8f9fa;
-    border-top: 1px solid #eee;
-}
-.buttons button, .buttons a {
-    flex: 1;
-    padding: 15px;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    text-decoration: none;
-    text-align: center;
-    transition: all 0.2s;
-}
-.btn-print {
-    background: #cc4b44;
-    color: white;
-    box-shadow: 0 3px 8px rgba(204, 75, 68, 0.3);
-}
-.btn-print:active { transform: scale(0.97); }
-.btn-back {
-    background: #95a5a6;
-    color: white;
-    box-shadow: 0 3px 8px rgba(149, 165, 166, 0.3);
-}
-.btn-back:active { transform: scale(0.97); }
-
-/* ===== د چاپ وخت ===== */
+.barcode-lines { width: 170px; height: 50px; background: repeating-linear-gradient(90deg, #000 0px, #000 2px, #fff 2px, #fff 3px, #000 3px, #000 5px, #fff 5px, #fff 6px, #000 6px, #000 9px, #fff 9px, #fff 10px, #000 10px, #000 12px, #fff 12px, #fff 13px, #000 13px, #000 15px, #fff 15px, #fff 16px, #000 16px, #000 18px, #fff 18px, #fff 20px, #000 20px, #000 21px, #fff 21px, #fff 23px); }
+.barcode-num { font-size: 13px; font-family: 'Courier New', monospace; letter-spacing: 3px; margin-top: 5px; color: #000; font-weight: bold; }
+.buttons { display: flex; gap: 12px; padding: 15px 22px; background: #f8f9fa; border-top: 1px solid #eee; }
+.buttons button, .buttons a { flex: 1; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; }
+.btn-print { background: #cc4b44; color: white; box-shadow: 0 3px 8px rgba(204, 75, 68, 0.3); }
+.btn-back { background: #95a5a6; color: white; box-shadow: 0 3px 8px rgba(149, 165, 166, 0.3); }
 @media print {
     @page { size: A4; margin: 15mm; }
     body { background: white; padding: 0; margin: 0; display: block; }
     .buttons { display: none; }
-    .tag {
-        box-shadow: none;
-        max-width: 100%;
-        width: 100%;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-    }
+    .tag { box-shadow: none; max-width: 100%; width: 100%; border-radius: 8px; border: 1px solid #ddd; }
 }
 </style>
 </head>
 <body>
 
 <div class="tag" id="tag">
-    <!-- سر بینر -->
     <div class="tag-header">
         <div class="promo">
             <h2>عرض خاص</h2>
@@ -247,8 +61,6 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
             <div class="brand-logo">D!</div>
         </div>
     </div>
-
-    <!-- بدنه -->
     <div class="tag-body">
         <div class="info-section">
             <div class="product-name" id="productName">...</div>
@@ -262,8 +74,6 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
             </div>
         </div>
     </div>
-
-    <!-- فوټر -->
     <div class="tag-footer">
         <div class="dates">
             <div class="date-line"><span id="startDate"></span></div>
@@ -274,35 +84,28 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
             <div class="barcode-num" id="barcodeNum"></div>
         </div>
     </div>
-
-    <!-- تڼۍ -->
     <div class="buttons">
-        <button class="btn-print" onclick="window.print()">🖨️ چاپ کړه</button>
+        <button class="btn-print" onclick="printAndLog()">🖨️ چاپ کړه</button>
         <a href="index.html" class="btn-back">← بیرته</a>
     </div>
 </div>
 
 <script>
-// د URL څخه د محصول ID یا بارکوډ اخیستل
 var params = new URLSearchParams(window.location.search);
 var id = params.get('id');
 var barcode = params.get('barcode');
-
-// د localStorage څخه معلومات راوړل
 var STORAGE_KEY = 'dmart_products';
+var PRINTS_KEY = 'dmart_prints';
 
 function loadProducts() {
     var data = localStorage.getItem(STORAGE_KEY);
-    if (data) {
-        try { return JSON.parse(data); } catch(e) { return []; }
-    }
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
     return [];
 }
 
 var products = loadProducts();
-
-// د محصول موندل
 var product = null;
+
 if (id) {
     for (var i = 0; i < products.length; i++) {
         if (products[i].id == id) { product = products[i]; break; }
@@ -313,27 +116,40 @@ if (id) {
     }
 }
 
-// که محصول ونه موندل شو
 if (!product) {
     document.body.innerHTML = '<div style="text-align:center;padding:50px;font-family:Tahoma;"><h2>❌ محصول ونه موندل شو</h2><p style="margin:15px 0;color:#666;">بارکوډ: ' + (barcode || id || 'نامعلوم') + '</p><a href="index.html" style="color:#cc4b44;font-size:16px;text-decoration:none;font-weight:bold;">← بیرته کور ته</a></div>';
 } else {
-    // معلومات ښودل
     document.getElementById('priceNum').textContent = product.price;
     document.getElementById('priceCur').textContent = product.currency || 'ر.س';
     document.getElementById('productName').textContent = product.name;
     document.getElementById('productWeight').textContent = product.weight || '';
     document.getElementById('barcodeNum').textContent = product.barcode;
 
-    // د نیټو معلومات (اتوماتیک: نن + 15 ورځې)
     var today = new Date();
     var endDate = new Date(today);
     endDate.setDate(endDate.getDate() + 15);
-
     var startStr = today.getDate() + '/' + (today.getMonth()+1) + '/' + today.getFullYear();
     var endStr = endDate.getDate() + '/' + (endDate.getMonth()+1) + '/' + endDate.getFullYear();
-
     document.getElementById('startDate').textContent = 'يبدأ من ' + startStr;
     document.getElementById('endDate').textContent = 'حتى ' + endStr;
+}
+
+function printAndLog() {
+    if (product) {
+        var prints = [];
+        var data = localStorage.getItem(PRINTS_KEY);
+        if (data) { try { prints = JSON.parse(data); } catch(e) { prints = []; } }
+        prints.push({
+            name: product.name,
+            price: product.price,
+            currency: product.currency || 'ر.س',
+            barcode: product.barcode,
+            time: new Date().toISOString()
+        });
+        if (prints.length > 100) { prints = prints.slice(-100); }
+        localStorage.setItem(PRINTS_KEY, JSON.stringify(prints));
+    }
+    window.print();
 }
 </script>
 
