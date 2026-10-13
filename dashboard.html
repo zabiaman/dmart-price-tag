@@ -13,8 +13,6 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .header h1 { font-size: 18px; }
 .header a { color: white; text-decoration: none; font-size: 13px; padding: 6px 10px; background: rgba(255,255,255,0.15); border-radius: 8px; }
 .container { padding: 20px; }
-
-/* د احصایې کارتونه */
 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
 .stat-card { background: white; border-radius: 12px; padding: 18px 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .stat-card .icon { font-size: 28px; margin-bottom: 8px; }
@@ -23,24 +21,15 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .stat-card.green .value { color: #7bbf6a; }
 .stat-card.blue .value { color: #3498db; }
 .stat-card.orange .value { color: #f39c12; }
-
-/* د ګراف بکس */
 .chart-box { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .chart-box h3 { font-size: 15px; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 .chart-container { position: relative; height: 220px; width: 100%; }
-
-/* د برخې سرلیک */
 .section-title { font-size: 15px; color: #333; font-weight: bold; margin: 20px 0 12px; border-right: 4px solid #d9534f; padding-right: 10px; }
-
-/* د غوره محصولاتو لیست */
 .top-item { background: white; border-radius: 10px; padding: 12px 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
 .top-item .rank { background: #d9534f; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; margin-left: 12px; }
 .top-item .name { flex: 1; font-size: 14px; font-weight: bold; color: #333; }
 .top-item .count { background: #7bbf6a; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: bold; }
-
 .empty { text-align: center; padding: 40px 20px; color: #999; background: white; border-radius: 12px; font-size: 14px; }
-
-/* د ښکته مینو */
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
 .nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
 .nav .icon { font-size: 22px; }
@@ -56,7 +45,6 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 
 <div class="container">
 
-<!-- د احصایې کارتونه -->
 <div class="stats-grid">
 <div class="stat-card green">
 <div class="icon">💰</div>
@@ -78,33 +66,33 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 <div class="value" id="totalTransactions">0</div>
 <div class="label">ټول لیږدونه</div>
 </div>
+<div class="stat-card" style="background:#fff3cd;">
+<div class="icon">⚠️</div>
+<div class="value" id="lowStockCount" style="color:#e74c3c;">0</div>
+<div class="label">کم موجودي</div>
+</div>
 </div>
 
-<!-- د ورځني پلور ګراف -->
 <div class="chart-box">
 <h3>📈 د وروستیو ۷ ورځو پلور</h3>
 <div class="chart-container"><canvas id="dailyChart"></canvas></div>
 </div>
 
-<!-- د کټګوریو ګراف -->
 <div class="chart-box">
 <h3>🥧 د کټګوریو پلور</h3>
 <div class="chart-container"><canvas id="categoryChart"></canvas></div>
 </div>
 
-<!-- د غوره محصولاتو ګراف -->
 <div class="chart-box">
 <h3>🏆 د غوره محصولاتو پلور</h3>
 <div class="chart-container"><canvas id="topChart"></canvas></div>
 </div>
 
-<!-- د غوره محصولاتو لیست -->
 <div class="section-title">🏆 غوره ۵ محصولات</div>
 <div id="topList"></div>
 
 </div>
 
-<!-- د ښکته مینو -->
 <nav class="nav">
 <a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
 <a href="dashboard.html" class="active"><span class="icon">📊</span><span>ډشبورډ</span></a>
@@ -132,7 +120,6 @@ function loadSales() {
 var sales = loadSales();
 var products = loadProducts();
 
-// ===== احصایې =====
 function calculateStats() {
     var totalSales = 0, totalProfit = 0, totalItems = 0;
     for (var i = 0; i < sales.length; i++) {
@@ -144,22 +131,22 @@ function calculateStats() {
     document.getElementById('totalProfit').textContent = totalProfit.toFixed(2);
     document.getElementById('totalItems').textContent = totalItems;
     document.getElementById('totalTransactions').textContent = sales.length;
+    var lowStockCount = 0;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].stock !== undefined && products[i].stock <= (products[i].minStock || 5)) lowStockCount++;
+    }
+    document.getElementById('lowStockCount').textContent = lowStockCount;
 }
 
-// ===== د ورځني پلور ګراف =====
 function drawDailyChart() {
-    var days = [];
-    var values = [];
-    var profits = [];
+    var days = [], values = [], profits = [];
     var today = new Date();
-    
     for (var i = 6; i >= 0; i--) {
         var d = new Date(today);
         d.setDate(d.getDate() - i);
         var dayStr = d.toDateString();
         var dayName = d.getDate() + '/' + (d.getMonth()+1);
         days.push(dayName);
-        
         var total = 0, profit = 0;
         for (var j = 0; j < sales.length; j++) {
             if (new Date(sales[j].time).toDateString() === dayStr) {
@@ -170,41 +157,20 @@ function drawDailyChart() {
         values.push(total);
         profits.push(profit);
     }
-    
     var ctx = document.getElementById('dailyChart').getContext('2d');
     new Chart(ctx, {
         type: 'bar',
         data: {
             labels: days,
             datasets: [
-                {
-                    label: 'پلور (ر.س)',
-                    data: values,
-                    backgroundColor: 'rgba(217, 83, 79, 0.7)',
-                    borderColor: '#d9534f',
-                    borderWidth: 2,
-                    borderRadius: 8
-                },
-                {
-                    label: 'ګټه (ر.س)',
-                    data: profits,
-                    backgroundColor: 'rgba(123, 191, 106, 0.7)',
-                    borderColor: '#7bbf6a',
-                    borderWidth: 2,
-                    borderRadius: 8
-                }
+                { label: 'پلور (ر.س)', data: values, backgroundColor: 'rgba(217, 83, 79, 0.7)', borderColor: '#d9534f', borderWidth: 2, borderRadius: 8 },
+                { label: 'ګټه (ر.س)', data: profits, backgroundColor: 'rgba(123, 191, 106, 0.7)', borderColor: '#7bbf6a', borderWidth: 2, borderRadius: 8 }
             ]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tahoma' } } } },
-            scales: { y: { beginAtZero: true } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
     });
 }
 
-// ===== د کټګوریو ګراف =====
 function drawCategoryChart() {
     var categories = {};
     for (var i = 0; i < sales.length; i++) {
@@ -216,39 +182,21 @@ function drawCategoryChart() {
         var cat = prod && prod.category ? prod.category : 'نامعلوم';
         categories[cat] = (categories[cat] || 0) + (parseFloat(s.total) || 0);
     }
-    
-    var labels = [];
-    var data = [];
+    var labels = [], data = [];
     for (var c in categories) { labels.push(c); data.push(categories[c]); }
-    
     if (labels.length === 0) {
         document.getElementById('categoryChart').parentElement.innerHTML = '<div class="empty">📭 هیڅ پلور نشته</div>';
         return;
     }
-    
     var colors = ['#d9534f', '#7bbf6a', '#3498db', '#f39c12', '#9b59b6', '#1abc9c', '#e74c3c', '#e67e22'];
-    
     var ctx = document.getElementById('categoryChart').getContext('2d');
     new Chart(ctx, {
         type: 'doughnut',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: data,
-                backgroundColor: colors,
-                borderColor: '#fff',
-                borderWidth: 3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tahoma' } } } }
-        }
+        data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderColor: '#fff', borderWidth: 3 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
     });
 }
 
-// ===== د غوره محصولاتو ګراف =====
 function drawTopChart() {
     var productSales = {};
     for (var i = 0; i < sales.length; i++) {
@@ -256,45 +204,24 @@ function drawTopChart() {
         if (!productSales[s.name]) productSales[s.name] = 0;
         productSales[s.name] += s.qty || 1;
     }
-    
     var arr = [];
     for (var name in productSales) { arr.push({ name: name, qty: productSales[name] }); }
     arr.sort(function(a, b) { return b.qty - a.qty; });
     arr = arr.slice(0, 5);
-    
     if (arr.length === 0) {
         document.getElementById('topChart').parentElement.innerHTML = '<div class="empty">📭 هیڅ پلور نشته</div>';
         return;
     }
-    
     var labels = [], data = [];
     for (var i = 0; i < arr.length; i++) { labels.push(arr[i].name); data.push(arr[i].qty); }
-    
     var ctx = document.getElementById('topChart').getContext('2d');
     new Chart(ctx, {
         type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'پلور شوي',
-                data: data,
-                backgroundColor: 'rgba(123, 191, 106, 0.7)',
-                borderColor: '#7bbf6a',
-                borderWidth: 2,
-                borderRadius: 8
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { x: { beginAtZero: true } }
-        }
+        data: { labels: labels, datasets: [{ label: 'پلور شوي', data: data, backgroundColor: 'rgba(123, 191, 106, 0.7)', borderColor: '#7bbf6a', borderWidth: 2, borderRadius: 8 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
     });
 }
 
-// ===== د غوره محصولاتو لیست =====
 function renderTopList() {
     var productSales = {};
     for (var i = 0; i < sales.length; i++) {
@@ -302,18 +229,12 @@ function renderTopList() {
         if (!productSales[s.name]) productSales[s.name] = { qty: 0, icon: s.icon };
         productSales[s.name].qty += s.qty || 1;
     }
-    
     var arr = [];
     for (var name in productSales) { arr.push({ name: name, qty: productSales[name].qty, icon: productSales[name].icon }); }
     arr.sort(function(a, b) { return b.qty - a.qty; });
     arr = arr.slice(0, 5);
-    
     var container = document.getElementById('topList');
-    if (arr.length === 0) {
-        container.innerHTML = '<div class="empty">📭 هیڅ پلور نشته</div>';
-        return;
-    }
-    
+    if (arr.length === 0) { container.innerHTML = '<div class="empty">📭 هیڅ پلور نشته</div>'; return; }
     var html = '';
     for (var i = 0; i < arr.length; i++) {
         var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1);
@@ -322,7 +243,6 @@ function renderTopList() {
     container.innerHTML = html;
 }
 
-// پیل
 calculateStats();
 drawDailyChart();
 drawCategoryChart();
