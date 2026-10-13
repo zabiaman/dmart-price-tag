@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dmart-pwa-v1';
+const CACHE_NAME = 'dmart-v2';
 const urlsToCache = [
   './',
   './index.html',
