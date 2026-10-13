@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#d9534f">
+<title>سوپر مارکیټ</title>
+<link rel="manifest" href="manifest.json">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
+body { background: #f0f2f5; padding-bottom: 80px; }
+.header { background: #d9534f; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+.header-left { display: flex; align-items: center; gap: 12px; }
+.logo { background: white; color: #d9534f; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 22px; }
+.title { font-size: 18px; font-weight: bold; }
+.subtitle { font-size: 11px; opacity: 0.9; }
+.search { padding: 15px 20px; background: white; }
+.search input { width: 100%; padding: 14px 20px; border: 2px solid #e0e0e0; border-radius: 30px; font-size: 15px; background: #f8f9fa; }
+.search input:focus { outline: none; border-color: #d9534f; background: white; }
+.menu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px 20px; background: white; margin-bottom: 15px; }
+.menu a { background: #f8f9fa; padding: 15px 5px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; text-decoration: none; color: #333; }
+.menu a:active { background: #d9534f; color: white; }
+.menu .icon { font-size: 24px; }
+.section-title { padding: 15px 20px 10px; font-size: 16px; color: #333; font-weight: bold; }
+.products { padding: 0 15px; display: flex; flex-direction: column; gap: 12px; }
+.card { background: white; border-radius: 15px; padding: 15px; display: flex; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.card-img { width: 70px; height: 70px; border-radius: 12px; background: #f0f2f5; display: flex; justify-content: center; align-items: center; font-size: 32px; flex-shrink: 0; }
+.card-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.card-name { color: #b03a3a; font-size: 15px; font-weight: bold; }
+.card-weight { color: #999; font-size: 12px; margin-top: 4px; }
+.card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.card-price { background: #7bbf6a; color: white; padding: 6px 14px; border-radius: 20px; font-size: 15px; font-weight: bold; }
+.card-print { background: #d9534f; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; }
+.nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
+.nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
+.nav .icon { font-size: 22px; }
+.nav a.active { color: #d9534f; }
+.empty { text-align: center; padding: 40px 20px; color: #999; }
+.empty .icon { font-size: 50px; margin-bottom: 15px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+<div class="header-left">
+<div class="logo">D!</div>
+<div>
+<div class="title">دي مارټ</div>
+<div class="subtitle">Dmart</div>
+</div>
+</div>
+<div style="font-size:28px;">👤</div>
+</div>
+
+<div class="search">
+<input type="text" id="searchInput" placeholder="🔍 د محصول نوم یا بارکوډ...">
+</div>
+
+<div class="menu">
+<a href="scanner.html"><span class="icon">📷</span><span>سکنر</span></a>
+<a href="admin.html"><span class="icon">📦</span><span>محصولات</span></a>
+<a href="admin.html"><span class="icon">➕</span><span>مدیر</span></a>
+<a href="reports.html"><span class="icon">📊</span><span>راپور</span></a>
+</div>
+
+<div class="section-title">📋 نوي محصولات</div>
+<div id="productList" class="products"></div>
+
+<nav class="nav">
+<a href="index.html" class="active"><span class="icon">🏠</span><span>کور</span></a>
+<a href="scanner.html"><span class="icon">📷</span><span>سکنر</span></a>
+<a href="admin.html"><span class="icon">📦</span><span>محصولات</span></a>
+<a href="reports.html"><span class="icon">📊</span><span>راپور</span></a>
+<a href="admin.html"><span class="icon">⚙️</span><span>مدیر</span></a>
+</nav>
+
+<script>
+var STORAGE_KEY = 'dmart_products';
+var defaultProducts = [
+{ id: 1, name: "مهران معجون الزنجبيل", weight: "320 جرام", price: 5.95, currency: "ر.س", icon: "🫙", barcode: "633152014535" },
+{ id: 2, name: "زيت الزيتون", weight: "1 لتر", price: 25.50, currency: "ر.س", icon: "🫒", barcode: "633152014536" },
+{ id: 3, name: "عسل طبيعي", weight: "500 جرام", price: 45.00, currency: "ر.س", icon: "🍯", barcode: "633152014537" },
+{ id: 4, name: "تمر مجدول", weight: "1 کیلو", price: 35.00, currency: "ر.س", icon: "🌴", barcode: "633152014538" },
+{ id: 5, name: "مياه معدنية", weight: "1.5 لتر", price: 3.00, currency: "ر.س", icon: "💧", barcode: "633152014539" },
+{ id: 6, name: "شاي أخضر", weight: "250 جرام", price: 18.50, currency: "ر.س", icon: "🍵", barcode: "633152014540" }
+];
+
+function loadProducts() {
+    var data = localStorage.getItem(STORAGE_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return defaultProducts; } }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultProducts));
+    return defaultProducts;
+}
+
+var products = loadProducts();
+
+function displayProducts(list) {
+    var container = document.getElementById("productList");
+    if (list.length === 0) {
+        container.innerHTML = '<div class="empty"><div class="icon">😕</div><div>هیڅ محصول ونه موندل شو</div></div>';
+        return;
+    }
+    var html = "";
+    for (var i = 0; i < list.length; i++) {
+        var p = list[i];
+        html += '<div class="card">' +
+            '<div class="card-img">' + (p.icon || '📦') + '</div>' +
+            '<div class="card-info">' +
+            '<div>' +
+            '<div class="card-name">' + p.name + '</div>' +
+            '<div class="card-weight">' + (p.weight || '') + '</div>' +
+            '</div>' +
+            '<div class="card-bottom">' +
+            '<div class="card-price">' + p.price + ' ' + (p.currency || 'ر.س') + '</div>' +
+            '<a href="price-tag.html?barcode=' + p.barcode + '" class="card-print">🖨️ چاپ</a>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+    }
+    container.innerHTML = html;
+}
+
+function doSearch() {
+    var q = document.getElementById("searchInput").value.trim();
+    var qLower = q.toLowerCase();
+    var filtered = [];
+    if (q === "") { filtered = products; }
+    else {
+        for (var i = 0; i < products.length; i++) {
+            var p = products[i];
+            var nameMatch = p.name.toLowerCase().indexOf(qLower) !== -1;
+            var barcodeMatch = p.barcode ? p.barcode.indexOf(q) !== -1 : false;
+            if (nameMatch || barcodeMatch) { filtered.push(p); }
+        }
+    }
+    displayProducts(filtered);
+}
+
+document.getElementById("searchInput").addEventListener("input", doSearch);
+document.getElementById("searchInput").addEventListener("keyup", doSearch);
+
+window.addEventListener('focus', function() {
+    products = loadProducts();
+    displayProducts(products);
+});
+
+window.addEventListener('pageshow', function() {
+    products = loadProducts();
+    displayProducts(products);
+});
+
+displayProducts(products);
+
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
+</body>
+</html>
