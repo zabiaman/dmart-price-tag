@@ -97,4 +97,325 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 <div class="stat-card" style="background:#fff3e0;">
 <div class="icon">📊</div>
 <div class="value" id="monthProfit" style="color:#e67e22;">0</div>
-<div class
+<div class="label">د میاشتې ګټه (ر.س)</div>
+</div>
+</div>
+
+<div class="sale-box">
+<h3>🛒 نوی پلور ثبت کړه</h3>
+<select id="saleProduct">
+<option value="">— محصول وټاکه —</option>
+</select>
+<div class="sale-row">
+<input type="number" id="saleQty" placeholder="مقدار" value="1" min="1">
+<input type="number" id="salePrice" placeholder="قیمت" step="0.01">
+</div>
+<button class="btn-sale" onclick="recordSale()">💾 پلور ثبت کړه</button>
+</div>
+</div>
+
+<div id="historyTab" class="hidden">
+<div class="filter-row">
+<select id="filterPeriod" onchange="renderHistory()">
+<option value="today">📅 نن ورځ</option>
+<option value="week">📅 دا اونۍ</option>
+<option value="month">📅 دا میاشت</option>
+<option value="all">📅 ټول</option>
+</select>
+</div>
+<div id="historyList"></div>
+<button class="btn-clear" onclick="clearHistory()">🗑️ د پلور تاریخ ړنګ کړه</button>
+</div>
+
+<div id="topTab" class="hidden">
+<div id="topList"></div>
+</div>
+
+<div id="reportTab" class="hidden">
+<div class="stats-grid">
+<div class="stat-card">
+<div class="icon">📦</div>
+<div class="value" id="rpTotalProducts">0</div>
+<div class="label">ټول محصولات</div>
+</div>
+<div class="stat-card green">
+<div class="icon">💰</div>
+<div class="value" id="rpTotalValue">0</div>
+<div class="label">ټول ارزښت (ر.س)</div>
+</div>
+<div class="stat-card" style="background:#e8f5e9;">
+<div class="icon">📈</div>
+<div class="value" id="rpTotalProfit" style="color:#27ae60;">0</div>
+<div class="label">ټوله ګټه (ر.س)</div>
+</div>
+<div class="stat-card" style="background:#fff3cd;">
+<div class="icon">⚠️</div>
+<div class="value" id="rpLowStock" style="color:#e74c3c;">0</div>
+<div class="label">کم موجودي</div>
+</div>
+</div>
+
+<div class="section-title">📦 ټول محصولات</div>
+<div id="rpAllProducts"></div>
+
+<div class="section-title">📂 کټګورۍ</div>
+<div id="rpCategories" class="category-list"></div>
+
+<button class="btn-clear" style="background:#d9534f;" onclick="location.reload()">🔄 تازه کړه</button>
+</div>
+
+</div>
+
+<nav class="nav">
+<a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
+<a href="dashboard.html"><span class="icon">📊</span><span>ډشبورډ</span></a>
+<a href="sales.html" class="active"><span class="icon">📈</span><span>پلور</span></a>
+<a href="print-all.html"><span class="icon">📦</span><span>چاپ ټول</span></a>
+<a href="login.html"><span class="icon">⚙️</span><span>مدیر</span></a>
+</nav>
+
+<script>
+var PRODUCTS_KEY = 'dmart_products';
+var SALES_KEY = 'dmart_sales';
+
+function loadProducts() {
+    var data = localStorage.getItem(PRODUCTS_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function loadSales() {
+    var data = localStorage.getItem(SALES_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function saveSales(list) { localStorage.setItem(SALES_KEY, JSON.stringify(list)); }
+function saveProducts(list) { localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list)); }
+
+function fillProductSelect() {
+    var products = loadProducts();
+    var select = document.getElementById('saleProduct');
+    select.innerHTML = '<option value="">— محصول وټاکه —</option>';
+    for (var i = 0; i < products.length; i++) {
+        var p = products[i];
+        var stockInfo = p.stock !== undefined ? ' (موجودي: ' + p.stock + ')' : '';
+        select.innerHTML += '<option value="' + p.id + '" data-price="' + p.price + '">' + (p.icon || '📦') + ' ' + p.name + ' - ' + p.price + ' ' + (p.currency || 'ر.س') + stockInfo + '</option>';
+    }
+}
+
+document.getElementById('saleProduct').addEventListener('change', function() {
+    var selected = this.options[this.selectedIndex];
+    var price = selected.getAttribute('data-price');
+    if (price) document.getElementById('salePrice').value = price;
+});
+
+function recordSale() {
+    var productId = document.getElementById('saleProduct').value;
+    var qty = parseInt(document.getElementById('saleQty').value) || 1;
+    var price = parseFloat(document.getElementById('salePrice').value) || 0;
+    
+    if (!productId) { alert('❌ مهرباني وکړه محصول وټاکه'); return; }
+    if (price <= 0) { alert('❌ مهرباني وکړه قیمت ولیکه'); return; }
+    
+    var products = loadProducts();
+    var product = null;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id == productId) { product = products[i]; break; }
+    }
+    if (!product) { alert('❌ محصول ونه موندل شو'); return; }
+    
+    // د موجودي ازموینه
+    if (product.stock !== undefined && product.stock < qty) {
+        if (!confirm('⚠️ یوازې ' + product.stock + ' ' + product.name + ' پاتې دي. ایا غواړې چې پلور ثبت شي؟')) return;
+    }
+    
+    var total = qty * price;
+    var costPrice = product.costPrice || 0;
+    var cost = costPrice * qty;
+    var profit = total - cost;
+    
+    // د موجودي کموالی
+    var newStock = product.stock !== undefined ? Math.max(0, product.stock - qty) : undefined;
+    for (var k = 0; k < products.length; k++) {
+        if (products[k].id == productId) {
+            if (products[k].stock !== undefined) products[k].stock = Math.max(0, products[k].stock - qty);
+            break;
+        }
+    }
+    saveProducts(products);
+    
+    var sales = loadSales();
+    sales.unshift({
+        id: Date.now(),
+        productId: product.id,
+        name: product.name,
+        icon: product.icon || '📦',
+        barcode: product.barcode,
+        qty: qty,
+        price: price,
+        total: total,
+        costPrice: costPrice,
+        cost: cost,
+        profit: profit,
+        currency: product.currency || 'ر.س',
+        time: new Date().toISOString()
+    });
+    saveSales(sales);
+    
+    var profitMsg = costPrice > 0 ? '\n📈 ګټه: ' + profit.toFixed(2) + ' ' + (product.currency || 'ر.س') : '';
+    var stockMsg = product.stock !== undefined ? '\n📦 پاتې موجودي: ' + newStock : '';
+    alert('✅ پلور ثبت شو: ' + qty + ' × ' + price + ' = ' + total + ' ' + (product.currency || 'ر.س') + profitMsg + stockMsg);
+    
+    document.getElementById('saleQty').value = 1;
+    document.getElementById('salePrice').value = '';
+    document.getElementById('saleProduct').value = '';
+    fillProductSelect();
+    updateStats();
+}
+
+function updateStats() {
+    var sales = loadSales();
+    var today = new Date().toDateString();
+    var month = new Date().getMonth();
+    var year = new Date().getFullYear();
+    var todayTotal = 0, todayCount = 0, monthProfit = 0, todayProfit = 0;
+    for (var i = 0; i < sales.length; i++) {
+        var s = sales[i];
+        var d = new Date(s.time);
+        var total = parseFloat(s.total) || 0;
+        var profit = parseFloat(s.profit) || 0;
+        if (d.toDateString() === today) { todayTotal += total; todayCount += s.qty || 1; todayProfit += profit; }
+        if (d.getMonth() === month && d.getFullYear() === year) { monthProfit += profit; }
+    }
+    document.getElementById('todayTotal').textContent = todayTotal.toFixed(2);
+    document.getElementById('todayCount').textContent = todayCount;
+    document.getElementById('todayProfit').textContent = todayProfit.toFixed(2);
+    document.getElementById('monthProfit').textContent = monthProfit.toFixed(2);
+}
+
+function renderHistory() {
+    var sales = loadSales();
+    var period = document.getElementById('filterPeriod').value;
+    var now = new Date();
+    var today = now.toDateString();
+    var weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    var monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    var filtered = [];
+    for (var i = 0; i < sales.length; i++) {
+        var d = new Date(sales[i].time);
+        if (period === 'today' && d.toDateString() !== today) continue;
+        if (period === 'week' && d < weekAgo) continue;
+        if (period === 'month' && d < monthAgo) continue;
+        filtered.push(sales[i]);
+    }
+    var container = document.getElementById('historyList');
+    if (filtered.length === 0) { container.innerHTML = '<div class="empty">📭 په دې موده کې هیڅ پلور نشته</div>'; return; }
+    var html = '';
+    for (var i = 0; i < filtered.length; i++) {
+        var s = filtered[i];
+        var d = new Date(s.time);
+        var timeStr = d.getDate() + '/' + (d.getMonth()+1) + ' ' + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+        var profitHtml = '';
+        if (s.profit !== undefined && s.costPrice > 0) {
+            var pColor = s.profit >= 0 ? '#27ae60' : '#e74c3c';
+            profitHtml = '<div class="profit" style="color:' + pColor + ';">📈 ګټه: ' + s.profit.toFixed(2) + ' ' + s.currency + '</div>';
+        }
+        html += '<div class="sale-item"><div class="info"><div class="name">' + (s.icon || '📦') + ' ' + s.name + '</div><div class="time">🕐 ' + timeStr + ' • ' + s.price + ' × ' + s.qty + '</div>' + profitHtml + '</div><div class="amount">' + s.total.toFixed(2) + ' ' + s.currency + '</div></div>';
+    }
+    container.innerHTML = html;
+}
+
+function renderTop() {
+    var sales = loadSales();
+    var productCount = {};
+    for (var i = 0; i < sales.length; i++) {
+        var s = sales[i];
+        if (!productCount[s.name]) productCount[s.name] = { qty: 0, icon: s.icon };
+        productCount[s.name].qty += s.qty || 1;
+    }
+    var arr = [];
+    for (var name in productCount) { arr.push({ name: name, qty: productCount[name].qty, icon: productCount[name].icon }); }
+    arr.sort(function(a, b) { return b.qty - a.qty; });
+    var container = document.getElementById('topList');
+    if (arr.length === 0) { container.innerHTML = '<div class="empty">🏆 هیڅ پلور نشته</div>'; return; }
+    var html = '';
+    for (var i = 0; i < arr.length; i++) {
+        var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1);
+        html += '<div class="top-item"><div class="rank">' + medal + '</div><div class="name">' + (arr[i].icon || '📦') + ' ' + arr[i].name + '</div><div class="count">' + arr[i].qty + ' پلور</div></div>';
+    }
+    container.innerHTML = html;
+}
+
+function renderReport() {
+    var products = loadProducts();
+    document.getElementById('rpTotalProducts').textContent = products.length;
+    var total = 0, totalProfit = 0, lowStock = 0;
+    for (var i = 0; i < products.length; i++) {
+        total += parseFloat(products[i].price) || 0;
+        if (products[i].costPrice) totalProfit += (parseFloat(products[i].price) - parseFloat(products[i].costPrice));
+        if (products[i].stock !== undefined && products[i].stock <= (products[i].minStock || 5)) lowStock++;
+    }
+    document.getElementById('rpTotalValue').textContent = total.toFixed(2);
+    document.getElementById('rpTotalProfit').textContent = totalProfit.toFixed(2);
+    document.getElementById('rpLowStock').textContent = lowStock;
+    var cats = {};
+    for (var i = 0; i < products.length; i++) {
+        var cat = products[i].category || 'نامعلوم';
+        cats[cat] = (cats[cat] || 0) + 1;
+    }
+    var catHtml = '';
+    for (var c in cats) { catHtml += '<div class="category-tag">' + c + ' <span class="count">' + cats[c] + '</span></div>'; }
+    document.getElementById('rpCategories').innerHTML = catHtml || '<div class="empty">هیڅ کټګوري نشته</div>';
+    var container = document.getElementById('rpAllProducts');
+    if (products.length === 0) { container.innerHTML = '<div class="empty">😕 هیڅ محصول نشته</div>'; return; }
+    var html = '';
+    for (var i = 0; i < products.length; i++) {
+        var p = products[i];
+        var profitHtml = '';
+        if (p.costPrice && p.costPrice > 0) {
+            var profit = p.price - p.costPrice;
+            var pColor = profit >= 0 ? '#27ae60' : '#e74c3c';
+            profitHtml = '<div class="profit-meta" style="color:' + pColor + ';">💰 ګټه: ' + profit.toFixed(2) + ' ' + p.currency + '</div>';
+        }
+        var stockHtml = '';
+        if (p.stock !== undefined) {
+            var stockColor = p.stock <= (p.minStock || 5) ? '#e74c3c' : '#27ae60';
+            var warn = p.stock <= (p.minStock || 5) ? ' ⚠️' : '';
+            stockHtml = '<div class="profit-meta" style="color:' + stockColor + ';">📦 موجودي: ' + p.stock + warn + '</div>';
+        }
+        html += '<div class="product-item"><div class="info"><div class="name">' + (p.icon || '📦') + ' ' + p.name + '</div><div class="meta">' + (p.weight || '') + ' • ' + (p.barcode || '') + '</div>' + profitHtml + stockHtml + '</div><div class="price">' + p.price + ' ' + (p.currency || 'ر.س') + '</div></div>';
+    }
+    container.innerHTML = html;
+}
+
+function showTab(tab) {
+    document.getElementById('recordTab').classList.add('hidden');
+    document.getElementById('historyTab').classList.add('hidden');
+    document.getElementById('topTab').classList.add('hidden');
+    document.getElementById('reportTab').classList.add('hidden');
+    document.getElementById('tabRecord').classList.remove('active');
+    document.getElementById('tabHistory').classList.remove('active');
+    document.getElementById('tabTop').classList.remove('active');
+    document.getElementById('tabReport').classList.remove('active');
+    if (tab === 'record') { document.getElementById('recordTab').classList.remove('hidden'); document.getElementById('tabRecord').classList.add('active'); fillProductSelect(); }
+    else if (tab === 'history') { document.getElementById('historyTab').classList.remove('hidden'); document.getElementById('tabHistory').classList.add('active'); renderHistory(); }
+    else if (tab === 'top') { document.getElementById('topTab').classList.remove('hidden'); document.getElementById('tabTop').classList.add('active'); renderTop(); }
+    else if (tab === 'report') { document.getElementById('reportTab').classList.remove('hidden'); document.getElementById('tabReport').classList.add('active'); renderReport(); }
+}
+
+function clearHistory() {
+    if (!confirm('⚠️ ایا ډاډه یې چې د پلور ټول تاریخ ړنګ کړې؟')) return;
+    localStorage.removeItem(SALES_KEY);
+    alert('🗑️ د پلور تاریخ ړنګ شو');
+    updateStats();
+    renderHistory();
+    renderTop();
+}
+
+fillProductSelect();
+updateStats();
+</script>
+
+</body>
+</html>
