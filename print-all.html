@@ -28,11 +28,9 @@ body { background: #f0f2f5; padding-bottom: 30px; }
     flex: 1;
     min-width: 100px;
 }
-.btn-primary { background: #d9534f; color: white; }
 .btn-success { background: #7bbf6a; color: white; }
 .btn-secondary { background: #95a5a6; color: white; }
 .btn-print { background: #2c3e50; color: white; }
-
 .controls .info {
     font-size: 13px;
     color: #333;
@@ -57,7 +55,6 @@ body { background: #f0f2f5; padding-bottom: 30px; }
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     border: 3px solid #ddd;
     position: relative;
-    transition: border-color 0.2s;
 }
 .tag.selected { border-color: #7bbf6a; }
 
@@ -139,21 +136,29 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 }
 .barcode-num { font-size: 8px; font-family: monospace; letter-spacing: 1px; margin-top: 2px; font-weight: bold; }
 
+/* ===== د چاپ وخت ===== */
 @media print {
-    @page { size: A4; margin: 8mm; }
-    body { background: white; padding: 0; margin: 0; }
+    @page { size: A4 portrait; margin: 5mm; }
+    body { background: white !important; padding: 0 !important; margin: 0 !important; }
     .controls { display: none !important; }
+    
     .tags-container {
-        padding: 0;
-        gap: 6mm;
-        grid-template-columns: repeat(2, 1fr);
+        padding: 0 !important;
+        gap: 0 !important;
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-rows: repeat(2, 1fr) !important;
     }
+    
     .tag {
-        box-shadow: none;
-        border: 1px dashed #999;
-        page-break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px dashed #999 !important;
+        page-break-inside: avoid !important;
+        margin: 2mm !important;
+        transform: scale(0.92);
+        transform-origin: center;
     }
-    .tag.selected { border: 1px dashed #999; }
+    .tag.selected { border: 1px dashed #999 !important; }
     .check-box { display: none !important; }
     .tag-header { background: #cc4b44 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .price-value { background: #5ea04f !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -186,7 +191,6 @@ function loadProducts() {
 var products = loadProducts();
 var selected = {};
 
-// د ټولو محصولاتو ټګونه ښودل
 function renderTags() {
     var container = document.getElementById('tagsContainer');
     if (products.length === 0) {
@@ -222,19 +226,14 @@ function renderTags() {
 }
 
 function toggleSelect(id) {
-    if (selected[id]) {
-        delete selected[id];
-    } else {
-        selected[id] = true;
-    }
+    if (selected[id]) { delete selected[id]; }
+    else { selected[id] = true; }
     renderTags();
 }
 
 function selectAll() {
     selected = {};
-    for (var i = 0; i < products.length; i++) {
-        selected[products[i].id] = true;
-    }
+    for (var i = 0; i < products.length; i++) { selected[products[i].id] = true; }
     renderTags();
 }
 
@@ -248,11 +247,9 @@ function updateInfo() {
     for (var id in selected) { if (selected[id]) count++; }
     var pages = Math.ceil(count / 4);
     if (pages < 1) pages = 1;
-    var info = '📊 ټاکل شوي: <strong>' + count + '</strong> له ' + products.length + ' | 📄 پاڼې: <strong>' + pages + '</strong> (۴ ټګونه په هر A4)';
-    document.getElementById('infoBox').innerHTML = info;
+    document.getElementById('infoBox').innerHTML = '📊 ټاکل شوي: <strong>' + count + '</strong> له ' + products.length + ' | 📄 پاڼې: <strong>' + pages + '</strong> (۴ ټګونه په هر A4)';
 }
 
-// پیل - ټول وټاکه
 selectAll();
 </script>
 
