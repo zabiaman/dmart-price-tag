@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>د قیمت ټګ</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
+body { background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+
+.tag {
+    width: 100%;
+    max-width: 450px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+}
+
+.tag-header {
+    background: #d9534f;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-logo {
+    background: white; color: #d9534f; width: 45px; height: 45px;
+    border-radius: 50%; display: flex; justify-content: center;
+    align-items: center; font-weight: bold; font-size: 22px;
+}
+.brand-text { display: flex; flex-direction: column; }
+.brand-text span { font-size: 14px; font-weight: bold; }
+.brand-text small { font-size: 10px; opacity: 0.9; }
+.promo { text-align: left; }
+.promo h2 { font-size: 24px; margin: 0; font-weight: bold; }
+.promo p { font-size: 11px; margin: 0; text-align: center; }
+
+.tag-body { padding: 20px; display: flex; gap: 20px; }
+.price-section { flex: 1; }
+.price-label { color: #4a7c59; font-weight: bold; margin-bottom: 10px; font-size: 15px; }
+.price-value {
+    background: #7bbf6a; color: white; padding: 15px;
+    border-radius: 10px; display: flex; justify-content: center;
+    align-items: baseline; gap: 5px;
+}
+.price-value .num { font-size: 48px; font-weight: bold; line-height: 1; }
+.price-value .cur { font-size: 22px; }
+.info-section { flex: 1.2; text-align: right; }
+.product-name { color: #b03a3a; font-size: 20px; font-weight: bold; line-height: 1.4; }
+.product-weight { color: #b03a3a; font-size: 15px; margin-top: 5px; }
+
+.tag-footer {
+    padding: 0 20px 15px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+}
+.dates { font-size: 10px; color: #d9534f; line-height: 1.5; }
+.barcode { text-align: center; }
+.barcode-lines {
+    width: 150px; height: 40px;
+    background: repeating-linear-gradient(90deg,
+        #000 0px, #000 2px, #fff 2px, #fff 4px,
+        #000 4px, #000 5px, #fff 5px, #fff 8px,
+        #000 8px, #000 11px, #fff 11px, #fff 12px,
+        #000 12px, #000 14px, #fff 14px, #fff 16px,
+        #000 16px, #000 18px);
+}
+.barcode-num { font-size: 11px; font-family: monospace; letter-spacing: 2px; margin-top: 3px; }
+
+.buttons {
+    display: flex; gap: 10px;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+}
+.buttons button, .buttons a {
+    flex: 1; padding: 14px; border: none; border-radius: 10px;
+    font-size: 15px; font-weight: bold; cursor: pointer;
+    text-decoration: none; text-align: center;
+}
+.btn-print { background: #d9534f; color: white; }
+.btn-back { background: #95a5a6; color: white; }
+
+@media print {
+    @page { size: A4; margin: 10mm; }
+    body { background: white; padding: 0; margin: 0; display: block; }
+    .buttons { display: none; }
+    .tag { box-shadow: none; max-width: 100%; width: 100%; border-radius: 8px; }
+}
+</style>
+</head>
+<body>
+
+<div class="tag" id="tag">
+    <div class="tag-header">
+        <div class="brand">
+            <div class="brand-logo">D!</div>
+            <div class="brand-text">
+                <span>دي مارټ</span>
+                <small>Dmart</small>
+            </div>
+        </div>
+        <div class="promo">
+            <h2>عرض خاص</h2>
+            <p>promotion</p>
+        </div>
+    </div>
+
+    <div class="tag-body">
+        <div class="price-section">
+            <div class="price-label">الحبة بسعر</div>
+            <div class="price-value">
+                <span class="num" id="priceNum">0</span>
+                <span class="cur" id="priceCur">ر.س</span>
+            </div>
+        </div>
+        <div class="info-section">
+            <div class="product-name" id="productName">...</div>
+            <div class="product-weight" id="productWeight"></div>
+        </div>
+    </div>
+
+    <div class="tag-footer">
+        <div class="dates">
+            <div id="startDate"></div>
+            <div id="endDate"></div>
+        </div>
+        <div class="barcode">
+            <div class="barcode-lines"></div>
+            <div class="barcode-num" id="barcodeNum"></div>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <button class="btn-print" onclick="window.print()">🖨️ چاپ کړه</button>
+        <a href="index.html" class="btn-back">← بیرته</a>
+    </div>
+</div>
+
+<script>
+// د URL څخه د محصول ID یا بارکوډ اخیستل
+var params = new URLSearchParams(window.location.search);
+var id = params.get('id');
+var barcode = params.get('barcode');
+
+// د localStorage څخه معلومات راوړل
+var STORAGE_KEY = 'dmart_products';
+
+function loadProducts() {
+var data = localStorage.getItem(STORAGE_KEY);
+if (data) {
+try { return JSON.parse(data); } catch(e) { return []; }
+}
+return [];
+}
+
+var products = loadProducts();
+
+// د محصول موندل
+var product = null;
+if (id) {
+for (var i = 0; i < products.length; i++) {
+if (products[i].id == id) { product = products[i]; break; }
+}
+} else if (barcode) {
+for (var i = 0; i < products.length; i++) {
+if (products[i].barcode == barcode) { product = products[i]; break; }
+}
+}
+
+// که محصول ونه موندل شو
+if (!product) {
+document.body.innerHTML = '<div style="text-align:center;padding:50px;font-family:Tahoma;"><h2>❌ محصول ونه موندل شو</h2><p style="margin:15px 0;color:#666;">بارکوډ: ' + (barcode || id || 'نامعلوم') + '</p><a href="index.html" style="color:#d9534f;font-size:16px;text-decoration:none;font-weight:bold;">← بیرته کور ته</a></div>';
+} else {
+// معلومات ښودل
+document.getElementById('priceNum').textContent = product.price;
+document.getElementById('priceCur').textContent = product.currency || 'ر.س';
+document.getElementById('productName').textContent = product.name;
+document.getElementById('productWeight').textContent = product.weight || '';
+document.getElementById('barcodeNum').textContent = product.barcode;
+
+// د نیټو معلومات
+var today = new Date();
+var startDate = new Date(today);
+var endDate = new Date(today);
+endDate.setDate(endDate.getDate() + 15);
+
+var startStr = startDate.getDate() + '/' + (startDate.getMonth()+1) + '/' + startDate.getFullYear();
+var endStr = endDate.getDate() + '/' + (endDate.getMonth()+1) + '/' + endDate.getFullYear();
+
+document.getElementById('startDate').textContent = 'يبدأ من ' + startStr;
+document.getElementById('endDate').textContent = 'حتى ' + endStr;
+}
+</script>
+
+</body>
+</html>
