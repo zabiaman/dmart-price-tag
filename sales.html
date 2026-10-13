@@ -12,13 +12,9 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .header h1 { font-size: 18px; }
 .header a { color: white; text-decoration: none; font-size: 13px; padding: 6px 10px; background: rgba(255,255,255,0.15); border-radius: 8px; }
 .container { padding: 20px; }
-
-/* د ټبونو */
 .tabs { display: flex; background: white; border-radius: 12px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .tabs button { flex: 1; padding: 15px; border: none; background: white; font-size: 13px; font-weight: bold; color: #666; cursor: pointer; }
 .tabs button.active { color: #d9534f; background: #fff5f5; border-bottom: 3px solid #d9534f; }
-
-/* د احصایې کارتونه */
 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
 .stat-card { background: white; border-radius: 12px; padding: 18px 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .stat-card .icon { font-size: 28px; margin-bottom: 8px; }
@@ -27,8 +23,6 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .stat-card.green .value { color: #7bbf6a; }
 .stat-card.blue .value { color: #3498db; }
 .stat-card.orange .value { color: #f39c12; }
-
-/* د پلور ثبتولو بکس */
 .sale-box { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .sale-box h3 { font-size: 16px; color: #333; margin-bottom: 15px; }
 .sale-box select, .sale-box input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; margin-bottom: 12px; }
@@ -36,48 +30,31 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .sale-row { display: flex; gap: 10px; }
 .sale-row input { flex: 1; }
 .btn-sale { width: 100%; padding: 15px; background: #7bbf6a; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; }
-
-/* د برخې سرلیک */
 .section-title { font-size: 15px; color: #333; font-weight: bold; margin: 20px 0 12px; border-right: 4px solid #d9534f; padding-right: 10px; }
-
-/* د پلور لیست */
 .sale-item { background: white; border-radius: 10px; padding: 12px 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border-right: 4px solid #7bbf6a; }
 .sale-item .info { flex: 1; }
 .sale-item .name { font-size: 14px; font-weight: bold; color: #333; }
 .sale-item .time { font-size: 11px; color: #999; margin-top: 3px; }
 .sale-item .profit { font-size: 12px; color: #27ae60; font-weight: bold; margin-top: 4px; }
 .sale-item .amount { background: #7bbf6a; color: white; padding: 6px 12px; border-radius: 15px; font-size: 13px; font-weight: bold; }
-
-/* د غوره محصولاتو لیست */
 .top-item { background: white; border-radius: 10px; padding: 12px 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
 .top-item .rank { background: #d9534f; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; margin-left: 12px; }
 .top-item .name { flex: 1; font-size: 14px; font-weight: bold; color: #333; }
 .top-item .count { background: #7bbf6a; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: bold; }
-
-/* د محصولاتو لیست (راپور) */
 .product-item { background: white; border-radius: 10px; padding: 12px 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
 .product-item .info { flex: 1; }
 .product-item .name { font-size: 14px; font-weight: bold; color: #b03a3a; }
 .product-item .meta { font-size: 11px; color: #999; margin-top: 3px; }
 .product-item .profit-meta { font-size: 12px; color: #27ae60; font-weight: bold; margin-top: 4px; }
 .product-item .price { background: #7bbf6a; color: white; padding: 5px 12px; border-radius: 15px; font-size: 13px; font-weight: bold; }
-
-/* د کټګوریو لیست */
 .category-list { display: flex; flex-wrap: wrap; gap: 8px; }
 .category-tag { background: white; padding: 8px 15px; border-radius: 20px; font-size: 13px; color: #333; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
 .category-tag .count { background: #d9534f; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-right: 5px; }
-
-/* د فلټر */
 .filter-row { display: flex; gap: 10px; margin-bottom: 15px; }
 .filter-row select { flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: white; }
-
 .empty { text-align: center; padding: 40px 20px; color: #999; background: white; border-radius: 12px; font-size: 14px; }
 .hidden { display: none; }
-
-/* د پاکولو تڼۍ */
 .btn-clear { width: 100%; padding: 14px; background: #e74c3c; color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; margin-top: 20px; cursor: pointer; }
-
-/* د ښکته مینو */
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
 .nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
 .nav .icon { font-size: 22px; }
@@ -100,7 +77,6 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 <button id="tabReport" onclick="showTab('report')">📊 راپور</button>
 </div>
 
-<!-- د پلور ثبتولو ټب -->
 <div id="recordTab">
 <div class="stats-grid">
 <div class="stat-card green">
@@ -121,347 +97,4 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 <div class="stat-card" style="background:#fff3e0;">
 <div class="icon">📊</div>
 <div class="value" id="monthProfit" style="color:#e67e22;">0</div>
-<div class="label">د میاشتې ګټه (ر.س)</div>
-</div>
-</div>
-
-<div class="sale-box">
-<h3>🛒 نوی پلور ثبت کړه</h3>
-<select id="saleProduct">
-<option value="">— محصول وټاکه —</option>
-</select>
-<div class="sale-row">
-<input type="number" id="saleQty" placeholder="مقدار" value="1" min="1">
-<input type="number" id="salePrice" placeholder="قیمت" step="0.01">
-</div>
-<button class="btn-sale" onclick="recordSale()">💾 پلور ثبت کړه</button>
-</div>
-</div>
-
-<!-- د پلور تاریخ ټب -->
-<div id="historyTab" class="hidden">
-<div class="filter-row">
-<select id="filterPeriod" onchange="renderHistory()">
-<option value="today">📅 نن ورځ</option>
-<option value="week">📅 دا اونۍ</option>
-<option value="month">📅 دا میاشت</option>
-<option value="all">📅 ټول</option>
-</select>
-</div>
-<div id="historyList"></div>
-<button class="btn-clear" onclick="clearHistory()">🗑️ د پلور تاریخ ړنګ کړه</button>
-</div>
-
-<!-- د غوره محصولاتو ټب -->
-<div id="topTab" class="hidden">
-<div id="topList"></div>
-</div>
-
-<!-- د راپور ټب -->
-<div id="reportTab" class="hidden">
-<div class="stats-grid">
-<div class="stat-card">
-<div class="icon">📦</div>
-<div class="value" id="rpTotalProducts">0</div>
-<div class="label">ټول محصولات</div>
-</div>
-<div class="stat-card green">
-<div class="icon">💰</div>
-<div class="value" id="rpTotalValue">0</div>
-<div class="label">ټول ارزښت (ر.س)</div>
-</div>
-<div class="stat-card" style="background:#e8f5e9;">
-<div class="icon">📈</div>
-<div class="value" id="rpTotalProfit" style="color:#27ae60;">0</div>
-<div class="label">ټوله ګټه (ر.س)</div>
-</div>
-<div class="stat-card orange">
-<div class="icon">📂</div>
-<div class="value" id="rpTotalCategories">0</div>
-<div class="label">کټګورۍ</div>
-</div>
-</div>
-
-<div class="section-title">📦 ټول محصولات</div>
-<div id="rpAllProducts"></div>
-
-<div class="section-title">📂 کټګورۍ</div>
-<div id="rpCategories" class="category-list"></div>
-
-<button class="btn-clear" style="background:#d9534f;" onclick="location.reload()">🔄 تازه کړه</button>
-</div>
-
-</div>
-
-<nav class="nav">
-<a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
-<a href="scanner.html"><span class="icon">📷</span><span>سکنر</span></a>
-<a href="print-all.html"><span class="icon">📦</span><span>چاپ ټول</span></a>
-<a href="sales.html" class="active"><span class="icon">📈</span><span>پلور</span></a>
-<a href="login.html"><span class="icon">⚙️</span><span>مدیر</span></a>
-</nav>
-
-<script>
-var PRODUCTS_KEY = 'dmart_products';
-var SALES_KEY = 'dmart_sales';
-var PRINTS_KEY = 'dmart_prints';
-
-function loadProducts() {
-    var data = localStorage.getItem(PRODUCTS_KEY);
-    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
-    return [];
-}
-
-function loadSales() {
-    var data = localStorage.getItem(SALES_KEY);
-    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
-    return [];
-}
-
-function saveSales(list) { localStorage.setItem(SALES_KEY, JSON.stringify(list)); }
-
-function loadPrints() {
-    var data = localStorage.getItem(PRINTS_KEY);
-    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
-    return [];
-}
-
-function fillProductSelect() {
-    var products = loadProducts();
-    var select = document.getElementById('saleProduct');
-    select.innerHTML = '<option value="">— محصول وټاکه —</option>';
-    for (var i = 0; i < products.length; i++) {
-        var p = products[i];
-        select.innerHTML += '<option value="' + p.id + '" data-price="' + p.price + '">' + (p.icon || '📦') + ' ' + p.name + ' - ' + p.price + ' ' + (p.currency || 'ر.س') + '</option>';
-    }
-}
-
-document.getElementById('saleProduct').addEventListener('change', function() {
-    var selected = this.options[this.selectedIndex];
-    var price = selected.getAttribute('data-price');
-    if (price) document.getElementById('salePrice').value = price;
-});
-
-function recordSale() {
-    var productId = document.getElementById('saleProduct').value;
-    var qty = parseInt(document.getElementById('saleQty').value) || 1;
-    var price = parseFloat(document.getElementById('salePrice').value) || 0;
-    
-    if (!productId) { alert('❌ مهرباني وکړه محصول وټاکه'); return; }
-    if (price <= 0) { alert('❌ مهرباني وکړه قیمت ولیکه'); return; }
-    
-    var products = loadProducts();
-    var product = null;
-    for (var i = 0; i < products.length; i++) {
-        if (products[i].id == productId) { product = products[i]; break; }
-    }
-    if (!product) { alert('❌ محصول ونه موندل شو'); return; }
-    
-    var total = qty * price;
-    var costPrice = product.costPrice || 0;
-    var cost = costPrice * qty;
-    var profit = total - cost;
-    
-    var sales = loadSales();
-    sales.unshift({
-        id: Date.now(),
-        productId: product.id,
-        name: product.name,
-        icon: product.icon || '📦',
-        barcode: product.barcode,
-        qty: qty,
-        price: price,
-        total: total,
-        costPrice: costPrice,
-        cost: cost,
-        profit: profit,
-        currency: product.currency || 'ر.س',
-        time: new Date().toISOString()
-    });
-    saveSales(sales);
-    
-    var profitMsg = costPrice > 0 ? '\n📈 ګټه: ' + profit.toFixed(2) + ' ' + (product.currency || 'ر.س') : '';
-    alert('✅ پلور ثبت شو: ' + qty + ' × ' + price + ' = ' + total + ' ' + (product.currency || 'ر.س') + profitMsg);
-    
-    document.getElementById('saleQty').value = 1;
-    document.getElementById('salePrice').value = '';
-    document.getElementById('saleProduct').value = '';
-    updateStats();
-}
-
-function updateStats() {
-    var sales = loadSales();
-    var today = new Date().toDateString();
-    var month = new Date().getMonth();
-    var year = new Date().getFullYear();
-    var todayTotal = 0, todayCount = 0, monthProfit = 0, todayProfit = 0;
-    var productCount = {};
-    
-    for (var i = 0; i < sales.length; i++) {
-        var s = sales[i];
-        var d = new Date(s.time);
-        var total = parseFloat(s.total) || 0;
-        var profit = parseFloat(s.profit) || 0;
-        
-        if (d.toDateString() === today) {
-            todayTotal += total;
-            todayCount += s.qty || 1;
-            todayProfit += profit;
-        }
-        if (d.getMonth() === month && d.getFullYear() === year) {
-            monthProfit += profit;
-        }
-        if (!productCount[s.name]) productCount[s.name] = { qty: 0, icon: s.icon };
-        productCount[s.name].qty += s.qty || 1;
-    }
-    
-    document.getElementById('todayTotal').textContent = todayTotal.toFixed(2);
-    document.getElementById('todayCount').textContent = todayCount;
-    document.getElementById('todayProfit').textContent = todayProfit.toFixed(2);
-    document.getElementById('monthProfit').textContent = monthProfit.toFixed(2);
-}
-
-function renderHistory() {
-    var sales = loadSales();
-    var period = document.getElementById('filterPeriod').value;
-    var now = new Date();
-    var today = now.toDateString();
-    var weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    var monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    
-    var filtered = [];
-    for (var i = 0; i < sales.length; i++) {
-        var d = new Date(sales[i].time);
-        if (period === 'today' && d.toDateString() !== today) continue;
-        if (period === 'week' && d < weekAgo) continue;
-        if (period === 'month' && d < monthAgo) continue;
-        filtered.push(sales[i]);
-    }
-    
-    var container = document.getElementById('historyList');
-    if (filtered.length === 0) {
-        container.innerHTML = '<div class="empty">📭 په دې موده کې هیڅ پلور نشته</div>';
-        return;
-    }
-    
-    var html = '';
-    for (var i = 0; i < filtered.length; i++) {
-        var s = filtered[i];
-        var d = new Date(s.time);
-        var timeStr = d.getDate() + '/' + (d.getMonth()+1) + ' ' + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
-        var profitHtml = '';
-        if (s.profit !== undefined && s.costPrice > 0) {
-            var pColor = s.profit >= 0 ? '#27ae60' : '#e74c3c';
-            profitHtml = '<div class="profit" style="color:' + pColor + ';">📈 ګټه: ' + s.profit.toFixed(2) + ' ' + s.currency + '</div>';
-        }
-        html += '<div class="sale-item"><div class="info"><div class="name">' + (s.icon || '📦') + ' ' + s.name + '</div><div class="time">🕐 ' + timeStr + ' • ' + s.price + ' × ' + s.qty + '</div>' + profitHtml + '</div><div class="amount">' + s.total.toFixed(2) + ' ' + s.currency + '</div></div>';
-    }
-    container.innerHTML = html;
-}
-
-function renderTop() {
-    var sales = loadSales();
-    var productCount = {};
-    for (var i = 0; i < sales.length; i++) {
-        var s = sales[i];
-        if (!productCount[s.name]) productCount[s.name] = { qty: 0, total: 0, icon: s.icon };
-        productCount[s.name].qty += s.qty || 1;
-        productCount[s.name].total += parseFloat(s.total) || 0;
-    }
-    var arr = [];
-    for (var name in productCount) {
-        arr.push({ name: name, qty: productCount[name].qty, total: productCount[name].total, icon: productCount[name].icon });
-    }
-    arr.sort(function(a, b) { return b.qty - a.qty; });
-    
-    var container = document.getElementById('topList');
-    if (arr.length === 0) { container.innerHTML = '<div class="empty">🏆 هیڅ پلور نشته</div>'; return; }
-    
-    var html = '';
-    for (var i = 0; i < arr.length; i++) {
-        var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1);
-        html += '<div class="top-item"><div class="rank">' + medal + '</div><div class="name">' + (arr[i].icon || '📦') + ' ' + arr[i].name + '</div><div class="count">' + arr[i].qty + ' پلور</div></div>';
-    }
-    container.innerHTML = html;
-}
-
-function renderReport() {
-    var products = loadProducts();
-    var prints = loadPrints();
-    
-    document.getElementById('rpTotalProducts').textContent = products.length;
-    
-    var total = 0, totalProfit = 0;
-    for (var i = 0; i < products.length; i++) {
-        total += parseFloat(products[i].price) || 0;
-        if (products[i].costPrice) {
-            totalProfit += (parseFloat(products[i].price) - parseFloat(products[i].costPrice));
-        }
-    }
-    document.getElementById('rpTotalValue').textContent = total.toFixed(2);
-    document.getElementById('rpTotalProfit').textContent = totalProfit.toFixed(2);
-    
-    var today = new Date().toDateString();
-    var todayPrints = 0;
-    for (var i = 0; i < prints.length; i++) {
-        if (new Date(prints[i].time).toDateString() === today) todayPrints++;
-    }
-    
-    var cats = {};
-    for (var i = 0; i < products.length; i++) {
-        var cat = products[i].category || 'نامعلوم';
-        cats[cat] = (cats[cat] || 0) + 1;
-    }
-    document.getElementById('rpTotalCategories').textContent = Object.keys(cats).length;
-    
-    var catHtml = '';
-    for (var c in cats) { catHtml += '<div class="category-tag">' + c + ' <span class="count">' + cats[c] + '</span></div>'; }
-    document.getElementById('rpCategories').innerHTML = catHtml || '<div class="empty">هیڅ کټګوري نشته</div>';
-    
-    var container = document.getElementById('rpAllProducts');
-    if (products.length === 0) { container.innerHTML = '<div class="empty">😕 هیڅ محصول نشته</div>'; return; }
-    var html = '';
-    for (var i = 0; i < products.length; i++) {
-        var p = products[i];
-        var profitHtml = '';
-        if (p.costPrice && p.costPrice > 0) {
-            var profit = p.price - p.costPrice;
-            var pColor = profit >= 0 ? '#27ae60' : '#e74c3c';
-            profitHtml = '<div class="profit-meta" style="color:' + pColor + ';">💰 ګټه: ' + profit.toFixed(2) + ' ' + p.currency + '</div>';
-        }
-        html += '<div class="product-item"><div class="info"><div class="name">' + (p.icon || '📦') + ' ' + p.name + '</div><div class="meta">' + (p.weight || '') + ' • ' + (p.barcode || '') + '</div>' + profitHtml + '</div><div class="price">' + p.price + ' ' + (p.currency || 'ر.س') + '</div></div>';
-    }
-    container.innerHTML = html;
-}
-
-function showTab(tab) {
-    document.getElementById('recordTab').classList.add('hidden');
-    document.getElementById('historyTab').classList.add('hidden');
-    document.getElementById('topTab').classList.add('hidden');
-    document.getElementById('reportTab').classList.add('hidden');
-    document.getElementById('tabRecord').classList.remove('active');
-    document.getElementById('tabHistory').classList.remove('active');
-    document.getElementById('tabTop').classList.remove('active');
-    document.getElementById('tabReport').classList.remove('active');
-    
-    if (tab === 'record') { document.getElementById('recordTab').classList.remove('hidden'); document.getElementById('tabRecord').classList.add('active'); }
-    else if (tab === 'history') { document.getElementById('historyTab').classList.remove('hidden'); document.getElementById('tabHistory').classList.add('active'); renderHistory(); }
-    else if (tab === 'top') { document.getElementById('topTab').classList.remove('hidden'); document.getElementById('tabTop').classList.add('active'); renderTop(); }
-    else if (tab === 'report') { document.getElementById('reportTab').classList.remove('hidden'); document.getElementById('tabReport').classList.add('active'); renderReport(); }
-}
-
-function clearHistory() {
-    if (!confirm('⚠️ ایا ډاډه یې چې د پلور ټول تاریخ ړنګ کړې؟')) return;
-    localStorage.removeItem(SALES_KEY);
-    alert('🗑️ د پلور تاریخ ړنګ شو');
-    updateStats();
-    renderHistory();
-    renderTop();
-}
-
-fillProductSelect();
-updateStats();
-</script>
-
-</body>
-</html>
+<div class
