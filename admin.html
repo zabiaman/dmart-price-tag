@@ -42,6 +42,9 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .stats-grid div { padding: 8px; background: #f8f9fa; border-radius: 8px; }
 .welcome { background: linear-gradient(135deg, #7bbf6a, #5ea04f); color: white; padding: 12px 20px; text-align: center; font-size: 14px; }
+.warning-box { background: #fff3cd; border: 2px solid #ffc107; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+.warning-box h4 { color: #856404; font-size: 14px; margin-bottom: 8px; }
+.warning-item { color: #856404; font-size: 13px; margin-top: 5px; }
 </style>
 </head>
 <body>
@@ -50,9 +53,7 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 (function() {
     var SESSION_KEY = 'dmart_session';
     var session = localStorage.getItem(SESSION_KEY);
-    if (!session) {
-        window.location.href = 'login.html';
-    }
+    if (!session) { window.location.href = 'login.html'; }
 })();
 </script>
 
@@ -76,6 +77,7 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 
 <div id="listTab">
 <div id="messageBox"></div>
+<div id="warningBox"></div>
 <div class="stats" id="statsBox"></div>
 <div id="productList"></div>
 </div>
@@ -100,6 +102,14 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 <div class="form-group">
 <label>د پیرود قیمت (Cost) 💰</label>
 <input type="number" id="costPrice" step="0.01" placeholder="70">
+</div>
+<div class="form-group">
+<label>موجودي (Stock) 📦</label>
+<input type="number" id="stock" placeholder="50" value="50">
+</div>
+<div class="form-group">
+<label>د کم موجودي حد ⚠️</label>
+<input type="number" id="minStock" placeholder="5" value="5">
 </div>
 <div class="form-group">
 <label>د پیسو واحد</label>
@@ -147,12 +157,12 @@ var STORAGE_KEY = 'dmart_products';
 var SESSION_KEY = 'dmart_session';
 
 var defaultProducts = [
-{ id: 1, name: "مهران معجون الزنجبيل", weight: "320 جرام", price: 5.95, costPrice: 4.00, currency: "ر.س", icon: "🫙", barcode: "633152014535", category: "عرض خاص" },
-{ id: 2, name: "زيت الزيتون", weight: "1 لتر", price: 25.50, costPrice: 20.00, currency: "ر.س", icon: "🫒", barcode: "633152014536", category: "زيوت" },
-{ id: 3, name: "عسل طبيعي", weight: "500 جرام", price: 45.00, costPrice: 35.00, currency: "ر.س", icon: "🍯", barcode: "633152014537", category: "عسل" },
-{ id: 4, name: "تمر مجدول", weight: "1 کیلو", price: 35.00, costPrice: 25.00, currency: "ر.س", icon: "🌴", barcode: "633152014538", category: "تمور" },
-{ id: 5, name: "مياه معدنية", weight: "1.5 لتر", price: 3.00, costPrice: 2.00, currency: "ر.س", icon: "💧", barcode: "633152014539", category: "مشروبات" },
-{ id: 6, name: "شاي أخضر", weight: "250 جرام", price: 18.50, costPrice: 12.00, currency: "ر.س", icon: "🍵", barcode: "633152014540", category: "شاي" }
+{ id: 1, name: "مهران معجون الزنجبيل", weight: "320 جرام", price: 5.95, costPrice: 4.00, stock: 50, minStock: 5, currency: "ر.س", icon: "🫙", barcode: "633152014535", category: "عرض خاص" },
+{ id: 2, name: "زيت الزيتون", weight: "1 لتر", price: 25.50, costPrice: 20.00, stock: 30, minStock: 5, currency: "ر.س", icon: "🫒", barcode: "633152014536", category: "زيوت" },
+{ id: 3, name: "عسل طبيعي", weight: "500 جرام", price: 45.00, costPrice: 35.00, stock: 20, minStock: 5, currency: "ر.س", icon: "🍯", barcode: "633152014537", category: "عسل" },
+{ id: 4, name: "تمر مجدول", weight: "1 کیلو", price: 35.00, costPrice: 25.00, stock: 25, minStock: 5, currency: "ر.س", icon: "🌴", barcode: "633152014538", category: "تمور" },
+{ id: 5, name: "مياه معدنية", weight: "1.5 لتر", price: 3.00, costPrice: 2.00, stock: 100, minStock: 10, currency: "ر.س", icon: "💧", barcode: "633152014539", category: "مشروبات" },
+{ id: 6, name: "شاي أخضر", weight: "250 جرام", price: 18.50, costPrice: 12.00, stock: 15, minStock: 3, currency: "ر.س", icon: "🍵", barcode: "633152014540", category: "شاي" }
 ];
 
 function loadProducts() {
@@ -174,15 +184,38 @@ function renderProducts() {
     var products = loadProducts();
     var container = document.getElementById('productList');
     
+    // د کم موجودي خبرتیا
+    var lowStockItems = [];
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].stock !== undefined && products[i].stock <= (products[i].minStock || 5)) {
+            lowStockItems.push(products[i]);
+        }
+    }
+    
+    var warningBox = document.getElementById('warningBox');
+    if (lowStockItems.length > 0) {
+        var warnHtml = '<div class="warning-box"><h4>⚠️ د کم موجودي خبرتیا (' + lowStockItems.length + ' محصول)</h4>';
+        for (var k = 0; k < lowStockItems.length; k++) {
+            warnHtml += '<div class="warning-item">' + (lowStockItems[k].icon || '📦') + ' ' + lowStockItems[k].name + ' — موجودي: <strong>' + lowStockItems[k].stock + '</strong></div>';
+        }
+        warnHtml += '</div>';
+        warningBox.innerHTML = warnHtml;
+    } else {
+        warningBox.innerHTML = '';
+    }
+    
     var totalProfit = 0;
+    var lowStockCount = 0;
     for (var i = 0; i < products.length; i++) {
         if (products[i].costPrice) totalProfit += (products[i].price - products[i].costPrice);
+        if (products[i].stock !== undefined && products[i].stock <= (products[i].minStock || 5)) lowStockCount++;
     }
     
     document.getElementById('statsBox').innerHTML = 
         '<div class="stats-grid">' +
         '<div>📦 ټول: <strong>' + products.length + '</strong></div>' +
         '<div>💰 ټوله ګټه: <strong style="color:#27ae60;">' + totalProfit.toFixed(2) + '</strong></div>' +
+        '<div>⚠️ کم موجودي: <strong style="color:' + (lowStockCount > 0 ? '#e74c3c' : '#27ae60') + ';">' + lowStockCount + '</strong></div>' +
         '</div>';
     
     if (products.length === 0) {
@@ -199,12 +232,19 @@ function renderProducts() {
             var profitColor = profit >= 0 ? '#27ae60' : '#e74c3c';
             profitText = '<div class="profit-line" style="color:' + profitColor + ';">💰 ګټه: ' + profit.toFixed(2) + ' ' + p.currency + ' (پیرود: ' + p.costPrice + ')</div>';
         }
+        var stockText = '';
+        if (p.stock !== undefined) {
+            var stockColor = p.stock <= (p.minStock || 5) ? '#e74c3c' : '#27ae60';
+            var warning = p.stock <= (p.minStock || 5) ? ' ⚠️ کم!' : '';
+            stockText = '<div class="profit-line" style="color:' + stockColor + ';">📦 موجودي: ' + p.stock + warning + '</div>';
+        }
         html += '<div class="product-item">' +
             '<div class="product-icon">' + (p.icon || '📦') + '</div>' +
             '<div class="product-info">' +
             '<div class="product-name">' + p.name + '</div>' +
             '<div class="product-details">' + (p.weight || '') + ' • پلور: ' + p.price + ' ' + p.currency + '</div>' +
             profitText +
+            stockText +
             '<div class="product-details" style="font-family:monospace;">' + p.barcode + '</div>' +
             '</div>' +
             '<div class="product-actions">' +
@@ -220,6 +260,8 @@ function addProduct() {
     var name = document.getElementById('name').value.trim();
     var price = parseFloat(document.getElementById('price').value);
     var costPrice = parseFloat(document.getElementById('costPrice').value) || 0;
+    var stock = parseInt(document.getElementById('stock').value) || 50;
+    var minStock = parseInt(document.getElementById('minStock').value) || 5;
     var barcode = document.getElementById('barcode').value.trim();
     
     if (!name || !price || !barcode) { showMessage('❌ نوم، قیمت او بارکوډ اړین دي', 'error'); return; }
@@ -235,6 +277,8 @@ function addProduct() {
         weight: document.getElementById('weight').value.trim(),
         price: price,
         costPrice: costPrice,
+        stock: stock,
+        minStock: minStock,
         currency: document.getElementById('currency').value,
         barcode: barcode,
         category: document.getElementById('category').value.trim(),
@@ -254,6 +298,8 @@ function clearForm() {
     document.getElementById('weight').value = '';
     document.getElementById('price').value = '';
     document.getElementById('costPrice').value = '';
+    document.getElementById('stock').value = '50';
+    document.getElementById('minStock').value = '5';
     document.getElementById('barcode').value = '';
     document.getElementById('category').value = '';
     document.getElementById('icon').value = '';
@@ -267,10 +313,12 @@ function editProduct(id) {
     var newName = prompt('د محصول نوم:', p.name); if (newName === null) return;
     var newPrice = prompt('د پلور قیمت:', p.price); if (newPrice === null) return;
     var newCost = prompt('د پیرود قیمت:', p.costPrice || 0); if (newCost === null) return;
+    var newStock = prompt('موجودي:', p.stock || 0); if (newStock === null) return;
     var newBarcode = prompt('بارکوډ:', p.barcode); if (newBarcode === null) return;
     p.name = newName || p.name;
     p.price = parseFloat(newPrice) || p.price;
     p.costPrice = parseFloat(newCost) || 0;
+    p.stock = parseInt(newStock) || 0;
     p.barcode = newBarcode || p.barcode;
     saveProducts(products);
     showMessage('✅ محصول سم شو', 'success');
