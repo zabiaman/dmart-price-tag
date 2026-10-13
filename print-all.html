@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>د ډیری ټګونو چاپ</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
+body { background: #f0f2f5; padding-bottom: 30px; }
+
+/* د کنټرول پینل */
+.controls {
+    background: white;
+    padding: 15px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.controls h1 { font-size: 18px; color: #d9534f; margin-bottom: 12px; }
+.controls .buttons { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.controls button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1;
+    min-width: 100px;
+}
+.btn-primary { background: #d9534f; color: white; }
+.btn-success { background: #7bbf6a; color: white; }
+.btn-secondary { background: #95a5a6; color: white; }
+.btn-print { background: #2c3e50; color: white; }
+
+.controls .info {
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+/* د ټګونو شبکه */
+.tags-container {
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+/* هر ټګ */
+.tag {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #eee;
+}
+.tag-header {
+    background: #cc4b44;
+    color: white;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+.tag-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(to right, #2d7a4f, #7bbf6a, #2d7a4f);
+}
+.brand { display: flex; align-items: center; gap: 6px; }
+.brand-logo {
+    background: white; color: #cc4b44;
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    font-weight: bold; font-size: 14px;
+}
+.brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+.brand-text .ar { font-size: 11px; font-weight: bold; }
+.brand-text .en { font-size: 8px; opacity: 0.9; }
+.promo { text-align: left; line-height: 1; }
+.promo h2 { font-size: 16px; font-weight: bold; }
+.promo p { font-size: 7px; text-align: center; letter-spacing: 1px; }
+
+.tag-body { padding: 10px 12px; display: flex; gap: 8px; align-items: center; }
+.info-section { flex: 1; text-align: left; }
+.product-name { color: #b03a3a; font-size: 12px; font-weight: bold; line-height: 1.2; margin-bottom: 3px; }
+.product-weight { color: #b03a3a; font-size: 10px; font-weight: bold; }
+.price-section { flex: 1; text-align: right; }
+.price-label { color: #2d7a4f; font-weight: bold; font-size: 10px; margin-bottom: 3px; text-align: center; }
+.price-value {
+    background: linear-gradient(135deg, #7bbf6a, #5ea04f);
+    color: white;
+    padding: 8px 5px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 3px;
+}
+.price-value .num { font-size: 22px; font-weight: bold; line-height: 1; }
+.price-value .cur { font-size: 11px; font-weight: bold; }
+
+.tag-footer { padding: 0 12px 10px; display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; }
+.dates { font-size: 7px; color: #cc4b44; line-height: 1.4; font-weight: bold; text-align: left; }
+.barcode-box { text-align: center; }
+.barcode-lines {
+    width: 90px; height: 28px;
+    background: repeating-linear-gradient(90deg,
+        #000 0px, #000 1px, #fff 1px, #fff 2px,
+        #000 2px, #000 3px, #fff 3px, #fff 4px,
+        #000 4px, #000 6px, #fff 6px, #fff 7px);
+}
+.barcode-num { font-size: 8px; font-family: monospace; letter-spacing: 1px; margin-top: 2px; font-weight: bold; }
+
+/* د چاپ وخت */
+@media print {
+    @page { size: A4; margin: 8mm; }
+    body { background: white; padding: 0; margin: 0; }
+    .controls { display: none !important; }
+    .tags-container {
+        padding: 0;
+        gap: 6mm;
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .tag {
+        box-shadow: none;
+        border: 1px dashed #999;
+        page-break-inside: avoid;
+    }
+    .tag-header { background: #cc4b44 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .price-value { background: #5ea04f !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<div class="controls">
+<h1>🖨️ د ډیری ټګونو چاپ</h1>
+<div class="buttons">
+<button class="btn-success" onclick="selectAll()">✅ ټول وټاکه</button>
+<button class="btn-secondary" onclick="deselectAll()">❌ ټول لغوه کړه</button>
+<button class="btn-print" onclick="window.print()">🖨️ چاپ کړه</button>
+</div>
+<div class="info" id="infoBox">...</div>
+</div>
+
+<div class="tags-container" id="tagsContainer"></div>
+
+<script>
+var STORAGE_KEY = 'dmart_products';
+
+function loadProducts() {
+    var data = localStorage.getItem(STORAGE_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+var products = loadProducts();
+var selected = {};
+
+// ټول محصولات ښودل
+function renderTags() {
+    var container = document.getElementById('tagsContainer');
+    if (products.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:#999;grid-column:1/-1;">😕 هیڅ محصول نشته</div>';
+        return;
+    }
+
+    var html = '';
+    for (var i = 0; i < products.length; i++) {
+        var p = products[i];
+        var isSelected = selected[p.id] ? 'checked' : '';
+        html += '<div class="tag" onclick="toggleSelect(' + p.id + ')" style="cursor:pointer;position:relative;' + (selected[p.id] ? 'outline:3px solid #7bbf6a;' : '') + '">' +
+            '<div style="position:absolute;top:5px;left:5px;z-index:10;background:white;border-radius:50%;width:24px;height:24px;display:flex;justify-content:center;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.2);">' +
+            (selected[p.id] ? '✅' : '⬜') +
+            '</div>' +
+            '<div class="tag-header">' +
+            '<div class="promo"><h2>عرض خاص</h2><p>promotion</p></div>' +
+            '<div class="brand"><div class="brand-text"><span class="ar">دي مارټ</span><span class="en">Dmart</span></div><div class="brand-logo">D!</div></div>' +
+            '</div>' +
+            '<div class="tag-body">' +
+            '<div class="info-section"><div class="product-name">' + p.name + '</div><div class="product-weight">' + (p.weight || '') + '</div></div>' +
+            '<div class="price-section"><div class="price-label">الحبة بسعر</div><div class="price-value"><span class="num">' + p.price + '</span><span class="cur">' + (p.currency || 'ر.س') + '</span></div></div>' +
+            '</div>' +
+            '<div class="tag-footer">' +
+            '<div class="dates"><div>يبدأ من 13/10/2026</div><div>حتى 28/10/2026</div></div>' +
+            '<div class="barcode-box"><div class="barcode-lines"></div><div class="barcode-num">' + p.barcode + '</div></div>' +
+            '</div>' +
+            '</div>';
+    }
+    container.innerHTML = html;
+    updateInfo();
+}
+
+function toggleSelect(id) {
+    selected[id] = !selected[id];
+    renderTags();
+}
+
+function selectAll() {
+    for (var i = 0; i < products.length; i++) {
+        selected[products[i].id] = true;
+    }
+    renderTags();
+}
+
+function deselectAll() {
+    selected = {};
+    renderTags();
+}
+
+function updateInfo() {
+    var count = 0;
+    for (var id in selected) { if (selected[id]) count++; }
+    var total = count;
+    var pages = Math.ceil(total / 4);
+    var info = '📊 ټاکل شوي: <strong>' + count + '</strong> له ' + products.length + ' | 📄 پاڼې: <strong>' + pages + '</strong> (۴ ټګونه په هر A4)';
+    document.getElementById('infoBox').innerHTML = info;
+}
+
+// پیل - ټول وټاکه
+selectAll();
+</script>
+
+</body>
+</html>
