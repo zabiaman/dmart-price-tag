@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#d9534f">
 <title>د موجودي مدیریت</title>
 <style>
@@ -10,19 +10,39 @@
 body { background: #f0f2f5; padding-bottom: 30px; }
 
 .header { background: #d9534f; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-.header h1 { font-size: 18px; }
-.header a { color: white; text-decoration: none; font-size: 13px; padding: 6px 10px; background: rgba(255,255,255,0.15); border-radius: 8px; }
+.header h1 { font-size: 16px; }
+.header-actions { display: flex; gap: 8px; }
+.header-actions a { color: white; text-decoration: none; font-size: 12px; padding: 8px 12px; background: rgba(255,255,255,0.2); border-radius: 8px; font-weight: bold; }
 
-.container { padding: 20px; }
+.container { padding: 15px; }
+
+/* د سکنر تڼۍ */
+.scanner-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.scanner-btn:active { transform: scale(0.98); }
 
 /* د احصایو کارتونه */
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-.stat-card { background: white; border-radius: 12px; padding: 15px 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+.stat-card { background: white; border-radius: 12px; padding: 15px 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .stat-card .icon { font-size: 24px; margin-bottom: 6px; }
 .stat-card .value { font-size: 20px; font-weight: bold; color: #d9534f; }
-.stat-card .label { font-size: 11px; color: #666; margin-top: 4px; }
+.stat-card .label { font-size: 10px; color: #666; margin-top: 4px; }
 .stat-card.green .value { color: #7bbf6a; }
-.stat-card.orange .value { color: #f39c12; }
 .stat-card.red .value { color: #e74c3c; }
 
 /* د لټون */
@@ -31,16 +51,16 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .search-box input:focus { outline: none; border-color: #d9534f; }
 
 /* د فلټر */
-.filter-row { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }
-.filter-btn { padding: 10px 16px; border: 2px solid #e0e0e0; border-radius: 20px; background: white; font-size: 13px; font-weight: bold; color: #666; cursor: pointer; white-space: nowrap; }
+.filter-row { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+.filter-btn { padding: 10px 16px; border: 2px solid #e0e0e0; border-radius: 20px; background: white; font-size: 12px; font-weight: bold; color: #666; cursor: pointer; white-space: nowrap; }
 .filter-btn.active { background: #d9534f; color: white; border-color: #d9534f; }
 
 /* د لیست سرلیک */
-.list-header { display: flex; justify-content: space-between; padding: 12px 15px; background: #2c3e50; color: white; border-radius: 10px 10px 0 0; font-size: 12px; font-weight: bold; }
+.list-header { display: flex; justify-content: space-between; padding: 12px 15px; background: #2c3e50; color: white; border-radius: 10px 10px 0 0; font-size: 11px; font-weight: bold; }
 .list-header .col-name { flex: 2; }
 .list-header .col-stock { flex: 1; text-align: center; }
 .list-header .col-price { flex: 1; text-align: center; }
-.list-header .col-action { flex: 1.5; text-align: center; }
+.list-header .col-action { flex: 1.8; text-align: center; }
 
 /* د موجودي لیست */
 .inventory-list { background: white; border-radius: 0 0 10px 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
@@ -49,27 +69,85 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .inv-item.low-stock { background: #fff3cd; }
 .inv-item.out-stock { background: #f8d7da; }
 
-.inv-icon { font-size: 28px; margin-left: 10px; }
-.inv-name-box { flex: 2; }
-.inv-name { font-size: 14px; font-weight: bold; color: #333; }
-.inv-barcode { font-size: 11px; color: #999; font-family: monospace; margin-top: 3px; }
-.inv-category { font-size: 11px; color: #666; margin-top: 3px; }
+.inv-icon { font-size: 28px; margin-left: 8px; }
+.inv-name-box { flex: 2; padding-left: 5px; }
+.inv-name { font-size: 13px; font-weight: bold; color: #333; }
+.inv-barcode { font-size: 10px; color: #999; font-family: monospace; margin-top: 3px; }
+.inv-category { font-size: 10px; color: #666; margin-top: 3px; }
 
 .inv-stock { flex: 1; text-align: center; }
 .stock-value { font-size: 20px; font-weight: bold; color: #27ae60; }
 .stock-value.low { color: #e74c3c; }
 .stock-value.out { color: #721c24; }
-.stock-label { font-size: 10px; color: #999; }
+.stock-label { font-size: 9px; color: #999; }
 
-.inv-price { flex: 1; text-align: center; font-size: 13px; font-weight: bold; color: #7bbf6a; }
+.inv-price { flex: 1; text-align: center; font-size: 12px; font-weight: bold; color: #7bbf6a; }
 
-.inv-actions { flex: 1.5; display: flex; gap: 6px; justify-content: center; }
-.inv-btn { width: 36px; height: 36px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+.inv-actions { flex: 1.8; display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+.inv-btn { width: 32px; height: 32px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; }
 .btn-minus { background: #e74c3c; color: white; }
 .btn-plus { background: #7bbf6a; color: white; }
 .btn-edit { background: #f39c12; color: white; }
+.btn-scan { background: #3498db; color: white; }
 
 .empty { text-align: center; padding: 40px 20px; color: #999; font-size: 14px; }
+
+/* د مودال */
+.modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.modal.active { display: flex; }
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+.modal-content .modal-icon { font-size: 60px; margin-bottom: 10px; }
+.modal-content h3 { color: #333; font-size: 18px; margin-bottom: 8px; }
+.modal-content .product-info { color: #666; font-size: 13px; margin-bottom: 15px; }
+.modal-content .current-stock {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+.modal-content .current-stock .label { font-size: 12px; color: #666; }
+.modal-content .current-stock .value { font-size: 32px; font-weight: bold; color: #27ae60; margin-top: 5px; }
+.modal-content .current-stock .value.low { color: #e74c3c; }
+.modal-input {
+    width: 100%;
+    padding: 15px;
+    border: 3px solid #3498db;
+    border-radius: 12px;
+    font-size: 24px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+.modal-input:focus { outline: none; border-color: #2980b9; }
+.modal-buttons { display: flex; gap: 10px; }
+.modal-buttons button {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.btn-add { background: #7bbf6a; color: white; }
+.btn-remove { background: #e74c3c; color: white; }
+.btn-cancel { background: #95a5a6; color: white; }
 
 /* د ښکته مینو */
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
@@ -82,10 +160,18 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 
 <div class="header">
 <h1>📦 د موجودي مدیریت</h1>
+<div class="header-actions">
+<a href="scanner.html">📷</a>
 <a href="index.html">← بیرته</a>
+</div>
 </div>
 
 <div class="container">
+
+<!-- د سکنر تڼۍ -->
+<button class="scanner-btn" onclick="openManualScan()">
+📷 د بارکوډ سکنر — موجودي زیاتول
+</button>
 
 <!-- د احصایو کارتونه -->
 <div class="stats-grid">
@@ -132,6 +218,25 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 
 </div>
 
+<!-- د موجودي مودال -->
+<div id="stockModal" class="modal">
+<div class="modal-content">
+<div class="modal-icon" id="modalIcon">📦</div>
+<h3 id="modalProductName">...</h3>
+<div class="product-info" id="modalProductInfo"></div>
+<div class="current-stock">
+<div class="label">اوسنی موجودي</div>
+<div class="value" id="modalCurrentStock">0</div>
+</div>
+<input type="number" class="modal-input" id="modalInput" placeholder="مقدار" value="10">
+<div class="modal-buttons">
+<button class="btn-add" onclick="applyStock(1)">➕ زیاتول</button>
+<button class="btn-remove" onclick="applyStock(-1)">➖ کموالی</button>
+</div>
+<button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:10px;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">لغوه کړه</button>
+</div>
+</div>
+
 <!-- د ښکته مینو -->
 <nav class="nav">
 <a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
@@ -144,6 +249,7 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 <script>
 var STORAGE_KEY = 'dmart_products';
 var currentFilter = 'all';
+var currentProduct = null;
 
 function loadProducts() {
     var data = localStorage.getItem(STORAGE_KEY);
@@ -157,22 +263,19 @@ function renderInventory() {
     var products = loadProducts();
     var search = document.getElementById('searchInput').value.trim().toLowerCase();
     
-    // فلټر
     var filtered = [];
     for (var i = 0; i < products.length; i++) {
         var p = products[i];
         var stock = p.stock !== undefined ? p.stock : 0;
         var minStock = p.minStock || 5;
         
-        // د لټون فلټر
         if (search) {
             var nameMatch = p.name.toLowerCase().indexOf(search) !== -1;
             var barcodeMatch = p.barcode ? p.barcode.indexOf(search) !== -1 : false;
             if (!nameMatch && !barcodeMatch) continue;
         }
         
-        // د حالت فلټر
-        if (currentFilter === 'low' && stock > minStock) continue;
+        if (currentFilter === 'low' && (stock > minStock || stock <= 0)) continue;
         if (currentFilter === 'out' && stock > 0) continue;
         if (currentFilter === 'good' && stock <= minStock) continue;
         
@@ -193,7 +296,6 @@ function renderInventory() {
     document.getElementById('goodStock').textContent = goodCount;
     document.getElementById('lowStock').textContent = lowCount;
     
-    // لیست
     var container = document.getElementById('inventoryList');
     if (filtered.length === 0) {
         container.innerHTML = '<div class="empty">😕 هیڅ محصول ونه موندل شو</div>';
@@ -221,8 +323,9 @@ function renderInventory() {
             '</div>' +
             '<div class="inv-price">' + p.price + ' ' + (p.currency || 'ر.س') + '</div>' +
             '<div class="inv-actions">' +
-            '<button class="inv-btn btn-minus" onclick="changeStock(' + p.id + ', -1)">−</button>' +
-            '<button class="inv-btn btn-plus" onclick="changeStock(' + p.id + ', 1)">+</button>' +
+            '<button class="inv-btn btn-minus" onclick="quickChange(' + p.id + ', -1)">−</button>' +
+            '<button class="inv-btn btn-plus" onclick="quickChange(' + p.id + ', 1)">+</button>' +
+            '<button class="inv-btn btn-scan" onclick="openProductModal(' + p.id + ')">📦</button>' +
             '<button class="inv-btn btn-edit" onclick="setStock(' + p.id + ')">✏️</button>' +
             '</div>' +
             '</div>';
@@ -230,12 +333,11 @@ function renderInventory() {
     container.innerHTML = html;
 }
 
-function changeStock(id, amount) {
+function quickChange(id, amount) {
     var products = loadProducts();
     for (var i = 0; i < products.length; i++) {
         if (products[i].id === id) {
-            var currentStock = products[i].stock !== undefined ? products[i].stock : 0;
-            var newStock = currentStock + amount;
+            var newStock = (products[i].stock || 0) + amount;
             if (newStock < 0) newStock = 0;
             products[i].stock = newStock;
             break;
@@ -257,6 +359,78 @@ function setStock(id) {
     product.stock = parseInt(newStock) || 0;
     saveProducts(products);
     renderInventory();
+}
+
+// د بارکوډ سکنر (لاسي)
+function openManualScan() {
+    var barcode = prompt('📷 بارکوډ ولیکه یا سکن کړه:');
+    if (barcode) {
+        findProductByBarcode(barcode.trim());
+    }
+}
+
+function findProductByBarcode(barcode) {
+    var products = loadProducts();
+    var product = null;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].barcode === barcode) { product = products[i]; break; }
+    }
+    if (product) {
+        openProductModal(product.id);
+    } else {
+        alert('❌ محصول ونه موندل شو: ' + barcode);
+    }
+}
+
+// د محصول مودال
+function openProductModal(id) {
+    var products = loadProducts();
+    var product = null;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id === id) { product = products[i]; break; }
+    }
+    if (!product) return;
+    
+    currentProduct = product;
+    var stock = product.stock !== undefined ? product.stock : 0;
+    var minStock = product.minStock || 5;
+    
+    document.getElementById('modalIcon').textContent = product.icon || '📦';
+    document.getElementById('modalProductName').textContent = product.name;
+    document.getElementById('modalProductInfo').textContent = (product.weight || '') + ' • ' + (product.barcode || '');
+    document.getElementById('modalCurrentStock').textContent = stock;
+    document.getElementById('modalCurrentStock').className = 'value' + (stock <= minStock ? ' low' : '');
+    document.getElementById('modalInput').value = '10';
+    document.getElementById('stockModal').classList.add('active');
+}
+
+function applyStock(sign) {
+    if (!currentProduct) return;
+    var amount = parseInt(document.getElementById('modalInput').value) || 0;
+    if (amount <= 0) { alert('❌ مهرباني وکړه سم عدد ولیکه'); return; }
+    
+    var change = amount * sign;
+    var products = loadProducts();
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id === currentProduct.id) {
+            var newStock = (products[i].stock || 0) + change;
+            if (newStock < 0) newStock = 0;
+            products[i].stock = newStock;
+            break;
+        }
+    }
+    saveProducts(products);
+    
+    var action = sign > 0 ? 'زیات شو' : 'کم شو';
+    alert('✅ ' + currentProduct.name + '\n\n' + amount + ' ' + action);
+    
+    closeModal();
+    renderInventory();
+}
+
+function closeModal() {
+    document.getElementById('stockModal').classList.remove('active');
+    currentProduct = null;
 }
 
 function setFilter(filter, btn) {
