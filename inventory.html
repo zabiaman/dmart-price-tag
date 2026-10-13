@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#d9534f">
+<title>د موجودي مدیریت</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
+body { background: #f0f2f5; padding-bottom: 30px; }
+
+.header { background: #d9534f; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 18px; }
+.header a { color: white; text-decoration: none; font-size: 13px; padding: 6px 10px; background: rgba(255,255,255,0.15); border-radius: 8px; }
+
+.container { padding: 20px; }
+
+/* د احصایو کارتونه */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat-card { background: white; border-radius: 12px; padding: 15px 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.stat-card .icon { font-size: 24px; margin-bottom: 6px; }
+.stat-card .value { font-size: 20px; font-weight: bold; color: #d9534f; }
+.stat-card .label { font-size: 11px; color: #666; margin-top: 4px; }
+.stat-card.green .value { color: #7bbf6a; }
+.stat-card.orange .value { color: #f39c12; }
+.stat-card.red .value { color: #e74c3c; }
+
+/* د لټون */
+.search-box { margin-bottom: 15px; }
+.search-box input { width: 100%; padding: 14px 18px; border: 2px solid #e0e0e0; border-radius: 30px; font-size: 14px; background: white; }
+.search-box input:focus { outline: none; border-color: #d9534f; }
+
+/* د فلټر */
+.filter-row { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }
+.filter-btn { padding: 10px 16px; border: 2px solid #e0e0e0; border-radius: 20px; background: white; font-size: 13px; font-weight: bold; color: #666; cursor: pointer; white-space: nowrap; }
+.filter-btn.active { background: #d9534f; color: white; border-color: #d9534f; }
+
+/* د لیست سرلیک */
+.list-header { display: flex; justify-content: space-between; padding: 12px 15px; background: #2c3e50; color: white; border-radius: 10px 10px 0 0; font-size: 12px; font-weight: bold; }
+.list-header .col-name { flex: 2; }
+.list-header .col-stock { flex: 1; text-align: center; }
+.list-header .col-price { flex: 1; text-align: center; }
+.list-header .col-action { flex: 1.5; text-align: center; }
+
+/* د موجودي لیست */
+.inventory-list { background: white; border-radius: 0 0 10px 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.inv-item { display: flex; align-items: center; padding: 14px 15px; border-bottom: 1px solid #f0f0f0; }
+.inv-item:last-child { border-bottom: none; }
+.inv-item.low-stock { background: #fff3cd; }
+.inv-item.out-stock { background: #f8d7da; }
+
+.inv-icon { font-size: 28px; margin-left: 10px; }
+.inv-name-box { flex: 2; }
+.inv-name { font-size: 14px; font-weight: bold; color: #333; }
+.inv-barcode { font-size: 11px; color: #999; font-family: monospace; margin-top: 3px; }
+.inv-category { font-size: 11px; color: #666; margin-top: 3px; }
+
+.inv-stock { flex: 1; text-align: center; }
+.stock-value { font-size: 20px; font-weight: bold; color: #27ae60; }
+.stock-value.low { color: #e74c3c; }
+.stock-value.out { color: #721c24; }
+.stock-label { font-size: 10px; color: #999; }
+
+.inv-price { flex: 1; text-align: center; font-size: 13px; font-weight: bold; color: #7bbf6a; }
+
+.inv-actions { flex: 1.5; display: flex; gap: 6px; justify-content: center; }
+.inv-btn { width: 36px; height: 36px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+.btn-minus { background: #e74c3c; color: white; }
+.btn-plus { background: #7bbf6a; color: white; }
+.btn-edit { background: #f39c12; color: white; }
+
+.empty { text-align: center; padding: 40px 20px; color: #999; font-size: 14px; }
+
+/* د ښکته مینو */
+.nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
+.nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
+.nav .icon { font-size: 22px; }
+.nav a.active { color: #d9534f; }
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>📦 د موجودي مدیریت</h1>
+<a href="index.html">← بیرته</a>
+</div>
+
+<div class="container">
+
+<!-- د احصایو کارتونه -->
+<div class="stats-grid">
+<div class="stat-card">
+<div class="icon">📦</div>
+<div class="value" id="totalProducts">0</div>
+<div class="label">ټول محصولات</div>
+</div>
+<div class="stat-card green">
+<div class="icon">✅</div>
+<div class="value" id="goodStock">0</div>
+<div class="label">ښه موجودي</div>
+</div>
+<div class="stat-card red">
+<div class="icon">⚠️</div>
+<div class="value" id="lowStock">0</div>
+<div class="label">کم موجودي</div>
+</div>
+</div>
+
+<!-- د لټون -->
+<div class="search-box">
+<input type="text" id="searchInput" placeholder="🔍 د محصول نوم یا بارکوډ...">
+</div>
+
+<!-- د فلټر -->
+<div class="filter-row">
+<button class="filter-btn active" onclick="setFilter('all', this)">ټول</button>
+<button class="filter-btn" onclick="setFilter('low', this)">⚠️ کم موجودي</button>
+<button class="filter-btn" onclick="setFilter('out', this)">❌ خلاص شوي</button>
+<button class="filter-btn" onclick="setFilter('good', this)">✅ ښه موجودي</button>
+</div>
+
+<!-- د لیست سرلیک -->
+<div class="list-header">
+<div class="col-name">محصول</div>
+<div class="col-stock">موجودي</div>
+<div class="col-price">قیمت</div>
+<div class="col-action">کړنې</div>
+</div>
+
+<!-- د موجودي لیست -->
+<div class="inventory-list" id="inventoryList"></div>
+
+</div>
+
+<!-- د ښکته مینو -->
+<nav class="nav">
+<a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
+<a href="inventory.html" class="active"><span class="icon">📦</span><span>موجودي</span></a>
+<a href="dashboard.html"><span class="icon">📊</span><span>ډشبورډ</span></a>
+<a href="sales.html"><span class="icon">📈</span><span>پلور</span></a>
+<a href="login.html"><span class="icon">⚙️</span><span>مدیر</span></a>
+</nav>
+
+<script>
+var STORAGE_KEY = 'dmart_products';
+var currentFilter = 'all';
+
+function loadProducts() {
+    var data = localStorage.getItem(STORAGE_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function saveProducts(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
+function renderInventory() {
+    var products = loadProducts();
+    var search = document.getElementById('searchInput').value.trim().toLowerCase();
+    
+    // فلټر
+    var filtered = [];
+    for (var i = 0; i < products.length; i++) {
+        var p = products[i];
+        var stock = p.stock !== undefined ? p.stock : 0;
+        var minStock = p.minStock || 5;
+        
+        // د لټون فلټر
+        if (search) {
+            var nameMatch = p.name.toLowerCase().indexOf(search) !== -1;
+            var barcodeMatch = p.barcode ? p.barcode.indexOf(search) !== -1 : false;
+            if (!nameMatch && !barcodeMatch) continue;
+        }
+        
+        // د حالت فلټر
+        if (currentFilter === 'low' && stock > minStock) continue;
+        if (currentFilter === 'out' && stock > 0) continue;
+        if (currentFilter === 'good' && stock <= minStock) continue;
+        
+        filtered.push(p);
+    }
+    
+    // احصایې
+    var total = products.length;
+    var goodCount = 0, lowCount = 0;
+    for (var i = 0; i < products.length; i++) {
+        var stock = products[i].stock !== undefined ? products[i].stock : 0;
+        var minStock = products[i].minStock || 5;
+        if (stock <= 0) lowCount++;
+        else if (stock <= minStock) lowCount++;
+        else goodCount++;
+    }
+    document.getElementById('totalProducts').textContent = total;
+    document.getElementById('goodStock').textContent = goodCount;
+    document.getElementById('lowStock').textContent = lowCount;
+    
+    // لیست
+    var container = document.getElementById('inventoryList');
+    if (filtered.length === 0) {
+        container.innerHTML = '<div class="empty">😕 هیڅ محصول ونه موندل شو</div>';
+        return;
+    }
+    
+    var html = '';
+    for (var i = 0; i < filtered.length; i++) {
+        var p = filtered[i];
+        var stock = p.stock !== undefined ? p.stock : 0;
+        var minStock = p.minStock || 5;
+        var stockClass = stock <= 0 ? 'out' : (stock <= minStock ? 'low' : '');
+        var itemClass = stock <= 0 ? 'out-stock' : (stock <= minStock ? 'low-stock' : '');
+        
+        html += '<div class="inv-item ' + itemClass + '">' +
+            '<div class="inv-icon">' + (p.icon || '📦') + '</div>' +
+            '<div class="inv-name-box">' +
+            '<div class="inv-name">' + p.name + '</div>' +
+            '<div class="inv-barcode">' + (p.barcode || '') + '</div>' +
+            '<div class="inv-category">' + (p.category || 'نامعلوم') + '</div>' +
+            '</div>' +
+            '<div class="inv-stock">' +
+            '<div class="stock-value ' + stockClass + '">' + stock + '</div>' +
+            '<div class="stock-label">موجودي</div>' +
+            '</div>' +
+            '<div class="inv-price">' + p.price + ' ' + (p.currency || 'ر.س') + '</div>' +
+            '<div class="inv-actions">' +
+            '<button class="inv-btn btn-minus" onclick="changeStock(' + p.id + ', -1)">−</button>' +
+            '<button class="inv-btn btn-plus" onclick="changeStock(' + p.id + ', 1)">+</button>' +
+            '<button class="inv-btn btn-edit" onclick="setStock(' + p.id + ')">✏️</button>' +
+            '</div>' +
+            '</div>';
+    }
+    container.innerHTML = html;
+}
+
+function changeStock(id, amount) {
+    var products = loadProducts();
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id === id) {
+            var currentStock = products[i].stock !== undefined ? products[i].stock : 0;
+            var newStock = currentStock + amount;
+            if (newStock < 0) newStock = 0;
+            products[i].stock = newStock;
+            break;
+        }
+    }
+    saveProducts(products);
+    renderInventory();
+}
+
+function setStock(id) {
+    var products = loadProducts();
+    var product = null;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id === id) { product = products[i]; break; }
+    }
+    if (!product) return;
+    var newStock = prompt('د ' + product.name + ' موجودي ولیکه:', product.stock || 0);
+    if (newStock === null) return;
+    product.stock = parseInt(newStock) || 0;
+    saveProducts(products);
+    renderInventory();
+}
+
+function setFilter(filter, btn) {
+    currentFilter = filter;
+    var btns = document.querySelectorAll('.filter-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+    btn.classList.add('active');
+    renderInventory();
+}
+
+document.getElementById('searchInput').addEventListener('input', renderInventory);
+
+renderInventory();
+</script>
+
+</body>
+</html>
