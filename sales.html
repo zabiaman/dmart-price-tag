@@ -193,6 +193,23 @@ function loadSales() {
 function saveSales(list) { localStorage.setItem(SALES_KEY, JSON.stringify(list)); }
 function saveProducts(list) { localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list)); }
 
+// ===== د خبرتیاوو اضافه کول =====
+function addNotification(type, title, message, icon) {
+    try {
+        var notifs = JSON.parse(localStorage.getItem('dmart_notifications') || '[]');
+        notifs.unshift({
+            id: Date.now(),
+            type: type,
+            title: title,
+            message: message,
+            icon: icon || '🔔',
+            time: new Date().toISOString()
+        });
+        if (notifs.length > 100) notifs = notifs.slice(0, 100);
+        localStorage.setItem('dmart_notifications', JSON.stringify(notifs));
+    } catch(e) { console.log('د خبرتیاوو خطا:', e); }
+}
+
 function fillProductSelect() {
     var products = loadProducts();
     var select = document.getElementById('saleProduct');
@@ -225,7 +242,6 @@ function recordSale() {
     }
     if (!product) { alert('❌ محصول ونه موندل شو'); return; }
     
-    // د موجودي ازموینه
     if (product.stock !== undefined && product.stock < qty) {
         if (!confirm('⚠️ یوازې ' + product.stock + ' ' + product.name + ' پاتې دي. ایا غواړې چې پلور ثبت شي؟')) return;
     }
@@ -266,6 +282,17 @@ function recordSale() {
     var profitMsg = costPrice > 0 ? '\n📈 ګټه: ' + profit.toFixed(2) + ' ' + (product.currency || 'ر.س') : '';
     var stockMsg = product.stock !== undefined ? '\n📦 پاتې موجودي: ' + newStock : '';
     alert('✅ پلور ثبت شو: ' + qty + ' × ' + price + ' = ' + total + ' ' + (product.currency || 'ر.س') + profitMsg + stockMsg);
+    
+    // د خبرتیاوو سیسټم
+    addNotification('sale', '✅ نوی پلور', product.name + ' — ' + qty + ' × ' + price + ' = ' + total + ' ' + (product.currency || 'ر.س'), '🛒');
+    
+    if (newStock !== undefined && newStock <= (product.minStock || 5)) {
+        if (newStock <= 0) {
+            addNotification('out-stock', '❌ خلاص شوی محصول', product.name + ' — موجودي: 0', '❌');
+        } else {
+            addNotification('low-stock', '⚠️ کم موجودي', product.name + ' — موجودي: ' + newStock, '⚠️');
+        }
+    }
     
     document.getElementById('saleQty').value = 1;
     document.getElementById('salePrice').value = '';
