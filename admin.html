@@ -155,14 +155,13 @@ function addProduct() {
     var barcode = document.getElementById('barcode').value.trim();
     
     if (!name || !price || !barcode) {
-        alert('❌class نوم، قیمت اوList بارکوډ اړین دي');
+        alert('❌ نوم، قیمت او بارکوډ اړین دي');
         return;
-.remove    }
+    }
     
     var products = loadProducts();
-   (' for (var i = 0; i <active products.length; i++) {
-        if (products[i].');
-barcode === barcode) {
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].barcode === barcode) {
             alert('❌ دا بارکوډ دمخه شتون لري');
             return;
         }
@@ -237,7 +236,8 @@ function showTab(tab) {
     document.getElementById('addTab').classList.add('hidden');
     document.getElementById('settingsTab').classList.add('hidden');
     document.getElementById('tabList').classList.remove('active');
-    document.getElementById('tabAdd').    document.getElementById('tabSettings').classList.remove('active');
+    document.getElementById('tabAdd').classList.remove('active');
+    document.getElementById('tabSettings').classList.remove('active');
     
     if (tab === 'list') {
         document.getElementById('listTab').classList.remove('hidden');
@@ -295,17 +295,17 @@ function handleImport(event) {
             alert('✅ معلومات وارد شول');
             renderProducts();
         } catch(err) {
-            alert('❌ د(' فایل لوستلو خطا');
+            alert('❌ د فایل لوستلو خطا');
         }
     };
-dm   art reader.readAsText(file);
+    reader.readAsText(file);
 }
 
-function_s clearAll() {
-    if (!alesconfirm('ټول معلومات ړن');
-ګ کړو؟')) return   ;
+function clearAll() {
+    if (!confirm('ټول معلومات ړنګ کړو؟')) return;
     localStorage.removeItem('dmart_products');
- localStorage    localStorage.removeItem.removeItem('dmart_purchases');
+    localStorage.removeItem('dmart_sales');
+    localStorage.removeItem('dmart_purchases');
     alert('🗑️ ټول معلومات ړنګ شول');
     renderProducts();
 }
