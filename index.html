@@ -22,7 +22,7 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 .search input { width: 100%; padding: 14px 20px; border: 2px solid #e0e0e0; border-radius: 30px; font-size: 15px; background: #f8f9fa; }
 .search input:focus { outline: none; border-color: #d9534f; background: white; }
 
-/* ===== د مینو ۱۲ تڼۍ (6 × 2) ===== */
+/* ===== د مینو ۱۸ تڼۍ (6 × 3) ===== */
 .menu { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 12px; background: white; margin-bottom: 15px; }
 .menu a { background: #f8f9fa; padding: 12px 3px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; text-decoration: none; color: #333; transition: all 0.2s; position: relative; }
 .menu a:active { background: #d9534f; color: white; transform: scale(0.95); }
@@ -105,7 +105,7 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <input type="text" id="searchInput" placeholder="🔍 د محصول نوم یا بارکوډ...">
 </div>
 
-<!-- ===== د مینو ۱۲ تڼۍ ===== -->
+<!-- ===== د مینو ۱۸ تڼۍ (6 × 3) ===== -->
 <div class="menu">
 <a href="scanner.html"><span class="icon">📷</span><span>سکنر</span></a>
 <a href="inventory.html"><span class="icon">📦</span><span>موجودي</span></a>
@@ -113,12 +113,20 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <a href="sales.html"><span class="icon">📈</span><span>پلور</span></a>
 <a href="purchases.html"><span class="icon">🛒</span><span>پیرود</span></a>
 <a href="reports.html"><span class="icon">📋</span><span>راپور</span></a>
+
 <a href="notifications.html"><span class="icon">🔔</span><span>خبرتیاوې</span><span class="badge" id="notifBadge1" style="display:none;">0</span></a>
 <a href="print-all.html"><span class="icon">🖨️</span><span>چاپ ټول</span></a>
+<a href="bluetooth-print.html"><span class="icon">📡</span><span>بلوتوث چاپ</span></a>
 <a href="login.html"><span class="icon">➕</span><span>نوی محصول</span></a>
 <a href="login.html"><span class="icon">⚙️</span><span>تنظیمات</span></a>
 <a href="login.html"><span class="icon">👥</span><span>کاروونکي</span></a>
+
 <a href="inventory.html"><span class="icon">⚠️</span><span>کم موجودي</span></a>
+<a href="dashboard.html"><span class="icon">📈</span><span>احصایې</span></a>
+<a href="sales.html"><span class="icon">💰</span><span>ګټه</span></a>
+<a href="admin.html"><span class="icon">📝</span><span>مدیریت</span></a>
+<a href="login.html"><span class="icon">🔐</span><span>د کاروونکي ننوتل</span></a>
+<a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
 </div>
 
 <div class="section-title">
@@ -218,7 +226,6 @@ function updateNotifBadge() {
     try { notifs = JSON.parse(localStorage.getItem('dmart_notifications') || '[]'); } catch(e) {}
     var products = loadProducts();
     
-    // د کم موجودي خبرتیاوې
     var lowCount = 0;
     for (var i = 0; i < products.length; i++) {
         if (products[i].stock !== undefined && products[i].stock <= (products[i].minStock || 5)) {
