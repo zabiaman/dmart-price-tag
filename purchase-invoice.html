@@ -45,6 +45,28 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .btn-primary { width: 100%; padding: 15px; background: #3498db; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 15px; }
 .btn-success { width: 100%; padding: 15px; background: #7bbf6a; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
+/* مهم: د سیسټم خوندي کولو تڼۍ */
+.btn-save-system {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+.btn-save-system:active { transform: scale(0.98); }
+
 .invoice-preview { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 2px dashed #3498db; display: none; }
 .invoice-preview.active { display: block; }
 .invoice-header-info { text-align: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 2px solid #3498db; }
@@ -55,6 +77,7 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .invoice-footer { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
 
 .print-actions { display: flex; gap: 10px; margin-top: 15px; }
+.print-actions button { flex: 1; }
 
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
 .nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
@@ -65,7 +88,7 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 
 @media print {
     body { background: white; padding: 0; margin: 0; }
-    .header, .nav, .invoice-builder, .btn-primary, .btn-success, .print-actions, .add-btn, .info-box { display: none !important; }
+    .header, .nav, .invoice-builder, .btn-primary, .btn-success, .btn-save-system, .print-actions, .add-btn, .info-box { display: none !important; }
     .invoice-preview { display: block !important; border: none; }
 }
 </style>
@@ -175,9 +198,9 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 </div>
 
 <button class="btn-primary" onclick="generateInvoice()">📥 فاکتور داخله کړه</button>
-<button class="btn-success" onclick="saveInvoice()" id="saveBtn" style="display:none;">💾 سیسټم ته خوندي کړه</button>
 </div>
 
+<!-- ===== د فاکتور مخکتنه (د سیسټم خوندي کولو تڼۍ سره) ===== -->
 <div class="invoice-preview" id="invoicePreview">
 <div class="invoice-header-info">
 <div class="logo">📥</div>
@@ -208,7 +231,12 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 </div>
 </div>
 
-<div class="print-actions">
+<!-- ===== مهم: د سیسټم خوندي کولو تڼۍ ===== -->
+<button class="btn-save-system" id="saveBtn" onclick="saveInvoice()" style="display:none;">
+💾 سیسټم ته خوندي کړه (موجودي زیاتول)
+</button>
+
+<div class="print-actions" id="printActions" style="display:none;">
 <button class="btn-primary" onclick="window.print()">🖨️ چاپ کړه</button>
 <button class="btn-success" onclick="closeInvoice()">🔄 نوی فاکتور</button>
 </div>
@@ -235,13 +263,10 @@ var currentInvoice = null;
 
 // ===== د بارکوډ اتوماتیک جوړول (EAN-13 style) =====
 function generateBarcode() {
-    // لومړی ۳ عدد (د داخلي کوډ لپاره)
     var barcode = '633';
-    // بیا ۹ عدد تصادفي
     for (var i = 0; i < 9; i++) {
         barcode += Math.floor(Math.random() * 10);
     }
-    // د چک عدد محاسبه (EAN-13)
     var sum = 0;
     for (var i = 0; i < 12; i++) {
         sum += parseInt(barcode[i]) * (i % 2 === 0 ? 1 : 3);
@@ -294,7 +319,6 @@ function onProductSelectChange() {
     var select = document.getElementById('productSelect');
     if (select.value === '__NEW__') {
         document.getElementById('newProductFields').style.display = 'block';
-        // که بارکوډ خالي وي، اتوماتیک ډک کړه
         if (!document.getElementById('newProductBarcode').value) {
             generateNewBarcode();
         }
@@ -310,28 +334,17 @@ function addProductToInvoice() {
     var qty = parseInt(document.getElementById('productQty').value) || 1;
     var price = parseFloat(document.getElementById('productPrice').value) || 0;
     
-    if (!productId) { 
-        alert('❌ مهرباني وکړه محصول وټاکه'); 
-        return; 
-    }
-    if (price <= 0) { 
-        alert('❌ مهرباني وکړه د پیرود قیمت ولیکه'); 
-        return; 
-    }
+    if (!productId) { alert('❌ مهرباني وکړه محصول وټاکه'); return; }
+    if (price <= 0) { alert('❌ مهرباني وکړه د پیرود قیمت ولیکه'); return; }
     
     var item = { qty: qty, price: price, total: qty * price };
     
     if (productId === '__NEW__') {
         var name = document.getElementById('newProductName').value.trim();
-        if (!name) { 
-            alert('❌ مهرباني وکړه د محصول نوم ولیکه'); 
-            return; 
-        }
+        if (!name) { alert('❌ مهرباني وکړه د محصول نوم ولیکه'); return; }
         
         var barcode = document.getElementById('newProductBarcode').value.trim();
-        if (!barcode) {
-            barcode = generateBarcode();
-        }
+        if (!barcode) barcode = generateBarcode();
         
         item.isNew = true;
         item.productId = null;
@@ -340,18 +353,13 @@ function addProductToInvoice() {
         item.weight = document.getElementById('newProductWeight').value.trim();
         item.sellPrice = parseFloat(document.getElementById('newProductPrice').value) || price;
         item.icon = '📦';
-        
-        console.log('✅ نوی محصول:', item);
     } else {
         var products = loadProducts();
         var product = null;
         for (var i = 0; i < products.length; i++) {
             if (products[i].id == productId) { product = products[i]; break; }
         }
-        if (!product) { 
-            alert('❌ محصول ونه موندل شو'); 
-            return; 
-        }
+        if (!product) { alert('❌ محصول ونه موندل شو'); return; }
         
         item.isNew = false;
         item.productId = product.id;
@@ -361,7 +369,6 @@ function addProductToInvoice() {
     }
     
     invoiceItems.push(item);
-    console.log('✅ ټول محصولات:', invoiceItems.length);
     
     // د فورم پاکول
     document.getElementById('productQty').value = 1;
@@ -373,14 +380,12 @@ function addProductToInvoice() {
     document.getElementById('newProductWeight').value = '';
     document.getElementById('newProductPrice').value = '';
     
-    // نوی بارکوډ چمتو کړه
     generateNewBarcode();
     
     renderInvoiceItems();
     updateSummary();
 }
 
-// ===== د محصولاتو ښودل =====
 function renderInvoiceItems() {
     var container = document.getElementById('invoiceProducts');
     if (invoiceItems.length === 0) {
@@ -430,10 +435,7 @@ function generateInvoice() {
     }
     
     var supplierName = document.getElementById('supplierName').value.trim();
-    if (!supplierName) { 
-        alert('❌ مهرباني وکړه د عرضه کوونکي نوم ولیکه'); 
-        return; 
-    }
+    if (!supplierName) { alert('❌ مهرباني وکړه د عرضه کوونکي نوم ولیکه'); return; }
     
     var supplierPhone = document.getElementById('supplierPhone').value.trim() || '-';
     var supplierVat = document.getElementById('supplierVat').value.trim() || '-';
@@ -488,8 +490,9 @@ function generateInvoice() {
     
     document.getElementById('invoicePreview').classList.add('active');
     document.getElementById('saveBtn').style.display = 'block';
+    document.getElementById('printActions').style.display = 'flex';
     
-    document.getElementById('invoicePreview').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('saveBtn').scrollIntoView({ behavior: 'smooth' });
 }
 
 // ===== د سیسټم خوندي کول =====
@@ -527,7 +530,6 @@ function saveInvoice() {
         var item = currentInvoice.items[i];
         
         if (item.isNew) {
-            // نوی محصول اضافه کول
             var newProduct = {
                 id: Date.now() + i + Math.floor(Math.random() * 1000),
                 name: item.name,
@@ -544,9 +546,7 @@ function saveInvoice() {
             };
             products.unshift(newProduct);
             addedCount++;
-            console.log('✅ نوی محصول اضافه شو:', newProduct.name, newProduct.barcode);
         } else {
-            // موجود محصول تازه کول
             for (var j = 0; j < products.length; j++) {
                 if (products[j].id == item.productId) {
                     products[j].stock = (products[j].stock || 0) + item.qty;
@@ -565,7 +565,6 @@ function saveInvoice() {
         }
     }
     
-    // مهم: محصولات خوندي کړه
     saveProducts(products);
     
     // 3. د پیرود ثبتول
@@ -616,7 +615,16 @@ function saveInvoice() {
           '📦 ټول محصولات: ' + currentInvoice.items.length + '\n' +
           '🆕 نوي محصولات: ' + addedCount + '\n' +
           '🔄 تازه شوي: ' + updatedCount + '\n' +
-          '💰 ټوله: ' + currentInvoice.total.toFixed(2) + ' ر.س');
+          '💰 ټوله: ' + currentInvoice.total.toFixed(2) + ' ر.س\n\n' +
+          '✓ موجودي تازه شوه\n' +
+          '✓ د پیرود قیمت تازه شو\n' +
+          '✓ عرضه کوونکی ثبت شو\n\n' +
+          '🏠 د کور پاڼې ته لاړ شه ترڅو نوی محصول وګورې');
+    
+    // تڼۍ پټول
+    document.getElementById('saveBtn').style.display = 'none';
+    document.getElementById('saveBtn').textContent = '✅ سیسټم ته داخله شوه';
+    document.getElementById('saveBtn').style.background = '#7bbf6a';
     
     fillProductSelect();
 }
@@ -632,6 +640,7 @@ function closeInvoice() {
         document.getElementById('invoiceDate').value = '';
         document.getElementById('invoicePreview').classList.remove('active');
         document.getElementById('saveBtn').style.display = 'none';
+        document.getElementById('printActions').style.display = 'none';
         renderInvoiceItems();
         updateSummary();
         fillProductSelect();
@@ -643,8 +652,6 @@ function closeInvoice() {
 fillProductSelect();
 renderInvoiceItems();
 updateSummary();
-
-// د نیټې ډیفالټ
 document.getElementById('invoiceDate').value = new Date().toISOString().slice(0,10);
 </script>
 
