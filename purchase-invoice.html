@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#3498db">
+<title>د پیرود فاکتور</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
+body { background: #f0f2f5; padding-bottom: 30px; }
+.header { background: #3498db; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 18px; }
+.header a { color: white; text-decoration: none; font-size: 13px; padding: 6px 10px; background: rgba(255,255,255,0.15); border-radius: 8px; }
+.container { padding: 15px; }
+
+/* د معلوماتو بکس */
+.info-box { background: #e7f3ff; border: 2px solid #3498db; border-radius: 12px; padding: 15px; margin-bottom: 15px; font-size: 13px; color: #0c5460; line-height: 1.7; }
+.info-box h4 { margin-bottom: 8px; font-size: 15px; }
+
+/* د فاکتور جوړولو بکس */
+.invoice-builder { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.invoice-builder h3 { font-size: 16px; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: #333; font-weight: bold; }
+.form-group input, .form-group select { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; }
+.form-group input:focus, .form-group select:focus { outline: none; border-color: #3498db; }
+.form-row { display: flex; gap: 10px; }
+.form-row .form-group { flex: 1; }
+
+/* د محصولاتو لیست */
+.product-item { background: #f8f9fa; border-radius: 10px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-right: 4px solid #3498db; }
+.product-item .info { flex: 1; }
+.product-item .name { font-size: 13px; font-weight: bold; color: #333; }
+.product-item .details { font-size: 11px; color: #999; margin-top: 3px; }
+.product-item .price { font-weight: bold; color: #27ae60; margin-left: 10px; }
+.product-item .remove-btn { background: #e74c3c; color: white; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 14px; cursor: pointer; }
+
+.add-btn { width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+/* د فاکتور ټولګه */
+.invoice-summary { background: #e3f2fd; border: 2px solid #3498db; border-radius: 12px; padding: 15px; margin-top: 15px; }
+.summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #bbdefb; font-size: 14px; }
+.summary-row:last-child { border-bottom: none; }
+.summary-row.total { border-top: 2px solid #3498db; margin-top: 5px; padding-top: 10px; font-size: 16px; font-weight: bold; }
+.summary-row.total .value { color: #3498db; font-size: 20px; }
+
+.btn-primary { width: 100%; padding: 15px; background: #3498db; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+.btn-success { width: 100%; padding: 15px; background: #7bbf6a; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+/* د فاکتور مخکتنه */
+.invoice-preview { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 2px dashed #3498db; display: none; }
+.invoice-preview.active { display: block; }
+.invoice-header-info { text-align: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 2px solid #3498db; }
+.invoice-header-info .logo { font-size: 30px; }
+.invoice-header-info .title { font-weight: bold; color: #3498db; font-size: 16px; }
+.invoice-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+.invoice-row.total { border-top: 2px solid #3498db; margin-top: 10px; padding-top: 10px; font-weight: bold; font-size: 15px; color: #3498db; }
+.invoice-footer { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+
+.print-actions { display: flex; gap: 10px; margin-top: 15px; }
+
+.nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
+.nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
+.nav .icon { font-size: 22px; }
+.nav a.active { color: #3498db; }
+
+.empty { text-align: center; padding: 30px; color: #999; font-size: 14px; }
+
+@media print {
+    body { background: white; padding: 0; margin: 0; }
+    .header, .nav, .invoice-builder, .btn-primary, .btn-success, .print-actions, .add-btn, .info-box { display: none !important; }
+    .invoice-preview { display: block !important; border: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>📥 د پیرود فاکتور (د عرضه کوونکي)</h1>
+<a href="purchases.html">← بیرته</a>
+</div>
+
+<div class="container">
+
+<div class="info-box">
+<h4>💡 د پیرود فاکتور څه دی؟</h4>
+<p>دا هغه فاکتور دی چې <strong>تاسو د عرضه کوونکي (Supplier) څخه اخلئ</strong> — لکه د سامان پیرود.</p>
+<p>✓ تاسو دا فاکتور <strong>سیسټم ته داخلوئ</strong></p>
+<p>✓ سیستم به <strong>موجودي اتوماتیک زیاته کړي</strong></p>
+<p>✓ د <strong>پیرود قیمت به تازه شي</strong></p>
+<p>✓ <strong>د عرضه کوونکي معلومات</strong> به ثبت شي</p>
+</div>
+
+<!-- د فاکتور جوړولو بکس -->
+<div class="invoice-builder">
+<h3>📥 نوی پیرود فاکتور داخله کړه</h3>
+
+<div class="form-row">
+<div class="form-group">
+<label>د عرضه کوونکي نوم *</label>
+<input type="text" id="supplierName" placeholder="شركة الرياض للتجارة">
+</div>
+<div class="form-group">
+<label>د عرضه کوونکي تلیفون</label>
+<input type="tel" id="supplierPhone" placeholder="+966501234567">
+</div>
+</div>
+
+<div class="form-row">
+<div class="form-group">
+<label>د عرضه کوونکي د مالیې شمیره</label>
+<input type="text" id="supplierVat" placeholder="300000000000003">
+</div>
+<div class="form-group">
+<label>د عرضه کوونکي فاکتور شمیره</label>
+<input type="text" id="supplierInvoiceNo" placeholder="SUP-12345">
+</div>
+</div>
+
+<div class="form-group">
+<label>د فاکتور نیټه</label>
+<input type="date" id="invoiceDate">
+</div>
+
+<hr style="margin:15px 0;border:none;border-top:2px dashed #e0e0e0;">
+
+<h3>📦 محصولات اضافه کړه</h3>
+
+<div class="form-group">
+<label>محصول وټاکه (یا نوی اضافه کړه)</label>
+<select id="productSelect">
+<option value="">— محصول وټاکه —</option>
+<option value="__NEW__">➕ نوی محصول (لاسي ولیکه)</option>
+</select>
+</div>
+
+<div id="newProductFields" style="display:none; background:#f8f9fa; padding:12px; border-radius:10px; margin-bottom:12px;">
+<div class="form-row">
+<div class="form-group">
+<label>د محصول نوم *</label>
+<input type="text" id="newProductName" placeholder="زعفران">
+</div>
+<div class="form-group">
+<label>بارکوډ</label>
+<input type="text" id="newProductBarcode" placeholder="633152014546">
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label>وزن</label>
+<input type="text" id="newProductWeight" placeholder="10 جرام">
+</div>
+<div class="form-group">
+<label>د پلور قیمت</label>
+<input type="number" id="newProductPrice" step="0.01" placeholder="100">
+</div>
+</div>
+</div>
+
+<div class="form-row">
+<div class="form-group">
+<label>مقدار *</label>
+<input type="number" id="productQty" value="1" min="1">
+</div>
+<div class="form-group">
+<label>د پیرود قیمت (هر واحد) *</label>
+<input type="number" id="productPrice" step="0.01" placeholder="0">
+</div>
+</div>
+
+<button class="add-btn" onclick="addProductToInvoice()">➕ محصول اضافه کړه</button>
+
+<div id="invoiceProducts" style="margin-top:15px;"></div>
+
+<div class="invoice-summary">
+<div class="summary-row"><span class="label">مجموعه (د مالیې پرته)</span><span class="value" id="sumSubtotal">0.00 ر.س</span></div>
+<div class="summary-row"><span class="label">ضریبه (۱۵٪)</span><span class="value" id="sumVat">0.00 ر.س</span></div>
+<div class="summary-row total"><span class="label">ټوله فاکتور</span><span class="value" id="sumTotal">0.00 ر.س</span></div>
+</div>
+
+<button class="btn-primary" onclick="generateInvoice()">📥 فاکتور داخله کړه</button>
+<button class="btn-success" onclick="saveInvoice()" id="saveBtn" style="display:none;">💾 سیسټم ته خوندي کړه</button>
+</div>
+
+<!-- د فاکتور مخکتنه -->
+<div class="invoice-preview" id="invoicePreview">
+<div class="invoice-header-info">
+<div class="logo">📥</div>
+<div class="title">د پیرود فاکتور - Purchase Invoice</div>
+<div style="font-size:12px;color:#666;margin-top:5px;">دي مارټ - Dmart</div>
+</div>
+
+<div class="invoice-row"><span class="label">د فاکتور شمیره</span><span class="value" id="invNumber">-</span></div>
+<div class="invoice-row"><span class="label">نیټه</span><span class="value" id="invDate">-</span></div>
+<div class="invoice-row"><span class="label">عرضه کوونکی</span><span class="value" id="invSupplier">-</span></div>
+<div class="invoice-row"><span class="label">تلیفون</span><span class="value" id="invPhone">-</span></div>
+<div class="invoice-row"><span class="label">د مالیې شمیره</span><span class="value" id="invVatNo">-</span></div>
+<div class="invoice-row"><span class="label">د عرضه کوونکي فاکتور</span><span class="value" id="invSupplierInv">-</span></div>
+
+<div style="margin-top:15px; padding-top:10px; border-top:2px solid #3498db;">
+<div style="text-align:center; font-weight:bold; color:#3498db; margin-bottom:10px;">د محصولاتو لیست</div>
+<div id="invProducts"></div>
+</div>
+
+<div class="invoice-row" style="margin-top:10px;"><span class="label">مجموعه</span><span class="value" id="invSubtotal">0.00 ر.س</span></div>
+<div class="invoice-row"><span class="label">ضریبه (۱۵٪)</span><span class="value" id="invVat">0.00 ر.س</span></div>
+<div class="invoice-row total"><span class="label">ټوله فاکتور</span><span class="value" id="invTotal">0.00 ر.س</span></div>
+
+<div class="invoice-footer">
+د پیرود فاکتور - Purchase Invoice
+<br>
+دي مارټ - Dmart
+</div>
+</div>
+
+<div class="print-actions">
+<button class="btn-primary" onclick="window.print()">🖨️ چاپ کړه</button>
+<button class="btn-success" onclick="closeInvoice()">🔄 نوی فاکتور</button>
+</div>
+</div>
+
+</div>
+
+<nav class="nav">
+<a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
+<a href="purchases.html"><span class="icon">🛒</span><span>پیرود</span></a>
+<a href="purchase-invoice.html" class="active"><span class="icon">📥</span><span>پیرود فاکتور</span></a>
+<a href="invoice.html"><span class="icon">🧾</span><span>پلور فاکتور</span></a>
+<a href="login.html"><span class="icon">⚙️</span><span>مدیر</span></a>
+</nav>
+
+<script>
+var PRODUCTS_KEY = 'dmart_products';
+var PURCHASES_KEY = 'dmart_purchases';
+var SUPPLIERS_KEY = 'dmart_suppliers';
+var VAT_RATE = 0.15;
+
+var invoiceItems = [];
+
+function loadProducts() {
+    var data = localStorage.getItem(PRODUCTS_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function saveProducts(list) {
+    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list));
+}
+
+function loadSuppliers() {
+    var data = localStorage.getItem(SUPPLIERS_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function saveSuppliers(list) {
+    localStorage.setItem(SUPPLIERS_KEY, JSON.stringify(list));
+}
+
+function fillProductSelect() {
+    var products = loadProducts();
+    var select = document.getElementById('productSelect');
+    select.innerHTML = '<option value="">— محصول وټاکه —</option>';
+    select.innerHTML += '<option value="__NEW__">➕ نوی محصول (لاسي ولیکه)</option>';
+    for (var i = 0; i < products.length; i++) {
+        var p = products[i];
+        select.innerHTML += '<option value="' + p.id + '">' + (p.icon || '📦') + ' ' + p.name + '</option>';
+    }
+}
+
+document.getElementById('productSelect').addEventListener('change', function() {
+    if (this.value === '__NEW__') {
+        document.getElementById('newProductFields').style.display = 'block';
+    } else {
+        document.getElementById('newProductFields').style.display = 'none';
+    }
+});
+
+function addProductToInvoice() {
+    var select = document.getElementById('productSelect');
+    var productId = select.value;
+    var qty = parseInt(document.getElementById('productQty').value) || 1;
+    var price = parseFloat(document.getElementById('productPrice').value) || 0;
+    
+    if (!productId) { alert('❌ مهرباني وکړه محصول وټاکه'); return; }
+    if (price <= 0) { alert('❌ مهرباني وکړه د پیرود قیمت ولیکه'); return; }
+    
+    var item = { qty: qty, price: price, total: qty * price };
+    
+    if (productId === '__NEW__') {
+        // نوی محصول
+        var name = document.getElementById('newProductName').value.trim();
+        if (!name) { alert('❌ مهرباني وکړه د محصول نوم ولیکه'); return; }
+        
+        item.isNew = true;
+        item.name = name;
+        item.barcode = document.getElementById('newProductBarcode').value.trim() || String(Date.now()).slice(-10);
+        item.weight = document.getElementById('newProductWeight').value.trim();
+        item.sellPrice = parseFloat(document.getElementById('newProductPrice').value) || price;
+        item.icon = '📦';
+    } else {
+        // موجود محصول
+        var products = loadProducts();
+        var product = null;
+        for (var i = 0; i < products.length; i++) {
+            if (products[i].id == productId) { product = products[i]; break; }
+        }
+        if (!product) { alert('❌ محصول ونه موندل شو'); return; }
+        
+        item.productId = product.id;
+        item.name = product.name;
+        item.barcode = product.barcode;
+        item.icon = product.icon || '📦';
+    }
+    
+    invoiceItems.push(item);
+    
+    // د فورم پاکول
+    document.getElementById('productQty').value = 1;
+    document.getElementById('productPrice').value = '';
+    document.getElementById('productSelect').value = '';
+    document.getElementById('newProductFields').style.display = 'none';
+    document.getElementById('newProductName').value = '';
+    document.getElementById('newProductBarcode').value = '';
+    document.getElementById('newProductWeight').value = '';
+    document.getElementById('newProductPrice').value = '';
+    
+    renderInvoiceItems();
+    updateSummary();
+}
+
+function renderInvoiceItems() {
+    var container = document.getElementById('invoiceProducts');
+    if (invoiceItems.length === 0) {
+        container.innerHTML = '<div class="empty">هیڅ محصول اضافه نه شو</div>';
+        return;
+    }
+    
+    var html = '';
+    for (var i = 0; i < invoiceItems.length; i++) {
+        var item = invoiceItems[i];
+        var badge = item.isNew ? ' 🆕' : '';
+        html += '<div class="product-item">' +
+            '<div class="info">' +
+            '<div class="name">' + item.icon + ' ' + item.name + badge + '</div>' +
+            '<div class="details">' + item.qty + ' × ' + item.price + ' ر.س</div>' +
+            '</div>' +
+            '<div class="price">' + item.total.toFixed(2) + ' ر.س</div>' +
+            '<button class="remove-btn" onclick="removeItem(' + i + ')">✕</button>' +
+            '</div>';
+    }
+    container.innerHTML = html;
+}
+
+function removeItem(index) {
+    invoiceItems.splice(index, 1);
+    renderInvoiceItems();
+    updateSummary();
+}
+
+function updateSummary() {
+    var subtotal = 0;
+    for (var i = 0; i < invoiceItems.length; i++) subtotal += invoiceItems[i].total;
+    var vat = subtotal * VAT_RATE;
+    var total = subtotal + vat;
+    
+    document.getElementById('sumSubtotal').textContent = subtotal.toFixed(2) + ' ر.س';
+    document.getElementById('sumVat').textContent = vat.toFixed(2) + ' ر.س';
+    document.getElementById('sumTotal').textContent = total.toFixed(2) + ' ر.س';
+}
+
+var currentInvoice = null;
+
+function generateInvoice() {
+    if (invoiceItems.length === 0) {
+        alert('❌ مهرباني وکړه لومړی محصول اضافه کړه');
+        return;
+    }
+    
+    var supplierName = document.getElementById('supplierName').value.trim();
+    if (!supplierName) { alert('❌ مهرباني وکړه د عرضه کوونکي نوم ولیکه'); return; }
+    
+    var supplierPhone = document.getElementById('supplierPhone').value.trim() || '-';
+    var supplierVat = document.getElementById('supplierVat').value.trim() || '-';
+    var supplierInvoiceNo = document.getElementById('supplierInvoiceNo').value.trim() || '-';
+    var invoiceDate = document.getElementById('invoiceDate').value || new Date().toISOString().slice(0,10);
+    
+    var subtotal = 0;
+    for (var i = 0; i < invoiceItems.length; i++) subtotal += invoiceItems[i].total;
+    var vat = subtotal * VAT_RATE;
+    var total = subtotal + vat;
+    
+    var now = new Date();
+    var invoiceNumber = 'PUR-' + now.getFullYear() + (now.getMonth()+1) + now.getDate() + '-' + Math.floor(Math.random() * 10000);
+    var dateStr = invoiceDate + ' ' + now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+    
+    currentInvoice = {
+        number: invoiceNumber,
+        date: dateStr,
+        invoiceDate: invoiceDate,
+        supplier: supplierName,
+        supplierPhone: supplierPhone,
+        supplierVat: supplierVat,
+        supplierInvoiceNo: supplierInvoiceNo,
+        items: invoiceItems.slice(),
+        subtotal: subtotal,
+        vat: vat,
+        total: total,
+        time: now.toISOString()
+    };
+    
+    document.getElementById('invNumber').textContent = invoiceNumber;
+    document.getElementById('invDate').textContent = dateStr;
+    document.getElementById('invSupplier').textContent = supplierName;
+    document.getElementById('invPhone').textContent = supplierPhone;
+    document.getElementById('invVatNo').textContent = supplierVat;
+    document.getElementById('invSupplierInv').textContent = supplierInvoiceNo;
+    
+    var productsHtml = '';
+    for (var i = 0; i < invoiceItems.length; i++) {
+        var item = invoiceItems[i];
+        var badge = item.isNew ? ' 🆕' : '';
+        productsHtml += '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed #eee;font-size:12px;">' +
+            '<span>' + item.icon + ' ' + item.name + badge + ' × ' + item.qty + '</span>' +
+            '<span>' + item.total.toFixed(2) + ' ر.س</span>' +
+            '</div>';
+    }
+    document.getElementById('invProducts').innerHTML = productsHtml;
+    
+    document.getElementById('invSubtotal').textContent = subtotal.toFixed(2) + ' ر.س';
+    document.getElementById('invVat').textContent = vat.toFixed(2) + ' ر.س';
+    document.getElementById('invTotal').textContent = total.toFixed(2) + ' ر.س';
+    
+    document.getElementById('invoicePreview').classList.add('active');
+    document.getElementById('saveBtn').style.display = 'block';
+    
+    document.getElementById('invoicePreview').scrollIntoView({ behavior: 'smooth' });
+}
+
+function saveInvoice() {
+    if (!currentInvoice) return;
+    
+    // 1. د عرضه کوونکي خوندي کول
+    var suppliers = loadSuppliers();
+    var existing = null;
+    for (var i = 0; i < suppliers.length; i++) {
+        if (suppliers[i].name === currentInvoice.supplier) { existing = suppliers[i]; break; }
+    }
+    if (existing) {
+        existing.phone = currentInvoice.supplierPhone;
+        existing.vat = currentInvoice.supplierVat;
+        existing.lastPurchase = currentInvoice.date;
+    } else {
+        suppliers.push({
+            id: Date.now(),
+            name: currentInvoice.supplier,
+            phone: currentInvoice.supplierPhone,
+            vat: currentInvoice.supplierVat,
+            lastPurchase: currentInvoice.date,
+            time: new Date().toISOString()
+        });
+    }
+    saveSuppliers(suppliers);
+    
+    // 2. د محصولاتو خوندي کول (نوي + موجود)
+    var products = loadProducts();
+    for (var i = 0; i < currentInvoice.items.length; i++) {
+        var item = currentInvoice.items[i];
+        
+        if (item.isNew) {
+            // نوی محصول اضافه کول
+            products.unshift({
+                id: Date.now() + i,
+                name: item.name,
+                name_en: '',
+                weight: item.weight,
+                price: item.sellPrice,
+                costPrice: item.price,
+                stock: item.qty,
+                minStock: 5,
+                currency: 'ر.س',
+                barcode: item.barcode,
+                category: '',
+                icon: item.icon || '📦'
+            });
+        } else {
+            // موجود محصول تازه کول
+            for (var j = 0; j < products.length; j++) {
+                if (products[j].id == item.productId) {
+                    products[j].stock = (products[j].stock || 0) + item.qty;
+                    // د اوسط پیرود قیمت
+                    var oldCost = products[j].costPrice || 0;
+                    var oldStock = products[j].stock - item.qty;
+                    if (oldStock > 0 && oldCost > 0) {
+                        var newAvg = ((oldCost * oldStock) + (item.price * item.qty)) / (oldStock + item.qty);
+                        products[j].costPrice = parseFloat(newAvg.toFixed(2));
+                    } else {
+                        products[j].costPrice = item.price;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    saveProducts(products);
+    
+    // 3. د پیرود ثبتول
+    var purchases = JSON.parse(localStorage.getItem(PURCHASES_KEY) || '[]');
+    for (var i = 0; i < currentInvoice.items.length; i++) {
+        var item = currentInvoice.items[i];
+        purchases.unshift({
+            id: Date.now() + i,
+            productId: item.productId || null,
+            name: item.name,
+            icon: item.icon,
+            qty: item.qty,
+            price: item.price,
+            total: item.total,
+            currency: 'ر.س',
+            supplier: currentInvoice.supplier,
+            invoiceNumber: currentInvoice.number,
+            time: new Date().toISOString()
+        });
+    }
+    localStorage.setItem(PURCHASES_KEY, JSON.stringify(purchases));
+    
+    // 4. د فاکتورونو ثبتول
+    var invoices = JSON.parse(localStorage.getItem('dmart_purchase_invoices') || '[]');
+    invoices.unshift(currentInvoice);
+    localStorage.setItem('dmart_purchase_invoices', JSON.stringify(invoices));
+    
+    // 5. خبرتیا
+    try {
+        var notifs = JSON.parse(localStorage.getItem('dmart_notifications') || '[]');
+        notifs.unshift({
+            id: Date.now(),
+            type: 'purchase',
+            title: '📥 نوی پیرود فاکتور',
+            message: currentInvoice.supplier + ' — ' + currentInvoice.items.length + ' محصولات — ' + currentInvoice.total.toFixed(2) + ' ر.س',
+            icon: '📥',
+            time: new Date().toISOString()
+        });
+        localStorage.setItem('dmart_notifications', JSON.stringify(notifs));
+    } catch(e) {}
+    
+    alert('✅ فاکتور سیسټم ته داخله شوه!\n\n' +
+          '📥 شمیره: ' + currentInvoice.number + '\n' +
+          '🏢 عرضه کوونکی: ' + currentInvoice.supplier + '\n' +
+          '📦 محصولات: ' + currentInvoice.items.length + '\n' +
+          '💰 ټوله: ' + currentInvoice.total.toFixed(2) + ' ر.س\n\n' +
+          '✓ موجودي تازه شوه\n' +
+          '✓ د پیرود قیمت تازه شو\n' +
+          '✓ عرضه کوونکی ثبت شو');
+}
+
+function closeInvoice() {
+    if (confirm('ایا غواړې چې نوی فاکتور پیل کړې؟')) {
+        invoiceItems = [];
+        currentInvoice = null;
+        document.getElementById('supplierName').value = '';
+        document.getElementById('supplierPhone').value = '';
+        document.getElementById('supplierVat').value = '';
+        document.getElementById('supplierInvoiceNo').value = '';
+        document.getElementById('invoiceDate').value = '';
+        document.getElementById('invoicePreview').classList.remove('active');
+        document.getElementById('saveBtn').style.display = 'none';
+        renderInvoiceItems();
+        updateSummary();
+        fillProductSelect();
+    }
+}
+
+fillProductSelect();
+renderInvoiceItems();
+updateSummary();
+
+// د نیټې ډیفالټ
+document.getElementById('invoiceDate').value = new Date().toISOString().slice(0,10);
+</script>
+
+</body>
+</html>
