@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#d9534f">
-<title>د بلوتوث چاپ</title>
+<title>د چاپ پاڼه</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
 body { background: #f0f2f5; padding-bottom: 30px; }
@@ -13,29 +13,28 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .header a { color: white; text-decoration: none; font-size: 13px; padding: 6px 10px; background: rgba(255,255,255,0.15); border-radius: 8px; }
 .container { padding: 15px; }
 
-/* د حالت کارت */
-.status-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-.status-card .icon { font-size: 40px; margin-bottom: 8px; }
-.status-card .status { font-size: 15px; font-weight: bold; }
-.status-card .status.connected { color: #7bbf6a; }
-.status-card .status.disconnected { color: #e74c3c; }
-.status-card .device-name { font-size: 12px; color: #666; margin-top: 5px; }
+/* د معلوماتو بکس */
+.info-box {
+    background: #e7f3ff;
+    border: 2px solid #3498db;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    font-size: 13px;
+    color: #0c5460;
+    line-height: 1.7;
+}
+.info-box h4 { margin-bottom: 8px; font-size: 15px; }
+.info-box p { margin-top: 5px; }
+.info-box ol { margin-right: 20px; margin-top: 8px; }
+.info-box li { margin-bottom: 5px; }
 
-/* تڼۍ */
-.btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 12px; }
-.btn-blue { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+/* د تڼیو ګروپ */
+.btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .btn-green { background: linear-gradient(135deg, #7bbf6a, #5ea04f); color: white; }
-.btn-red { background: #e74c3c; color: white; }
-.btn-orange { background: #f39c12; color: white; }
+.btn-blue { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+.btn-orange { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
 .btn:active { transform: scale(0.98); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-/* معلومات */
-.info-box { background: #e7f3ff; border: 2px solid #3498db; border-radius: 12px; padding: 15px; margin-bottom: 15px; font-size: 13px; color: #0c5460; }
-.info-box h4 { margin-bottom: 8px; font-size: 14px; }
-.info-box p { margin-top: 5px; line-height: 1.5; }
-
-.warning-box { background: #fff3cd; border: 2px solid #ffc107; border-radius: 12px; padding: 15px; margin-bottom: 15px; font-size: 13px; color: #856404; }
 
 /* د محصول لیست */
 .section-title { font-size: 15px; color: #333; font-weight: bold; margin: 15px 0 12px; border-right: 4px solid #d9534f; padding-right: 10px; }
@@ -45,29 +44,93 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .product-item .details { font-size: 11px; color: #999; margin-top: 3px; }
 .product-item .print-btn { background: #3498db; color: white; padding: 8px 14px; border: none; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
 
-/* د چاپ مودال */
-.modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 20px; }
-.modal.active { display: flex; }
-.modal-content { background: white; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; }
-.modal-content .icon { font-size: 60px; margin-bottom: 15px; }
-.modal-content h3 { color: #333; font-size: 18px; margin-bottom: 10px; }
-.modal-content p { color: #666; font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
+/* د ټګ مخکتنه (د چاپ لپاره) */
+.print-area {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: none;
+}
+.print-area.active { display: block; }
 
-/* د ټګ مخکتنه */
 .receipt {
     font-family: 'Courier New', monospace;
     background: white;
     padding: 15px;
     border-radius: 8px;
-    margin: 10px 0;
     text-align: center;
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.7;
     border: 1px dashed #999;
+    max-width: 300px;
+    margin: 0 auto;
 }
-.receipt .receipt-header { font-weight: bold; font-size: 16px; margin-bottom: 8px; }
-.receipt .receipt-line { border-top: 1px dashed #999; margin: 8px 0; }
-.receipt .receipt-total { font-weight: bold; font-size: 16px; }
+.receipt .receipt-header { font-weight: bold; font-size: 16px; margin-bottom: 10px; }
+.receipt .receipt-line { border-top: 1px dashed #999; margin: 10px 0; }
+.receipt .receipt-total { font-weight: bold; font-size: 18px; color: #d9534f; }
+.receipt .barcode {
+    width: 150px;
+    height: 40px;
+    margin: 10px auto 5px;
+    background: repeating-linear-gradient(90deg,
+        #000 0px, #000 2px, #fff 2px, #fff 4px,
+        #000 4px, #000 5px, #fff 5px, #fff 8px,
+        #000 8px, #000 11px, #fff 11px, #fff 12px,
+        #000 12px, #000 14px, #fff 14px, #fff 16px,
+        #000 16px, #000 18px);
+}
+.receipt .barcode-num {
+    font-size: 11px;
+    letter-spacing: 3px;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+/* د چاپ تڼۍ */
+.print-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* د مودال */
+.modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.modal.active { display: flex; }
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+.modal-content .icon { font-size: 60px; margin-bottom: 15px; }
+.modal-content h3 { color: #333; font-size: 18px; margin-bottom: 10px; }
+.modal-content p { color: #666; font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
+.modal-content textarea {
+    width: 100%;
+    height: 200px;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    margin-bottom: 15px;
+    direction: ltr;
+    text-align: left;
+}
+.modal-content .btn { width: 100%; padding: 14px; }
 
 .empty { text-align: center; padding: 40px 20px; color: #999; background: white; border-radius: 12px; font-size: 14px; }
 
@@ -75,44 +138,52 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
 .nav .icon { font-size: 22px; }
 .nav a.active { color: #d9534f; }
+
+/* د چاپ وخت */
+@media print {
+    body { background: white; padding: 0; margin: 0; }
+    .header, .nav, .info-box, .section-title, .product-item, .btn, .print-actions, .modal { display: none !important; }
+    .print-area { display: block !important; box-shadow: none; padding: 0; }
+    .receipt { border: none; max-width: 100%; }
+}
 </style>
 </head>
 <body>
 
 <div class="header">
-<h1>🖨️ د بلوتوث چاپ</h1>
+<h1>🖨️ د چاپ پاڼه</h1>
 <a href="index.html">← بیرته</a>
 </div>
 
 <div class="container">
 
-<!-- د حالت کارت -->
-<div class="status-card">
-<div class="icon" id="statusIcon">📡</div>
-<div class="status disconnected" id="statusText">پرنټر نه دی وصل شوی</div>
-<div class="device-name" id="deviceName"></div>
+<!-- د معلوماتو بکس -->
+<div class="info-box">
+<h4>📱 د iPhone لپاره د چاپ لارښود:</h4>
+<p><strong>لاره ۱ — د محصول ټګ چاپ:</strong></p>
+<ol>
+<li>د محصول څنګ ته **"🖨️ چاپ"** کلیک کړه</li>
+<li>د iOS چاپ ډیالوګ به پرانیستل شي</li>
+<li>خپل **پرنټر وټاکه**</li>
+<li>**"Print"** کلیک کړه</li>
+</ol>
+<p style="margin-top:10px;"><strong>لاره ۲ — د متن کاپي (د حرارتي پرنټر لپاره):</strong></p>
+<ol>
+<li>د محصول څنګ ته **"📋 کاپي"** کلیک کړه</li>
+<li>خپل **د پرنټر اپلیکیشن** (لکه XPrinter، POS Printer) پرانیزه</li>
+<li>متن **پیست** کړه او **چاپ** یې کړه</li>
+</ol>
 </div>
 
-<!-- د معلومات بکس -->
-<div class="info-box" id="infoBox">
-<h4>💡 څنګه کار کوي:</h4>
-<p>1. **"🔗 پرنټر وصل کړه"** تڼۍ کلیک کړه</p>
-<p>2. د **بلوتوث پرنټرونو** لیست به ښکاره شي</p>
-<p>3. خپل **پرنټر وټاکه**</p>
-<p>4. بیا کولی شئ **هر محصول** مستقیم چاپ کړئ</p>
+<!-- د چاپ ساحه -->
+<div class="print-area" id="printArea">
+<div class="receipt" id="receiptContent"></div>
+<div class="print-actions">
+<button class="btn btn-green" onclick="window.print()">🖨️ چاپ کړه</button>
+<button class="btn btn-blue" onclick="copyReceipt()">📋 کاپي کړه</button>
+<button class="btn btn-orange" onclick="closePrintArea()">❌ بنده کړه</button>
 </div>
-
-<!-- د ملاتړ نه کولو خبرتیا -->
-<div class="warning-box" id="notSupportedBox" style="display:none;">
-⚠️ **ستاسو براوزر د Web Bluetooth ملاتړ نه کوي.**
-<br><br>
-دا فیچر یوازې د **Chrome / Edge** په Android کې کار کوي. د Safari (iPhone) لپاره نشته.
 </div>
-
-<!-- تڼۍ -->
-<button class="btn btn-blue" id="connectBtn" onclick="connectPrinter()">🔗 پرنټر وصل کړه</button>
-<button class="btn btn-red" id="disconnectBtn" onclick="disconnectPrinter()" style="display:none;">🔌 پرنټر قطع کړه</button>
-<button class="btn btn-green" id="testBtn" onclick="testPrint()" style="display:none;">🧪 د ازموینې چاپ</button>
 
 <!-- د محصولاتو لیست -->
 <div class="section-title">📦 د محصولاتو لیست</div>
@@ -120,19 +191,21 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 
 </div>
 
-<!-- د چاپ مودال -->
-<div class="modal" id="printModal">
+<!-- د کاپي مودال -->
+<div class="modal" id="copyModal">
 <div class="modal-content">
-<div class="icon" id="modalIcon">🖨️</div>
-<h3 id="modalTitle">چاپ روان دی...</h3>
-<p id="modalMessage">مهرباني وکړه انتظار وکړه</p>
-<button class="btn btn-red" onclick="closeModal()">بنده کړه</button>
+<div class="icon">📋</div>
+<h3>متن کاپي شو</h3>
+<p>دا متن د پرنټر اپلیکیشن کې پیست کړه:</p>
+<textarea id="copyText" readonly></textarea>
+<button class="btn btn-green" onclick="doCopy()">📋 بیا کاپي کړه</button>
+<button class="btn btn-orange" onclick="closeCopyModal()">بنده کړه</button>
 </div>
 </div>
 
 <nav class="nav">
 <a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
-<a href="bluetooth-print.html" class="active"><span class="icon">🖨️</span><span>بلوتوث چاپ</span></a>
+<a href="bluetooth-print.html" class="active"><span class="icon">🖨️</span><span>چاپ</span></a>
 <a href="inventory.html"><span class="icon">📦</span><span>موجودي</span></a>
 <a href="print-all.html"><span class="icon">📄</span><span>چاپ ټول</span></a>
 <a href="login.html"><span class="icon">⚙️</span><span>مدیر</span></a>
@@ -140,241 +213,8 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 
 <script>
 var PRODUCTS_KEY = 'dmart_products';
-var bluetoothDevice = null;
-var bluetoothCharacteristic = null;
+var currentReceiptText = '';
 
-// ===== د Web Bluetooth ملاتړ ازموینه =====
-function checkSupport() {
-    if (!navigator.bluetooth) {
-        document.getElementById('notSupportedBox').style.display = 'block';
-        document.getElementById('connectBtn').disabled = true;
-        document.getElementById('infoBox').style.display = 'none';
-        return false;
-    }
-    return true;
-}
-
-// ===== د پرنټر وصل کول =====
-async function connectPrinter() {
-    if (!navigator.bluetooth) {
-        alert('❌ ستاسو براوزر د Web Bluetooth ملاتړ نه کوي');
-        return;
-    }
-    
-    try {
-        showModal('🔗', 'د پرنټر پلټنه...', 'د بلوتوث پرنټرونو لیست ته وګوره');
-        
-        bluetoothDevice = await navigator.bluetooth.requestDevice({
-            acceptAllDevices: true,
-            optionalServices: [
-                '000018f0-0000-1000-8000-00805f9b34fb', // د حرارتي پرنټر خدمت
-                '0000ff00-0000-1000-8000-00805f9b34fb',
-                'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
-                '49535343-fe7d-4ae5-8fa9-9fafd205e455',
-                '0000ffe0-0000-1000-8000-00805f9b34fb'
-            ]
-        });
-        
-        closeModal();
-        
-        if (bluetoothDevice) {
-            updateStatus('connecting', 'وصلیدږي...', bluetoothDevice.name || 'نامعلوم');
-            
-            // د GATT سرور وصلول
-            const server = await bluetoothDevice.gatt.connect();
-            
-            // د خدمت پلټنه
-            const services = await server.getPrimaryServices();
-            let foundChar = null;
-            
-            for (const service of services) {
-                const characteristics = await service.getCharacteristics();
-                for (const char of characteristics) {
-                    if (char.properties.write || char.properties.writeWithoutResponse) {
-                        foundChar = char;
-                        break;
-                    }
-                }
-                if (foundChar) break;
-            }
-            
-            if (foundChar) {
-                bluetoothCharacteristic = foundChar;
-                updateStatus('connected', 'وصل شو ✅', bluetoothDevice.name || 'نامعلوم');
-                document.getElementById('connectBtn').style.display = 'none';
-                document.getElementById('disconnectBtn').style.display = 'block';
-                document.getElementById('testBtn').style.display = 'block';
-                
-                // د قطع کیدو پیښه
-                bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
-            } else {
-                alert('⚠️ د پرنټر لیکلو خدمت ونه موندل شو. ممکن دا پرنټر د Web Bluetooth ملاتړ نه کوي.');
-                await disconnectPrinter();
-            }
-        }
-    } catch (error) {
-        closeModal();
-        if (error.name === 'NotFoundError') {
-            // کاروونکي لغوه کړه
-            return;
-        }
-        alert('❌ د پرنټر د وصل کیدو خطا: ' + error.message);
-    }
-}
-
-// ===== د پرنټر قطع کول =====
-async function disconnectPrinter() {
-    if (bluetoothDevice && bluetoothDevice.gatt.connected) {
-        await bluetoothDevice.gatt.disconnect();
-    }
-    onDisconnected();
-}
-
-function onDisconnected() {
-    bluetoothDevice = null;
-    bluetoothCharacteristic = null;
-    updateStatus('disconnected', 'پرنټر قطع شو', '');
-    document.getElementById('connectBtn').style.display = 'block';
-    document.getElementById('disconnectBtn').style.display = 'none';
-    document.getElementById('testBtn').style.display = 'none';
-}
-
-function updateStatus(status, text, deviceName) {
-    var statusIcon = document.getElementById('statusIcon');
-    var statusText = document.getElementById('statusText');
-    var deviceNameEl = document.getElementById('deviceName');
-    
-    statusText.className = 'status ' + (status === 'connected' ? 'connected' : 'disconnected');
-    statusText.textContent = text;
-    deviceNameEl.textContent = deviceName ? '📱 ' + deviceName : '';
-    
-    if (status === 'connected') {
-        statusIcon.textContent = '✅';
-    } else if (status === 'connecting') {
-        statusIcon.textContent = '⏳';
-    } else {
-        statusIcon.textContent = '📡';
-    }
-}
-
-// ===== د چاپ لیږل =====
-async function sendToPrinter(text) {
-    if (!bluetoothCharacteristic) {
-        alert('❌ لومړی پرنټر وصل کړه');
-        return false;
-    }
-    
-    try {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(text);
-        
-        // د ESC/POS کمانډونه
-        const ESC = 0x1B;
-        const GS = 0x1D;
-        
-        // د متن لیږل (د حرارتي پرنټر لپاره)
-        // د ۲۰۰ بایټو په برخو ووېشل
-        const chunkSize = 200;
-        for (let i = 0; i < data.length; i += chunkSize) {
-            const chunk = data.slice(i, i + chunkSize);
-            await bluetoothCharacteristic.writeValue(chunk);
-            await new Promise(r => setTimeout(r, 50)); // انتظار
-        }
-        
-        // د کاغذ پرې کول
-        const cutCommand = new Uint8Array([GS, 0x56, 0x00]);
-        await bluetoothCharacteristic.writeValue(cutCommand);
-        
-        return true;
-    } catch (error) {
-        alert('❌ د چاپ خطا: ' + error.message);
-        return false;
-    }
-}
-
-// ===== د ازموینې چاپ =====
-async function testPrint() {
-    showModal('🧪', 'د ازموینې چاپ...', '');
-    var testText = 
-        '\n' +
-        '================================\n' +
-        '        دي مارټ - Dmart\n' +
-        '================================\n' +
-        '\n' +
-        '  ✅ د ازموینې چاپ\n' +
-        '\n' +
-        '  دا یو ازموینې پیغام دی\n' +
-        '  که دا چاپ شو، پرنټر سم کار کوي\n' +
-        '\n' +
-        '  نیټه: ' + new Date().toLocaleString('ar-EG') + '\n' +
-        '\n' +
-        '================================\n' +
-        '\n\n\n';
-    
-    var success = await sendToPrinter(testText);
-    if (success) {
-        showModal('✅', 'چاپ بریالی شو!', 'پرنټر سم کار کوي');
-        setTimeout(closeModal, 2000);
-    } else {
-        closeModal();
-    }
-}
-
-// ===== د محصول چاپ =====
-async function printProduct(productId) {
-    if (!bluetoothCharacteristic) {
-        if (confirm('پرنټر وصل نه دی. ایا غواړې چې اوس یې وصل کړې؟')) {
-            await connectPrinter();
-        }
-        return;
-    }
-    
-    var products = loadProducts();
-    var product = null;
-    for (var i = 0; i < products.length; i++) {
-        if (products[i].id == productId) { product = products[i]; break; }
-    }
-    if (!product) return;
-    
-    showModal('🖨️', 'د ' + product.name + ' چاپ...', '');
-    
-    var text = 
-        '\n' +
-        '================================\n' +
-        '        دي مارټ - Dmart\n' +
-        '================================\n' +
-        '\n' +
-        '  ' + product.name + '\n' +
-        '  ' + (product.weight || '') + '\n' +
-        '\n' +
-        '  د پلور قیمت: ' + product.price + ' ' + (product.currency || 'ر.س') + '\n' +
-        '  بارکوډ: ' + (product.barcode || '') + '\n' +
-        '\n' +
-        '================================\n' +
-        '\n\n\n';
-    
-    var success = await sendToPrinter(text);
-    if (success) {
-        showModal('✅', 'چاپ بریالی شو!', product.name);
-        setTimeout(closeModal, 2000);
-    } else {
-        closeModal();
-    }
-}
-
-// ===== د مودال =====
-function showModal(icon, title, message) {
-    document.getElementById('modalIcon').textContent = icon;
-    document.getElementById('modalTitle').textContent = title;
-    document.getElementById('modalMessage').textContent = message;
-    document.getElementById('printModal').classList.add('active');
-}
-
-function closeModal() {
-    document.getElementById('printModal').classList.remove('active');
-}
-
-// ===== د محصولاتو لیست =====
 function loadProducts() {
     var data = localStorage.getItem(PRODUCTS_KEY);
     if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
@@ -398,14 +238,156 @@ function renderProducts() {
             '<div class="name">' + (p.icon || '📦') + ' ' + p.name + '</div>' +
             '<div class="details">' + (p.weight || '') + ' • ' + p.price + ' ' + (p.currency || 'ر.س') + '</div>' +
             '</div>' +
-            '<button class="print-btn" onclick="printProduct(' + p.id + ')">🖨️ چاپ</button>' +
+            '<div style="display:flex;gap:5px;">' +
+            '<button class="print-btn" onclick="printProduct(' + p.id + ')">🖨️</button>' +
+            '<button class="print-btn" style="background:#7bbf6a;" onclick="copyProduct(' + p.id + ')">📋</button>' +
+            '</div>' +
             '</div>';
     }
     container.innerHTML = html;
 }
 
-// ===== پیل =====
-checkSupport();
+// ===== د محصول ټګ جوړول =====
+function generateReceipt(product) {
+    var now = new Date();
+    var dateStr = now.getDate() + '/' + (now.getMonth()+1) + '/' + now.getFullYear();
+    var timeStr = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+    
+    return `
+================================
+        دي مارټ - Dmart
+================================
+
+       عرض خاص - promotion
+
+--------------------------------
+  ${product.name}
+  ${product.weight || ''}
+--------------------------------
+
+       الحبة بسعر
+
+  ${product.price} ${product.currency || 'ر.س'}
+
+--------------------------------
+
+  بارکوډ: ${product.barcode || ''}
+
+  نیټه: ${dateStr}
+  وخت: ${timeStr}
+
+================================
+  د پیرودلو څخه مننه
+================================
+
+
+`;
+}
+
+// ===== د محصول چاپ =====
+function printProduct(productId) {
+    var products = loadProducts();
+    var product = null;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id == productId) { product = products[i]; break; }
+    }
+    if (!product) return;
+    
+    var receiptHtml = `
+        <div class="receipt-header">دي مارټ - Dmart</div>
+        <div style="font-size:11px;">عرض خاص - promotion</div>
+        <div class="receipt-line"></div>
+        <div style="font-size:15px;font-weight:bold;">${product.name}</div>
+        <div style="font-size:12px;">${product.weight || ''}</div>
+        <div class="receipt-line"></div>
+        <div style="font-size:12px;">الحبة بسعر</div>
+        <div class="receipt-total">${product.price} ${product.currency || 'ر.س'}</div>
+        <div class="receipt-line"></div>
+        <div class="barcode"></div>
+        <div class="barcode-num">${product.barcode || ''}</div>
+        <div class="receipt-line"></div>
+        <div style="font-size:11px;">د پیرودلو څخه مننه</div>
+    `;
+    
+    document.getElementById('receiptContent').innerHTML = receiptHtml;
+    document.getElementById('printArea').classList.add('active');
+    
+    // د کاپي لپاره متن
+    currentReceiptText = generateReceipt(product);
+    
+    // سکرول کول
+    document.getElementById('printArea').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ===== د محصول کاپي =====
+function copyProduct(productId) {
+    var products = loadProducts();
+    var product = null;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id == productId) { product = products[i]; break; }
+    }
+    if (!product) return;
+    
+    var text = generateReceipt(product);
+    currentReceiptText = text;
+    
+    // کاپي کول
+    copyToClipboard(text);
+    
+    // مودال ښودل
+    document.getElementById('copyText').value = text;
+    document.getElementById('copyModal').classList.add('active');
+}
+
+function copyReceipt() {
+    if (currentReceiptText) {
+        copyToClipboard(currentReceiptText);
+        alert('✅ متن کاپي شو');
+    }
+}
+
+function copyToClipboard(text) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function() {
+            console.log('✅ متن کاپي شو');
+        }).catch(function(err) {
+            fallbackCopy(text);
+        });
+    } else {
+        fallbackCopy(text);
+    }
+}
+
+function fallbackCopy(text) {
+    var textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        document.execCommand('copy');
+        console.log('✅ متن کاپي شو (fallback)');
+    } catch(e) {
+        console.log('❌ کاپي خطا:', e);
+    }
+    document.body.removeChild(textarea);
+}
+
+function doCopy() {
+    var text = document.getElementById('copyText').value;
+    copyToClipboard(text);
+    alert('✅ متن کاپي شو');
+}
+
+function closeCopyModal() {
+    document.getElementById('copyModal').classList.remove('active');
+}
+
+function closePrintArea() {
+    document.getElementById('printArea').classList.remove('active');
+}
+
 renderProducts();
 </script>
 
