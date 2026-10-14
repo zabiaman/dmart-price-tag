@@ -64,13 +64,32 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 /* ===== برخې سرلیک ===== */
 .section-title { padding: 15px 20px 10px; font-size: 16px; color: #333; font-weight: bold; }
 .products { padding: 0 15px; display: flex; flex-direction: column; gap: 12px; }
-.card { background: white; border-radius: 15px; padding: 15px; display: flex; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.card { background: white; border-radius: 15px; padding: 15px; display: flex; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: relative; overflow: hidden; }
 .card-img { width: 70px; height: 70px; border-radius: 12px; background: #f0f2f5; display: flex; justify-content: center; align-items: center; font-size: 32px; flex-shrink: 0; }
 .card-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
 .card-name { color: #b03a3a; font-size: 15px; font-weight: bold; }
 .card-weight { color: #999; font-size: 12px; margin-top: 4px; }
 .card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+
+/* د بیې برخه */
+.price-box { display: flex; flex-direction: column; align-items: flex-start; }
+.old-price { text-decoration: line-through; color: #999; font-size: 12px; margin-bottom: -2px; }
 .card-price { background: #7bbf6a; color: white; padding: 6px 14px; border-radius: 20px; font-size: 15px; font-weight: bold; }
+.card-price.discount-price { background: #d9534f; } /* د عرض بیه سور رنګ */
+
+/* د عرض لیبل */
+.discount-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #d9534f;
+    color: white;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-weight: bold;
+    border-bottom-left-radius: 10px;
+}
+
 .card-print { background: #d9534f; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; }
 
 /* ===== ښکته نیویگیشن ===== */
@@ -244,7 +263,25 @@ function displayProducts(list) {
     var html = "";
     for (var i = 0; i < list.length; i++) {
         var p = list[i];
+        
+        // ====== د عرض محاسبه ======
+        var hasDiscount = p.discount && p.discount > 0;
+        var finalPrice = p.price;
+        var oldPriceHtml = '';
+        var priceClass = 'card-price';
+        var badgeHtml = '';
+        
+        if (hasDiscount) {
+            finalPrice = p.price - (p.price * p.discount / 100);
+            finalPrice = Math.round(finalPrice * 100) / 100; // د 2 عددی اعشاریو لپاره
+            oldPriceHtml = '<div class="old-price">' + p.price + ' ' + (p.currency || 'ر.س') + '</div>';
+            priceClass = 'card-price discount-price';
+            badgeHtml = '<div class="discount-badge">🔥 ' + p.discount + '% عرض</div>';
+        }
+        // ============================
+
         html += '<div class="card">' +
+            badgeHtml +
             '<div class="card-img">' + (p.icon || '📦') + '</div>' +
             '<div class="card-info">' +
             '<div>' +
@@ -252,7 +289,10 @@ function displayProducts(list) {
             '<div class="card-weight">' + (p.weight || '') + '</div>' +
             '</div>' +
             '<div class="card-bottom">' +
-            '<div class="card-price">' + p.price + ' ' + (p.currency || 'ر.س') + '</div>' +
+            '<div class="price-box">' +
+            oldPriceHtml +
+            '<div class="' + priceClass + '">' + finalPrice + ' ' + (p.currency || 'ر.س') + '</div>' +
+            '</div>' +
             '<a href="price-tag.html?barcode=' + p.barcode + '" class="card-print">🖨️ چاپ</a>' +
             '</div>' +
             '</div>' +
