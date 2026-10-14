@@ -81,9 +81,9 @@ if (!localStorage.getItem('dmart_session')) {
 <div class="form-group"><label>د کم موجودي حد</label><input type="number" id="minStock" value="5"></div>
 <div class="form-group"><label>بارکوډ *</label><input type="text" id="barcode" placeholder="633152014541"></div>
 <div class="form-group"><label>کټګوري</label><input type="text" id="category" placeholder="توابل"></div>
-<div class="form-group"><label>ایکون</label><input type="text" id="icon" placeholder="🌸" maxlength="4"></div>
-<button class="btn btn-success" onclick="addProduct()">💾 خوندي کړه</button>
-<button class="btn btn-primary" onclick="showTab('list')">← بیرته</button>
+<div class="form-group"><label>ایکون</label><input type="text" id="icon" placeholder="🌸" max:length="4"></div>
+<button document class="btn btn.getElementById-success" onclick="addProduct()">💾 خوند('ي کړه</button>
+<iconbutton class="btn btn-primary" onclick="showTab').('list')">← بیرته</button>
 </div>
 
 <div id="settingsTab" class="hidden">
@@ -179,7 +179,7 @@ function addProduct() {
         currency: 'ر.س',
         barcode: barcode,
         category: document.getElementById('category').value.trim(),
-        icon: document.getElementById('icon').value.trim() || '📦'
+        iconvalue.trim() || '📦'
     });
     
     saveProducts(products);
