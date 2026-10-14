@@ -13,24 +13,21 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .header a { color: white; text-decoration: none; font-size: 13px; padding: 6px 10px; background: rgba(255,255,255,0.15); border-radius: 8px; }
 .container { padding: 15px; }
 
-/* د مالیې کارتونه */
 .tax-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
 .tax-card { background: white; border-radius: 12px; padding: 18px 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .tax-card .icon { font-size: 32px; margin-bottom: 8px; }
 .tax-card .value { font-size: 28px; font-weight: bold; color: #d9534f; line-height: 1; }
 .tax-card .label { font-size: 12px; color: #666; margin-top: 6px; }
 .tax-card.green .value { color: #7bbf6a; }
-.tax-card.blue .value { color: #3498db; }
-.tax-card.orange .value { color: #f39c12; }
 
-/* د محاسبې بکس */
 .calc-box { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .calc-box h3 { font-size: 16px; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 .form-group { margin-bottom: 12px; }
 .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: #333; font-weight: bold; }
-.form-group input, .form-group select { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; }
-.form-group input:focus, .form-group select:focus { outline: none; border-color: #d9534f; }
-.result-box { background: #e8f5e9; border: 2px solid #7bbf6a; border-radius: 12px; padding: 15px; margin-top: 15px; }
+.form-group input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; }
+.form-group input:focus { outline: none; border-color: #d9534f; }
+.result-box { background: #e8f5e9; border: 2px solid #7bbf6a; border-radius: 12px; padding: 15px; margin-top: 15px; display: none; }
+.result-box.active { display: block; }
 .result-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #c8e6c9; font-size: 14px; }
 .result-row:last-child { border-bottom: none; }
 .result-row .label { color: #333; }
@@ -40,18 +37,14 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 
 .btn-calc { width: 100%; padding: 15px; background: #7bbf6a; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
-/* د معلوماتو بکس */
 .info-box { background: #e7f3ff; border: 2px solid #3498db; border-radius: 12px; padding: 15px; margin-bottom: 15px; font-size: 13px; color: #0c5460; line-height: 1.7; }
 .info-box h4 { margin-bottom: 8px; font-size: 15px; }
 .info-box p { margin-top: 5px; }
 
-/* د فاکتور نمونې */
 .invoice-preview { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 2px dashed #d9534f; }
 .invoice-preview h3 { color: #d9534f; margin-bottom: 15px; text-align: center; font-size: 16px; }
 .invoice-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
-.invoice-row.total { border-top: 2px solid #d9534f; margin-top: 10px; padding-top: 10px; font-weight: bold; font-size: 15px; }
-
-.empty { text-align: center; padding: 40px 20px; color: #999; background: white; border-radius: 12px; font-size: 14px; }
+.invoice-row.total { border-top: 2px solid #d9534f; margin-top: 10px; padding-top: 10px; font-weight: bold; font-size: 15px; color: #d9534f; }
 
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
 .nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
@@ -68,61 +61,56 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 
 <div class="container">
 
-<!-- د مالیې کارتونه -->
 <div class="tax-grid">
 <div class="tax-card">
 <div class="icon">💰</div>
 <div class="value">۱۵٪</div>
-<div class="label">ضریبه القیمه المضافة (VAT)</div>
+<div class="label">ضریبه (VAT)</div>
 </div>
 <div class="tax-card green">
 <div class="icon">🕌</div>
 <div class="value">۲.۵٪</div>
-<div class="label">الزکاة</div>
+<div class="label">زکات</div>
 </div>
 </div>
 
-<!-- د مالیې محاسبه -->
 <div class="calc-box">
-<h3>💰 د مالیې محاسبه (VAT)</h3>
+<h3>💰 د مالیې محاسبه (VAT 15%)</h3>
 <div class="form-group">
 <label>د محصول قیمت (د مالیې پرته)</label>
 <input type="number" id="priceExVat" placeholder="100.00" step="0.01">
 </div>
 <button class="btn-calc" onclick="calcVat()">محاسبه کړه</button>
-<div class="result-box" id="vatResult" style="display:none;">
+<div class="result-box" id="vatResult">
 <div class="result-row"><span class="label">د مالیې پرته قیمت</span><span class="value" id="vatEx">0.00</span></div>
 <div class="result-row"><span class="label">ضریبه (۱۵٪)</span><span class="value" id="vatAmount">0.00</span></div>
 <div class="result-row total"><span class="label">د مالیې سره قیمت</span><span class="value" id="vatTotal">0.00</span></div>
 </div>
 </div>
 
-<!-- د زکات محاسبه -->
 <div class="calc-box">
-<h3>🕌 د زکات محاسبه</h3>
+<h3>🕌 د زکات محاسبه (2.5%)</h3>
 <div class="form-group">
 <label>د سوداګرۍ شتمني (د زکات وړ)</label>
 <input type="number" id="zakatBase" placeholder="10000.00" step="0.01">
 </div>
 <button class="btn-calc" onclick="calcZakat()">محاسبه کړه</button>
-<div class="result-box" id="zakatResult" style="display:none;">
+<div class="result-box" id="zakatResult">
 <div class="result-row"><span class="label">د زکات وړ شتمني</span><span class="value" id="zakatBaseResult">0.00</span></div>
 <div class="result-row total"><span class="label">زکات (۲.۵٪)</span><span class="value" id="zakatAmount">0.00</span></div>
 </div>
 </div>
 
-<!-- د معلوماتو بکس -->
 <div class="info-box">
 <h4>💡 د سعودي عربستان د مالیې او زکات معلومات:</h4>
-<p><strong>ضریبه (VAT):</strong> ۱۵٪ د ډیرو توکو او خدماتو لپاره [citation:1][citation:9]</p>
-<p><strong>زکات:</strong> ۲.۵٪ د اسلامي کال لپاره، د سوداګرۍ د شتمنیو لپاره [citation:6]</p>
-<p><strong>مرجع:</strong> د سعودي عربستان د زکات، مالیې او ګمرک اداره (ZATCA) [citation:3][citation:4]</p>
+<p><strong>ضریبه (VAT):</strong> ۱۵٪ د ډیرو توکو او خدماتو لپاره </p>
+<p><strong>زکات:</strong> ۲.۵٪ د اسلامي کال لپاره، د سوداګرۍ د شتمنیو لپاره </p>
+<p><strong>مرجع:</strong> د سعودي عربستان د زکات، مالیې او ګمرک اداره (ZATCA) </p>
 </div>
 
-<!-- د فاکتور نمونه -->
 <div class="calc-box">
 <h3>📄 د فاکتور نمونه (د مالیې سره)</h3>
-<div class="invoice-preview" id="invoicePreview">
+<div class="invoice-preview">
 <div style="text-align:center;margin-bottom:15px;">
 <div style="font-size:30px;">📦</div>
 <div style="font-weight:bold;color:#b03a3a;">دي مارټ - Dmart</div>
@@ -144,10 +132,9 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 </nav>
 
 <script>
-var VAT_RATE = 0.15; // ۱۵٪
-var ZAKAT_RATE = 0.025; // ۲.۵٪
+var VAT_RATE = 0.15;
+var ZAKAT_RATE = 0.025;
 
-// ===== د مالیې محاسبه =====
 function calcVat() {
     var priceEx = parseFloat(document.getElementById('priceExVat').value) || 0;
     if (priceEx <= 0) { alert('❌ مهرباني وکړه قیمت ولیکه'); return; }
@@ -158,15 +145,13 @@ function calcVat() {
     document.getElementById('vatEx').textContent = priceEx.toFixed(2) + ' ر.س';
     document.getElementById('vatAmount').textContent = vatAmount.toFixed(2) + ' ر.س';
     document.getElementById('vatTotal').textContent = total.toFixed(2) + ' ر.س';
-    document.getElementById('vatResult').style.display = 'block';
+    document.getElementById('vatResult').classList.add('active');
     
-    // د فاکتور تازه کول
     document.getElementById('invPrice').textContent = priceEx.toFixed(2) + ' ر.س';
     document.getElementById('invVat').textContent = vatAmount.toFixed(2) + ' ر.س';
     document.getElementById('invTotal').textContent = total.toFixed(2) + ' ر.س';
 }
 
-// ===== د زکات محاسبه =====
 function calcZakat() {
     var base = parseFloat(document.getElementById('zakatBase').value) || 0;
     if (base <= 0) { alert('❌ مهرباني وکړه شتمني ولیکه'); return; }
@@ -175,7 +160,7 @@ function calcZakat() {
     
     document.getElementById('zakatBaseResult').textContent = base.toFixed(2) + ' ر.س';
     document.getElementById('zakatAmount').textContent = zakatAmount.toFixed(2) + ' ر.س';
-    document.getElementById('zakatResult').style.display = 'block';
+    document.getElementById('zakatResult').classList.add('active');
 }
 </script>
 
