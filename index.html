@@ -10,17 +10,23 @@
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
 body { background: #f0f2f5; padding-bottom: 80px; }
 
-/* د سر برخه */
 .header { background: #d9534f; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
 .header-left { display: flex; align-items: center; gap: 12px; }
 .logo { background: white; color: #d9534f; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 22px; }
 .title { font-size: 18px; font-weight: bold; }
 .subtitle { font-size: 11px; opacity: 0.9; }
 
-/* د لټون */
 .search { padding: 15px 20px; background: white; }
 .search input { width: 100%; padding: 14px 20px; border: 2px solid #e0e0e0; border-radius: 30px; font-size: 15px; background: #f8f9fa; }
 .search input:focus { outline: none; border-color: #d9534f; background: white; }
+
+/* ===== د مالیې او زکات معلومات ===== */
+.tax-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; background: white; margin-bottom: 15px; }
+.tax-card { background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 12px; border: 2px solid #dee2e6; }
+.tax-icon { font-size: 32px; }
+.tax-details { flex: 1; }
+.tax-label { font-size: 11px; color: #666; margin-bottom: 4px; }
+.tax-value { font-size: 20px; font-weight: bold; color: #d9534f; }
 
 /* ===== د مینو ۱۸ تڼۍ (6 × 3) ===== */
 .menu { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 12px; background: white; margin-bottom: 15px; }
@@ -28,26 +34,11 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 .menu a:active { background: #d9534f; color: white; transform: scale(0.95); }
 .menu .icon { font-size: 24px; }
 
-/* د خبرتیاوو بیج */
-.menu .badge {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: #e74c3c;
-    color: white;
-    font-size: 9px;
-    font-weight: bold;
-    padding: 1px 5px;
-    border-radius: 8px;
-    min-width: 16px;
-    text-align: center;
-}
+.menu .badge { position: absolute; top: 5px; right: 5px; background: #e74c3c; color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; min-width: 16px; text-align: center; }
 
-/* د برخې سرلیک */
 .section-title { padding: 15px 20px 10px; font-size: 16px; color: #333; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
 .section-title a { color: #d9534f; text-decoration: none; font-size: 13px; }
 
-/* د محصولاتو لیست */
 .products { padding: 0 15px; display: flex; flex-direction: column; gap: 12px; }
 .card { background: white; border-radius: 15px; padding: 15px; display: flex; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .card-img { width: 70px; height: 70px; border-radius: 12px; background: #f0f2f5; display: flex; justify-content: center; align-items: center; font-size: 32px; flex-shrink: 0; }
@@ -58,29 +49,14 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 .card-price { background: #7bbf6a; color: white; padding: 6px 14px; border-radius: 20px; font-size: 15px; font-weight: bold; }
 .card-print { background: #d9534f; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; }
 
-/* د ښکته مینو */
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
 .nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; position: relative; }
 .nav .icon { font-size: 22px; }
 .nav a.active { color: #d9534f; }
-.nav .badge {
-    position: absolute;
-    top: -2px;
-    right: 15px;
-    background: #e74c3c;
-    color: white;
-    font-size: 9px;
-    font-weight: bold;
-    padding: 1px 5px;
-    border-radius: 8px;
-    min-width: 16px;
-    text-align: center;
-}
 
 .empty { text-align: center; padding: 40px 20px; color: #999; }
 .empty .icon { font-size: 50px; margin-bottom: 15px; }
 
-/* د کوچنیو سکرینونو لپاره */
 @media (max-width: 400px) {
     .menu { grid-template-columns: repeat(4, 1fr); }
     .menu .icon { font-size: 22px; }
@@ -105,27 +81,45 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <input type="text" id="searchInput" placeholder="🔍 د محصول نوم یا بارکوډ...">
 </div>
 
-<!-- ===== د مینو ۱۸ تڼۍ (6 × 3) ===== -->
-<div class="menu">
-<a href="scanner.html"><span class="icon">📷</span><span>سکنر</span></a>
+<!-- د مالیې او زکات معلومات -->
+<div class="tax-info">
+<div class="tax-card">
+<div class="tax-icon">💰</div>
+<div class="tax-details">
+<div class="tax-label">ضریبه (VAT)</div>
+<div class="tax-value">۱۵٪</div>
+</div>
+</div>
+<div class="tax-card">
+<div class="tax-icon">🕌</div>
+<div class="tax-details">
+<div class="tax-label">زکات</div>
+<div class="tax-value">۲.۵٪</div>
+</div>
+</div>
+</div>
+
+<!-- د مینو.html ۱۸ تڼۍ -->
+<div class"><="menu">
+<a href="span classscanner.html"><="span class="iconicon">📷</span><span>سکنر</span></a>
 <a href="inventory.html"><span class="icon">📦</span><span>موجودي</span></a>
 <a href="dashboard.html"><span class="icon">📊</span><span>ډشبورډ</span></a>
 <a href="sales.html"><span class="icon">📈</span><span>پلور</span></a>
 <a href="purchases.html"><span class="icon">🛒</span><span>پیرود</span></a>
-<a href="reports.html"><span class="icon">📋</span><span>راپور</span></a>
+<a href="tax.html"><span class="icon">💰</span><span>مالیه</span></a>
 
+<a href="reports.html"><span class="icon">📋</span><span>راپور</span></a>
 <a href="notifications.html"><span class="icon">🔔</span><span>خبرتیاوې</span><span class="badge" id="notifBadge1" style="display:none;">0</span></a>
 <a href="print-all.html"><span class="icon">🖨️</span><span>چاپ ټول</span></a>
 <a href="bluetooth-print.html"><span class="icon">📡</span><span>بلوتوث چاپ</span></a>
 <a href="login.html"><span class="icon">➕</span><span>نوی محصول</span></a>
 <a href="login.html"><span class="icon">⚙️</span><span>تنظیمات</span></a>
-<a href="login.html"><span class="icon">👥</span><span>کاروونکي</span></a>
 
+<a href="login.html"><span class="icon">👥</span><span>کاروونکي</span></a>
 <a href="inventory.html"><span class="icon">⚠️</span><span>کم موجودي</span></a>
 <a href="dashboard.html"><span class="icon">📈</span><span>احصایې</span></a>
-<a href="sales.html"><span class="icon">💰</span><span>ګټه</span></a>
+<a href="sales.html"><span class="icon">💵</span><span>ګټه</span></a>
 <a href="admin.html"><span class="icon">📝</span><span>مدیریت</span></a>
-<a href="login.html"><span class="icon">🔐</span><span>د کاروونکي ننوتل</span></a>
 <a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
 </div>
 
@@ -138,8 +132,8 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <nav class="nav">
 <a href="index.html" class="active"><span class="icon">🏠</span><span>کور</span></a>
 <a href="inventory.html"><span class="icon">📦</span><span>موجودي</span></a>
-<a href="dashboard.html"><span class="icon">📊</span><span>ډشبورډ</span></a>
-<a href="sales.html"><span class="icon">📈</span><span>پلور</span></a>
+<a href="dashboard">📊</span><span>ډشبورډ</span></a>
+<a href="tax.html"><span class="icon">💰</span><span>مالیه</span></a>
 <a href="notifications.html"><span class="icon">🔔</span><span>خبرتیاوې</span><span class="badge" id="notifBadge2" style="display:none;">0</span></a>
 </nav>
 
@@ -220,7 +214,6 @@ window.addEventListener('pageshow', function() {
     updateNotifBadge();
 });
 
-// ===== د خبرتیاوو بیج =====
 function updateNotifBadge() {
     var notifs = [];
     try { notifs = JSON.parse(localStorage.getItem('dmart_notifications') || '[]'); } catch(e) {}
