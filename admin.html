@@ -25,6 +25,7 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .btn-success { background: #7bbf6a; color: white; }
 .btn-danger { background: #e74c3c; color: white; }
 .btn-warning { background: #f39c12; color: white; }
+.btn-blue { background: #3498db; color: white; }
 .product-item { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; }
 .product-icon { font-size: 32px; }
 .product-info { flex: 1; }
@@ -38,6 +39,7 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .message { padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-size: 14px; }
 .message.success { background: #d4edda; color: #155724; }
 .message.error { background: #f8d7da; color: #721c24; }
+.message.info { background: #d1ecf1; color: #0c5460; }
 .stats { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-size: 14px; color: #333; }
 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .stats-grid div { padding: 8px; background: #f8f9fa; border-radius: 8px; }
@@ -45,6 +47,10 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .warning-box { background: #fff3cd; border: 2px solid #ffc107; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
 .warning-box h4 { color: #856404; font-size: 14px; margin-bottom: 8px; }
 .warning-item { color: #856404; font-size: 13px; margin-top: 5px; }
+.backup-info { background: #e7f3ff; border: 2px solid #3498db; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+.backup-info h4 { color: #0c5460; font-size: 14px; margin-bottom: 8px; }
+.backup-info p { color: #0c5460; font-size: 13px; margin-top: 5px; }
+.data-count { display: flex; justify-content: space-between; padding: 8px; background: white; border-radius: 8px; margin-top: 5px; font-size: 13px; }
 </style>
 </head>
 <body>
@@ -140,13 +146,23 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 
 <div id="settingsTab" class="hidden">
 <h3 style="margin-bottom:15px;">⚙️ تنظیمات</h3>
-<button class="btn btn-danger" onclick="exportData()">📥 د معلوماتو صادرول (Backup)</button>
-<button class="btn btn-primary" onclick="importData()">📤 د معلوماتو واردول (Restore)</button>
+
+<div class="backup-info">
+<h4>💾 د معلوماتو بیک اپ</h4>
+<p>د ټولو معلوماتو (محصولات، پلور، پیرود، کاروونکي) بیک اپ صادر کړه.</p>
+<div id="dataCountBox"></div>
+</div>
+
+<button class="btn btn-danger" onclick="exportAllData()">📥 د ټولو معلوماتو صادرول (Full Backup)</button>
+<button class="btn btn-blue" onclick="importData()">📤 د ټولو معلوماتو واردول (Restore)</button>
 <button class="btn btn-warning" onclick="showUsers()">👥 د کاروونکو مدیریت</button>
 <button class="btn btn-danger" onclick="clearAll()">🗑️ ټول معلومات ړنګول</button>
 <input type="file" id="importFile" accept=".json" style="display:none;" onchange="handleImport(event)">
+
 <div style="margin-top:20px; padding:15px; background:#fff; border-radius:10px; font-size:13px; color:#666;">
 <strong>💡 یادونه:</strong> ټول معلومات په دې موبایل کې خوندي کیږي (localStorage).
+<br><br>
+<strong>⚠️ مهم:</strong> کله چې اپلیکیشن ړنګوئ، ټول معلومات پاکیږي. د دې لپاره چې معلومات وساتي، <strong>لومړی بیک اپ صادر کړه</strong>، بیا اپلیکیشن ړنګ کړه، بیا یې نصب کړه، او بیا بیک اپ وارد کړه.
 </div>
 </div>
 
@@ -154,6 +170,10 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 
 <script>
 var STORAGE_KEY = 'dmart_products';
+var SALES_KEY = 'dmart_sales';
+var PURCHASES_KEY = 'dmart_purchases';
+var USERS_KEY = 'dmart_users';
+var PRINTS_KEY = 'dmart_prints';
 var SESSION_KEY = 'dmart_session';
 
 var defaultProducts = [
@@ -177,14 +197,13 @@ function saveProducts(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(l
 function showMessage(text, type) {
     var box = document.getElementById('messageBox');
     box.innerHTML = '<div class="message ' + type + '">' + text + '</div>';
-    setTimeout(function() { box.innerHTML = ''; }, 3000);
+    setTimeout(function() { box.innerHTML = ''; }, 5000);
 }
 
 function renderProducts() {
     var products = loadProducts();
     var container = document.getElementById('productList');
     
-    // د کم موجودي خبرتیا
     var lowStockItems = [];
     for (var i = 0; i < products.length; i++) {
         if (products[i].stock !== undefined && products[i].stock <= (products[i].minStock || 5)) {
@@ -344,19 +363,49 @@ function showTab(tab) {
     document.getElementById('tabSettings').classList.remove('active');
     if (tab === 'list') { document.getElementById('listTab').classList.remove('hidden'); document.getElementById('tabList').classList.add('active'); renderProducts(); }
     else if (tab === 'add') { document.getElementById('addTab').classList.remove('hidden'); document.getElementById('tabAdd').classList.add('active'); }
-    else if (tab === 'settings') { document.getElementById('settingsTab').classList.remove('hidden'); document.getElementById('tabSettings').classList.add('active'); }
+    else if (tab === 'settings') { document.getElementById('settingsTab').classList.remove('hidden'); document.getElementById('tabSettings').classList.add('active'); updateDataCount(); }
 }
 
-function exportData() {
-    var products = loadProducts();
-    var dataStr = JSON.stringify(products, null, 2);
+// ===== د ټولو معلوماتو شمیر =====
+function updateDataCount() {
+    var products = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    var sales = JSON.parse(localStorage.getItem(SALES_KEY) || '[]');
+    var purchases = JSON.parse(localStorage.getItem(PURCHASES_KEY) || '[]');
+    var users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+    var prints = JSON.parse(localStorage.getItem(PRINTS_KEY) || '[]');
+    
+    document.getElementById('dataCountBox').innerHTML = 
+        '<div class="data-count"><span>📦 محصولات:</span><strong>' + products.length + '</strong></div>' +
+        '<div class="data-count"><span>📈 پلور:</span><strong>' + sales.length + '</strong></div>' +
+        '<div class="data-count"><span>🛒 پیرود:</span><strong>' + purchases.length + '</strong></div>' +
+        '<div class="data-count"><span>👥 کاروونکي:</span><strong>' + users.length + '</strong></div>' +
+        '<div class="data-count"><span>🖨️ چاپونه:</span><strong>' + prints.length + '</strong></div>';
+}
+
+// ===== د ټولو معلوماتو بیک اپ =====
+function exportAllData() {
+    var backup = {
+        version: '3.0',
+        date: new Date().toISOString(),
+        products: JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'),
+        sales: JSON.parse(localStorage.getItem(SALES_KEY) || '[]'),
+        purchases: JSON.parse(localStorage.getItem(PURCHASES_KEY) || '[]'),
+        users: JSON.parse(localStorage.getItem(USERS_KEY) || '[]'),
+        prints: JSON.parse(localStorage.getItem(PRINTS_KEY) || '[]')
+    };
+    
+    var dataStr = JSON.stringify(backup, null, 2);
     var blob = new Blob([dataStr], { type: 'application/json' });
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = 'dmart-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    a.download = 'dmart-full-backup-' + new Date().toISOString().slice(0,10) + '.json';
     a.click();
-    showMessage('📥 بیک اپ ډاونلوډ شو (' + products.length + ' محصولات)', 'success');
+    
+    showMessage('📥 بشپړ بیک اپ ډاونلوډ شو: ' + 
+        backup.products.length + ' محصولات، ' + 
+        backup.sales.length + ' پلور، ' + 
+        backup.purchases.length + ' پیرود', 'success');
 }
 
 function importData() { document.getElementById('importFile').click(); }
@@ -367,27 +416,52 @@ function handleImport(event) {
     var reader = new FileReader();
     reader.onload = function(e) {
         try {
-            var products = JSON.parse(e.target.result);
-            if (Array.isArray(products)) {
-                saveProducts(products);
-                showMessage('✅ معلومات وارد شول (' + products.length + ' محصولات)', 'success');
+            var: data = JSON.parse(e.target.result);
+            
+            // د نوي فورمټ ملاتړ (بشپړ بیک اپ)
+            if (data.products || data.sales || data.purchases || data.users) {
+                if (data.products) localStorage.setItem(STORAGE_KEY, JSON.stringify(data.products));
+                if (data.sales) localStorage.setItem(SALES_KEY, JSON.stringify(data.sales));
+                if (data.purchases) localStorage.setItem(PURCHASES_KEY, JSON.stringify(data.purchases));
+                if (data.users) localStorage.setItem(USERS_KEY, JSON.stringify(data.users));
+                if (data.prints) localStorage.setItem(PRINTS_KEY, JSON.stringify(data.prints));
+                
+                showMessage('✅ ټول معلومات وارد شول ' + 
+                    (data.products ? data.products.length + ' محصولات، ' : '') +
+                    (data.sales ? data.sales.length + ' پلور، ' : '') +
+                    (data.purchases ? data.purchases.length + ' پیرود' : ''), 'success');
                 renderProducts();
-            } else { showMessage('❌ ناسم فایل', 'error'); }
-        } catch(err) { showMessage('❌ د فایل لوستلو خطا', 'error'); }
+                updateDataCount();
+            }
+            // د زوړ فورمټ ملاتړ (یوازې محصولات)
+            else if (Array.isArray(data)) {
+                saveProducts(data);
+                showMessage('✅ محصولات وارد شول (' + data.length + ' محصولات)', 'success');
+                renderProducts();
+                updateDataCount();
+            }
+            else { showMessage('❌ ناسم فایل', 'error'); }
+        } catch(err) { showMessage('❌ د فایل لوستلو خطا: ' + err.message, 'error'); }
     };
     reader.readAsText(file);
 }
 
 function clearAll() {
-    if (!confirm('⚠️ ایا ډاډه یې چې ټول معلومات ړنګ کړې؟')) return;
+    if (!confirm('⚠️ ایا ډاډه یې چې ټول معلومات ړنګ کړې؟\n\nدا به محصولات، پلور، پیرود، کاروونکي ټول ړنګ کړي!')) return;
+    if (!confirm('⚠️ دا عمل بېرته نه راګرځي! دوهم ځل تصدیق:')) return;
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(SALES_KEY);
+    localStorage.removeItem(PURCHASES_KEY);
+    localStorage.removeItem(USERS_KEY);
+    localStorage.removeItem(PRINTS_KEY);
     showMessage('🗑️ ټول معلومات ړنګ شول', 'success');
     renderProducts();
+    updateDataCount();
 }
 
 function showUsers() {
-    var users = JSON.parse(localStorage.getItem('dmart_users') || '[]');
-    var msg = '👥 کاروونکي:\n\n';
+    var users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+    var msg = '👥 کاروونکي (' + users.length + '):\n\n';
     for (var i = 0; i < users.length; i++) {
         msg += '👤 ' + users[i].username + ' (' + users[i].name + ')\n';
     }
