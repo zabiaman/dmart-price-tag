@@ -47,8 +47,8 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 
 .invoice-preview { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 2px dashed #3498db; display: none; }
 .invoice-preview.active { display: block; }
-.invoice-header-info { text-align: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 2px solid #303498db; }
-.invoice-header-info .logo { font-size: px; }
+.invoice-header-info { text-align: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 2px solid #3498db; }
+.invoice-header-info .logo { font-size: 30px; }
 .invoice-header-info .title { font-weight: bold; color: #3498db; font-size: 16px; }
 .invoice-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
 .invoice-row.total { border-top: 2px solid #3498db; margin-top: 10px; padding-top: 10px; font-weight: bold; font-size: 15px; color: #3498db; }
@@ -136,19 +136,20 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 <input type="text" id="newProductName" placeholder="زعفران">
 </div>
 <div class="form-group">
-<label>بارکوډ</label>
-<input type="text" id="newProductBarcode" placeholder="633152014546">
-</div>
-</div>
-<div class="form-row">
-<div class="form-group">
 <label>وزن</label>
 <input type="text" id="newProductWeight" placeholder="10 جرام">
+</div>
+</div>
+<div class="form-group">
+<label>بارکوډ (اختیاري - که خالي وي، اتوماتیک جوړیږي)</label>
+<div style="display:flex;gap:8px;">
+<input type="text" id="newProductBarcode" placeholder="اتوماتیک جوړیږي" style="flex:1;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;">
+<button type="button" onclick="generateNewBarcode()" style="background:#3498db;color:white;border:none;border-radius:8px;padding:0 15px;font-size:14px;font-weight:bold;cursor:pointer;white-space:nowrap;">🔄 نوی</button>
+</div>
 </div>
 <div class="form-group">
 <label>د پلور قیمت</label>
 <input type="number" id="newProductPrice" step="0.01" placeholder="100">
-</div>
 </div>
 </div>
 
@@ -216,7 +217,7 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 </div>
 
 <nav class="nav">
-<a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
+<a href="index.html" onclick="window.location.replace('index.html'); return false;"><span class="icon">🏠</span><span>کور</span></a>
 <a href="purchases.html"><span class="icon">🛒</span><span>پیرود</span></a>
 <a href="purchase-invoice.html" class="active"><span class="icon">📥</span><span>پیرود فاکتور</span></a>
 <a href="invoice.html"><span class="icon">🧾</span><span>پلور فاکتور</span></a>
@@ -231,6 +232,30 @@ var VAT_RATE = 0.15;
 
 var invoiceItems = [];
 var currentInvoice = null;
+
+// ===== د بارکوډ اتوماتیک جوړول (EAN-13 style) =====
+function generateBarcode() {
+    // لومړی ۳ عدد (د داخلي کوډ لپاره)
+    var barcode = '633';
+    // بیا ۹ عدد تصادفي
+    for (var i = 0; i < 9; i++) {
+        barcode += Math.floor(Math.random() * 10);
+    }
+    // د چک عدد محاسبه (EAN-13)
+    var sum = 0;
+    for (var i = 0; i < 12; i++) {
+        sum += parseInt(barcode[i]) * (i % 2 === 0 ? 1 : 3);
+    }
+    var checkDigit = (10 - (sum % 10)) % 10;
+    barcode += checkDigit;
+    return barcode;
+}
+
+function generateNewBarcode() {
+    var barcode = generateBarcode();
+    document.getElementById('newProductBarcode').value = barcode;
+    return barcode;
+}
 
 // ===== د معلوماتو لوستل =====
 function loadProducts() {
@@ -269,6 +294,10 @@ function onProductSelectChange() {
     var select = document.getElementById('productSelect');
     if (select.value === '__NEW__') {
         document.getElementById('newProductFields').style.display = 'block';
+        // که بارکوډ خالي وي، اتوماتیک ډک کړه
+        if (!document.getElementById('newProductBarcode').value) {
+            generateNewBarcode();
+        }
     } else {
         document.getElementById('newProductFields').style.display = 'none';
     }
@@ -293,23 +322,27 @@ function addProductToInvoice() {
     var item = { qty: qty, price: price, total: qty * price };
     
     if (productId === '__NEW__') {
-        // ===== نوی محصول =====
         var name = document.getElementById('newProductName').value.trim();
         if (!name) { 
             alert('❌ مهرباني وکړه د محصول نوم ولیکه'); 
             return; 
         }
         
+        var barcode = document.getElementById('newProductBarcode').value.trim();
+        if (!barcode) {
+            barcode = generateBarcode();
+        }
+        
         item.isNew = true;
         item.productId = null;
         item.name = name;
-        item.barcode = document.getElementById('newProductBarcode').value.trim() || String(Date.now()).slice(-10);
+        item.barcode = barcode;
         item.weight = document.getElementById('newProductWeight').value.trim();
         item.sellPrice = parseFloat(document.getElementById('newProductPrice').value) || price;
         item.icon = '📦';
         
+        console.log('✅ نوی محصول:', item);
     } else {
-        // ===== موجود محصول =====
         var products = loadProducts();
         var product = null;
         for (var i = 0; i < products.length; i++) {
@@ -328,6 +361,7 @@ function addProductToInvoice() {
     }
     
     invoiceItems.push(item);
+    console.log('✅ ټول محصولات:', invoiceItems.length);
     
     // د فورم پاکول
     document.getElementById('productQty').value = 1;
@@ -338,6 +372,9 @@ function addProductToInvoice() {
     document.getElementById('newProductBarcode').value = '';
     document.getElementById('newProductWeight').value = '';
     document.getElementById('newProductPrice').value = '';
+    
+    // نوی بارکوډ چمتو کړه
+    generateNewBarcode();
     
     renderInvoiceItems();
     updateSummary();
@@ -358,6 +395,7 @@ function renderInvoiceItems() {
         html += '<div class="product-item">' +
             '<div class="info">' +
             '<div class="name">' + item.icon + ' ' + item.name + badge + '</div>' +
+            '<div class="details">بارکوډ: ' + item.barcode + '</div>' +
             '<div class="details">' + item.qty + ' × ' + item.price + ' ر.س</div>' +
             '</div>' +
             '<div class="price">' + item.total.toFixed(2) + ' ر.س</div>' +
@@ -480,7 +518,7 @@ function saveInvoice() {
     }
     saveSuppliers(suppliers);
     
-    // 2. د محصولاتو خوندي کول
+    // ===== 2. د محصولاتو خوندي کول =====
     var products = loadProducts();
     var addedCount = 0;
     var updatedCount = 0;
@@ -500,12 +538,13 @@ function saveInvoice() {
                 stock: item.qty,
                 minStock: 5,
                 currency: 'ر.س',
-                barcode: item.barcode || String(Date.now()).slice(-10),
+                barcode: item.barcode || generateBarcode(),
                 category: '',
                 icon: item.icon || '📦'
             };
             products.unshift(newProduct);
             addedCount++;
+            console.log('✅ نوی محصول اضافه شو:', newProduct.name, newProduct.barcode);
         } else {
             // موجود محصول تازه کول
             for (var j = 0; j < products.length; j++) {
@@ -539,6 +578,7 @@ function saveInvoice() {
             productId: item.productId || null,
             name: item.name,
             icon: item.icon,
+            barcode: item.barcode,
             qty: item.qty,
             price: item.price,
             total: item.total,
@@ -576,10 +616,7 @@ function saveInvoice() {
           '📦 ټول محصولات: ' + currentInvoice.items.length + '\n' +
           '🆕 نوي محصولات: ' + addedCount + '\n' +
           '🔄 تازه شوي: ' + updatedCount + '\n' +
-          '💰 ټوله: ' + currentInvoice.total.toFixed(2) + ' ر.س\n\n' +
-          '✓ موجودي تازه شوه\n' +
-          '✓ د پیرود قیمت تازه شو\n' +
-          '✓ عرضه کوونکی ثبت شو');
+          '💰 ټوله: ' + currentInvoice.total.toFixed(2) + ' ر.س');
     
     fillProductSelect();
 }
@@ -598,6 +635,7 @@ function closeInvoice() {
         renderInvoiceItems();
         updateSummary();
         fillProductSelect();
+        generateNewBarcode();
     }
 }
 
