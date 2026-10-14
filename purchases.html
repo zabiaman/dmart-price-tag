@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#d9534f">
+<title>د پیرود ثبتول</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
+body { background: #f0f2f5; padding-bottom: 30px; }
+.header { background: #d9534f; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 18px; }
+.header a { color: white; text-decoration: none; font-size: 13px; padding: 6px 10px; background: rgba(255,255,255,0.15); border-radius: 8px; }
+.container { padding: 20px; }
+.tabs { display: flex; background: white; border-radius: 12px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.tabs button { flex: 1; padding: 15px; border: none; background: white; font-size: 13px; font-weight: bold; color: #666; cursor: pointer; }
+.tabs button.active { color: #d9534f; background: #fff5f5; border-bottom: 3px solid #d9534f; }
+
+/* د احصایو کارتونه */
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: white; border-radius: 12px; padding: 18px 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.stat-card .icon { font-size: 28px; margin-bottom: 8px; }
+.stat-card .value { font-size: 22px; font-weight: bold; color: #d9534f; line-height: 1; }
+.stat-card .label { font-size: 12px; color: #666; margin-top: 6px; }
+.stat-card.blue .value { color: #3498db; }
+.stat-card.green .value { color: #7bbf6a; }
+.stat-card.orange .value { color: #f39c12; }
+
+/* د پیرود ثبتولو بکس */
+.purchase-box { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.purchase-box h3 { font-size: 16px; color: #333; margin-bottom: 15px; }
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; margin-bottom: 6px; font-size: 12px; color: #333; font-weight: bold; }
+.form-group select, .form-group input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; }
+.form-group select:focus, .form-group input:focus { outline: none; border-color: #d9534f; }
+.form-row { display: flex; gap: 10px; }
+.form-row .form-group { flex: 1; }
+.btn-purchase { width: 100%; padding: 15px; background: #3498db; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; }
+.btn-purchase:active { transform: scale(0.97); }
+
+/* د پیرود تاریخ */
+.section-title { font-size: 15px; color: #333; font-weight: bold; margin: 20px 0 12px; border-right: 4px solid #3498db; padding-right: 10px; }
+.purchase-item { background: white; border-radius: 10px; padding: 12px 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border-right: 4px solid #3498db; }
+.purchase-item .info { flex: 1; }
+.purchase-item .name { font-size: 14px; font-weight: bold; color: #333; }
+.purchase-item .details { font-size: 11px; color: #999; margin-top: 3px; }
+.purchase-item .amount { background: #3498db; color: white; padding: 6px 12px; border-radius: 15px; font-size: 13px; font-weight: bold; }
+
+/* د فلټر */
+.filter-row { display: flex; gap: 10px; margin-bottom: 15px; }
+.filter-row select { flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: white; }
+
+.empty { text-align: center; padding: 40px 20px; color: #999; background: white; border-radius: 12px; font-size: 14px; }
+.hidden { display: none; }
+
+.btn-clear { width: 100%; padding: 14px; background: #e74c3c; color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+
+/* د ښکته مینو */
+.nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
+.nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
+.nav .icon { font-size: 22px; }
+.nav a.active { color: #d9534f; }
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>🛒 د پیرود ثبتول</h1>
+<a href="index.html">← بیرته</a>
+</div>
+
+<div class="container">
+
+<div class="tabs">
+<button id="tabRecord" class="active" onclick="showTab('record')">➕ نوی پیرود</button>
+<button id="tabHistory" onclick="showTab('history')">📋 د پیرود تاریخ</button>
+</div>
+
+<!-- د پیرود ثبتولو ټب -->
+<div id="recordTab">
+<div class="stats-grid">
+<div class="stat-card blue">
+<div class="icon">💰</div>
+<div class="value" id="todayTotal">0</div>
+<div class="label">د نن ورځې پیرود (ر.س)</div>
+</div>
+<div class="stat-card">
+<div class="icon">📦</div>
+<div class="value" id="todayCount">0</div>
+<div class="label">د نن ورځې محصولات</div>
+</div>
+<div class="stat-card orange">
+<div class="icon">📅</div>
+<div class="value" id="monthTotal">0</div>
+<div class="label">د میاشتې پیرود (ر.س)</div>
+</div>
+<div class="stat-card green">
+<div class="icon">🏷️</div>
+<div class="value" id="totalPurchases">0</div>
+<div class="label">ټول پیرودونه</div>
+</div>
+</div>
+
+<div class="purchase-box">
+<h3>🛒 نوی پیرود ثبت کړه</h3>
+<div class="form-group">
+<label>محصول وټاکه</label>
+<select id="purchaseProduct">
+<option value="">— محصول وټاکه —</option>
+</select>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label>مقدار</label>
+<input type="number" id="purchaseQty" placeholder="10" value="10" min="1">
+</div>
+<div class="form-group">
+<label>د پیرود قیمت (هر واحد)</label>
+<input type="number" id="purchasePrice" placeholder="0" step="0.01">
+</div>
+</div>
+<div class="form-group">
+<label>د پیرود ټوله قیمت</label>
+<input type="number" id="purchaseTotal" placeholder="0" step="0.01" readonly style="background:#f8f9fa;color:#3498db;font-weight:bold;font-size:18px;">
+</div>
+<div class="form-group">
+<label>یادونه (اختیاري)</label>
+<input type="text" id="purchaseNote" placeholder="لکه: د دوبۍ څخه">
+</div>
+<button class="btn-purchase" onclick="recordPurchase()">💾 پیرود ثبت کړه</button>
+</div>
+</div>
+
+<!-- د پیرود تاریخ ټب -->
+<div id="historyTab" class="hidden">
+<div class="filter-row">
+<select id="filterPeriod" onchange="renderHistory()">
+<option value="today">📅 نن ورځ</option>
+<option value="week">📅 دا اونۍ</option>
+<option value="month">📅 دا میاشت</option>
+<option value="all">📅 ټول</option>
+</select>
+</div>
+<div id="historyList"></div>
+<button class="btn-clear" onclick="clearHistory()">🗑️ د پیرود تاریخ ړنګ کړه</button>
+</div>
+
+</div>
+
+<nav class="nav">
+<a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
+<a href="inventory.html"><span class="icon">📦</span><span>موجودي</span></a>
+<a href="purchases.html" class="active"><span class="icon">🛒</span><span>پیرود</span></a>
+<a href="sales.html"><span class="icon">📈</span><span>پلور</span></a>
+<a href="login.html"><span class="icon">⚙️</span><span>مدیر</span></a>
+</nav>
+
+<script>
+var PRODUCTS_KEY = 'dmart_products';
+var PURCHASES_KEY = 'dmart_purchases';
+
+function loadProducts() {
+    var data = localStorage.getItem(PRODUCTS_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function saveProducts(list) { localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list)); }
+
+function loadPurchases() {
+    var data = localStorage.getItem(PURCHASES_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function savePurchases(list) { localStorage.setItem(PURCHASES_KEY, JSON.stringify(list)); }
+
+function fillProductSelect() {
+    var products = loadProducts();
+    var select = document.getElementById('purchaseProduct');
+    select.innerHTML = '<option value="">— محصول وټاکه —</option>';
+    for (var i = 0; i < products.length; i++) {
+        var p = products[i];
+        var costInfo = p.costPrice ? ' (پیرود: ' + p.costPrice + ')' : '';
+        select.innerHTML += '<option value="' + p.id + '" data-cost="' + (p.costPrice || 0) + '">' + (p.icon || '📦') + ' ' + p.name + costInfo + '</option>';
+    }
+}
+
+document.getElementById('purchaseProduct').addEventListener('change', function() {
+    var selected = this.options[this.selectedIndex];
+    var cost = selected.getAttribute('data-cost');
+    if (cost && parseFloat(cost) > 0) {
+        document.getElementById('purchasePrice').value = cost;
+    }
+    calculateTotal();
+});
+
+function calculateTotal() {
+    var qty = parseInt(document.getElementById('purchaseQty').value) || 0;
+    var price = parseFloat(document.getElementById('purchasePrice').value) || 0;
+    document.getElementById('purchaseTotal').value = (qty * price).toFixed(2);
+}
+
+document.getElementById('purchaseQty').addEventListener('input', calculateTotal);
+document.getElementById('purchasePrice').addEventListener('input', calculateTotal);
+
+function recordPurchase() {
+    var productId = document.getElementById('purchaseProduct').value;
+    var qty = parseInt(document.getElementById('purchaseQty').value) || 0;
+    var price = parseFloat(document.getElementById('purchasePrice').value) || 0;
+    var note = document.getElementById('purchaseNote').value.trim();
+    
+    if (!productId) { alert('❌ مهرباني وکړه محصول وټاکه'); return; }
+    if (qty <= 0) { alert('❌ مهرباني وکړه سم مقدار ولیکه'); return; }
+    if (price <= 0) { alert('❌ مهرباني وکړه د پیرود قیمت ولیکه'); return; }
+    
+    var products = loadProducts();
+    var product = null;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id == productId) { product = products[i]; break; }
+    }
+    if (!product) { alert('❌ محصول ونه موندل شو'); return; }
+    
+    var total = qty * price;
+    
+    // د موجودي زیاتول
+    for (var k = 0; k < products.length; k++) {
+        if (products[k].id == productId) {
+            products[k].stock = (products[k].stock || 0) + qty;
+            // د پیرود قیمت تازه کول (اوسط)
+            var oldCost = products[k].costPrice || 0;
+            var oldStock = products[k].stock - qty;
+            if (oldStock > 0 && oldCost > 0) {
+                // د اوسط قیمت محاسبه
+                var newAvgCost = ((oldCost * oldStock) + (price * qty)) / (oldStock + qty);
+                products[k].costPrice = parseFloat(newAvgCost.toFixed(2));
+            } else {
+                products[k].costPrice = price;
+            }
+            break;
+        }
+    }
+    saveProducts(products);
+    
+    var purchases = loadPurchases();
+    purchases.unshift({
+        id: Date.now(),
+        productId: product.id,
+        name: product.name,
+        icon: product.icon || '📦',
+        barcode: product.barcode,
+        qty: qty,
+        price: price,
+        total: total,
+        note: note,
+        currency: product.currency || 'ر.س',
+        time: new Date().toISOString()
+    });
+    savePurchases(purchases);
+    
+    alert('✅ پیرود ثبت شو: ' + qty + ' × ' + price + ' = ' + total + ' ' + (product.currency || 'ر.س') + '\n📦 نوی موجودي: ' + (product.stock || 0));
+    
+    document.getElementById('purchaseQty').value = 10;
+    document.getElementById('purchasePrice').value = '';
+    document.getElementById('purchaseTotal').value = '';
+    document.getElementById('purchaseNote').value = '';
+    document.getElementById('purchaseProduct').value = '';
+    
+    fillProductSelect();
+    updateStats();
+}
+
+function updateStats() {
+    var purchases = loadPurchases();
+    var today = new Date().toDateString();
+    var month = new Date().getMonth();
+    var year = new Date().getFullYear();
+    var todayTotal = 0, todayCount = 0, monthTotal = 0;
+    
+    for (var i = 0; i < purchases.length; i++) {
+        var p = purchases[i];
+        var d = new Date(p.time);
+        var total = parseFloat(p.total) || 0;
+        if (d.toDateString() === today) { todayTotal += total; todayCount += p.qty || 0; }
+        if (d.getMonth() === month && d.getFullYear() === year) { monthTotal += total; }
+    }
+    
+    document.getElementById('todayTotal').textContent = todayTotal.toFixed(2);
+    document.getElementById('todayCount').textContent = todayCount;
+    document.getElementById('monthTotal').textContent = monthTotal.toFixed(2);
+    document.getElementById('totalPurchases').textContent = purchases.length;
+}
+
+function renderHistory() {
+    var purchases = loadPurchases();
+    var period = document.getElementById('filterPeriod').value;
+    var now = new Date();
+    var today = now.toDateString();
+    var weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    var monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    
+    var filtered = [];
+    for (var i = 0; i < purchases.length; i++) {
+        var d = new Date(purchases[i].time);
+        if (period === 'today' && d.toDateString() !== today) continue;
+        if (period === 'week' && d < weekAgo) continue;
+        if (period === 'month' && d < monthAgo) continue;
+        filtered.push(purchases[i]);
+    }
+    
+    var container = document.getElementById('historyList');
+    if (filtered.length === 0) {
+        container.innerHTML = '<div class="empty">📭 په دې موده کې هیڅ پیرود نشته</div>';
+        return;
+    }
+    
+    var html = '';
+    for (var i = 0; i < filtered.length; i++) {
+        var p = filtered[i];
+        var d = new Date(p.time);
+        var timeStr = d.getDate() + '/' + (d.getMonth()+1) + ' ' + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+        var noteHtml = p.note ? ' • ' + p.note : '';
+        html += '<div class="purchase-item"><div class="info"><div class="name">' + (p.icon || '📦') + ' ' + p.name + '</div><div class="details">🕐 ' + timeStr + ' • ' + p.qty + ' × ' + p.price + noteHtml + '</div></div><div class="amount">' + p.total.toFixed(2) + ' ' + p.currency + '</div></div>';
+    }
+    container.innerHTML = html;
+}
+
+function showTab(tab) {
+    document.getElementById('recordTab').classList.add('hidden');
+    document.getElementById('historyTab').classList.add('hidden');
+    document.getElementById('tabRecord').classList.remove('active');
+    document.getElementById('tabHistory').classList.remove('active');
+    
+    if (tab === 'record') {
+        document.getElementById('recordTab').classList.remove('hidden');
+        document.getElementById('tabRecord').classList.add('active');
+        fillProductSelect();
+    } else {
+        document.getElementById('historyTab').classList.remove('hidden');
+        document.getElementById('tabHistory').classList.add('active');
+        renderHistory();
+    }
+}
+
+function clearHistory() {
+    if (!confirm('⚠️ ایا ډاډه یې چې د پیرود ټول تاریخ ړنګ کړې؟')) return;
+    localStorage.removeItem(PURCHASES_KEY);
+    alert('🗑️ د پیرود تاریخ ړنګ شو');
+    updateStats();
+    renderHistory();
+}
+
+fillProductSelect();
+updateStats();
+</script>
+
+</body>
+</html>
