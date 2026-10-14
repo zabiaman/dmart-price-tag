@@ -20,7 +20,6 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 .search input { width: 100%; padding: 14px 20px; border: 2px solid #e0e0e0; border-radius: 30px; font-size: 15px; background: #f8f9fa; }
 .search input:focus { outline: none; border-color: #d9534f; background: white; }
 
-/* ===== د مالیې او زکات معلومات ===== */
 .tax-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; background: white; margin-bottom: 15px; }
 .tax-card { background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 12px; border: 2px solid #dee2e6; }
 .tax-icon { font-size: 32px; }
@@ -28,17 +27,12 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 .tax-label { font-size: 11px; color: #666; margin-bottom: 4px; }
 .tax-value { font-size: 20px; font-weight: bold; color: #d9534f; }
 
-/* ===== د مینو ۱۸ تڼۍ (6 × 3) ===== */
 .menu { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 12px; background: white; margin-bottom: 15px; }
-.menu a { background: #f8f9fa; padding: 12px 3px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; text-decoration: none; color: #333; transition: all 0.2s; position: relative; }
-.menu a:active { background: #d9534f; color: white; transform: scale(0.95); }
+.menu a { background: #f8f9fa; padding: 12px 3px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; text-decoration: none; color: #333; }
+.menu a:active { background: #d9534f; color: white; }
 .menu .icon { font-size: 24px; }
 
-.menu .badge { position: absolute; top: 5px; right: 5px; background: #e74c3c; color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 8px; min-width: 16px; text-align: center; }
-
-.section-title { padding: 15px 20px 10px; font-size: 16px; color: #333; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-.section-title a { color: #d9534f; text-decoration: none; font-size: 13px; }
-
+.section-title { padding: 15px 20px 10px; font-size: 16px; color: #333; font-weight: bold; }
 .products { padding: 0 15px; display: flex; flex-direction: column; gap: 12px; }
 .card { background: white; border-radius: 15px; padding: 15px; display: flex; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .card-img { width: 70px; height: 70px; border-radius: 12px; background: #f0f2f5; display: flex; justify-content: center; align-items: center; font-size: 32px; flex-shrink: 0; }
@@ -50,12 +44,11 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 .card-print { background: #d9534f; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; }
 
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
-.nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; position: relative; }
+.nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
 .nav .icon { font-size: 22px; }
 .nav a.active { color: #d9534f; }
 
 .empty { text-align: center; padding: 40px 20px; color: #999; }
-.empty .icon { font-size: 50px; margin-bottom: 15px; }
 
 @media (max-width: 400px) {
     .menu { grid-template-columns: repeat(4, 1fr); }
@@ -78,10 +71,9 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 </div>
 
 <div class="search">
-<input type="text" id="searchInput" placeholder="🔍 د محصول نوم یا بارکوډ...">
+<input type="text" id="searchInput" placeholder="د محصول نوم یا بارکوډ...">
 </div>
 
-<!-- د مالیې او زکات معلومات -->
 <div class="tax-info">
 <div class="tax-card">
 <div class="tax-icon">💰</div>
@@ -99,9 +91,8 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 </div>
 </div>
 
-<!-- د مینو.html ۱۸ تڼۍ -->
-<div class"><="menu">
-<a href="span classscanner.html"><="span class="iconicon">📷</span><span>سکنر</span></a>
+<div class="menu">
+<a href="scanner.html"><span class="icon">📷</span><span>سکنر</span></a>
 <a href="inventory.html"><span class="icon">📦</span><span>موجودي</span></a>
 <a href="dashboard.html"><span class="icon">📊</span><span>ډشبورډ</span></a>
 <a href="sales.html"><span class="icon">📈</span><span>پلور</span></a>
@@ -109,7 +100,7 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <a href="tax.html"><span class="icon">💰</span><span>مالیه</span></a>
 
 <a href="reports.html"><span class="icon">📋</span><span>راپور</span></a>
-<a href="notifications.html"><span class="icon">🔔</span><span>خبرتیاوې</span><span class="badge" id="notifBadge1" style="display:none;">0</span></a>
+<a href="notifications.html"><span class="icon">🔔</span><span>خبرتیاوې</span></a>
 <a href="print-all.html"><span class="icon">🖨️</span><span>چاپ ټول</span></a>
 <a href="bluetooth-print.html"><span class="icon">📡</span><span>بلوتوث چاپ</span></a>
 <a href="login.html"><span class="icon">➕</span><span>نوی محصول</span></a>
@@ -123,18 +114,15 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
 </div>
 
-<div class="section-title">
-<span>📋 نوي محصولات</span>
-<a href="admin.html">ټول وګوره ←</a>
-</div>
+<div class="section-title">نوي محصولات</div>
 <div id="productList" class="products"></div>
 
 <nav class="nav">
 <a href="index.html" class="active"><span class="icon">🏠</span><span>کور</span></a>
 <a href="inventory.html"><span class="icon">📦</span><span>موجودي</span></a>
-<a href="dashboard">📊</span><span>ډشبورډ</span></a>
+<a href="dashboard.html"><span class="icon">📊</span><span>ډشبورډ</span></a>
 <a href="tax.html"><span class="icon">💰</span><span>مالیه</span></a>
-<a href="notifications.html"><span class="icon">🔔</span><span>خبرتیاوې</span><span class="badge" id="notifBadge2" style="display:none;">0</span></a>
+<a href="notifications.html"><span class="icon">🔔</span><span>خبرتیاوې</span></a>
 </nav>
 
 <script>
@@ -160,7 +148,7 @@ var products = loadProducts();
 function displayProducts(list) {
     var container = document.getElementById("productList");
     if (list.length === 0) {
-        container.innerHTML = '<div class="empty"><div class="icon">😕</div><div>هیڅ محصول ونه موندل شو</div></div>';
+        container.innerHTML = '<div class="empty">هیڅ محصول ونه موندل شو</div>';
         return;
     }
     var html = "";
@@ -205,44 +193,14 @@ document.getElementById("searchInput").addEventListener("keyup", doSearch);
 window.addEventListener('focus', function() {
     products = loadProducts();
     displayProducts(products);
-    updateNotifBadge();
 });
 
 window.addEventListener('pageshow', function() {
     products = loadProducts();
     displayProducts(products);
-    updateNotifBadge();
 });
 
-function updateNotifBadge() {
-    var notifs = [];
-    try { notifs = JSON.parse(localStorage.getItem('dmart_notifications') || '[]'); } catch(e) {}
-    var products = loadProducts();
-    
-    var lowCount = 0;
-    for (var i = 0; i < products.length; i++) {
-        if (products[i].stock !== undefined && products[i].stock <= (products[i].minStock || 5)) {
-            lowCount++;
-        }
-    }
-    
-    var total = notifs.length + lowCount;
-    var badge1 = document.getElementById('notifBadge1');
-    var badge2 = document.getElementById('notifBadge2');
-    
-    if (total > 0) {
-        badge1.textContent = total > 99 ? '99+' : total;
-        badge1.style.display = 'block';
-        badge2.textContent = total > 99 ? '99+' : total;
-        badge2.style.display = 'block';
-    } else {
-        badge1.style.display = 'none';
-        badge2.style.display = 'none';
-    }
-}
-
 displayProducts(products);
-updateNotifBadge();
 
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js");
