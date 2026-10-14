@@ -24,9 +24,24 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 
 /* ===== د مینو ۱۲ تڼۍ (6 × 2) ===== */
 .menu { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 12px; background: white; margin-bottom: 15px; }
-.menu a { background: #f8f9fa; padding: 12px 3px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; text-decoration: none; color: #333; transition: all 0.2s; }
+.menu a { background: #f8f9fa; padding: 12px 3px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; text-decoration: none; color: #333; transition: all 0.2s; position: relative; }
 .menu a:active { background: #d9534f; color: white; transform: scale(0.95); }
 .menu .icon { font-size: 24px; }
+
+/* د خبرتیاوو بیج */
+.menu .badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #e74c3c;
+    color: white;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 1px 5px;
+    border-radius: 8px;
+    min-width: 16px;
+    text-align: center;
+}
 
 /* د برخې سرلیک */
 .section-title { padding: 15px 20px 10px; font-size: 16px; color: #333; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
@@ -45,9 +60,22 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 
 /* د ښکته مینو */
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
-.nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
+.nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; position: relative; }
 .nav .icon { font-size: 22px; }
 .nav a.active { color: #d9534f; }
+.nav .badge {
+    position: absolute;
+    top: -2px;
+    right: 15px;
+    background: #e74c3c;
+    color: white;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 1px 5px;
+    border-radius: 8px;
+    min-width: 16px;
+    text-align: center;
+}
 
 .empty { text-align: center; padding: 40px 20px; color: #999; }
 .empty .icon { font-size: 50px; margin-bottom: 15px; }
@@ -83,14 +111,14 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <a href="inventory.html"><span class="icon">📦</span><span>موجودي</span></a>
 <a href="dashboard.html"><span class="icon">📊</span><span>ډشبورډ</span></a>
 <a href="sales.html"><span class="icon">📈</span><span>پلور</span></a>
-<a href="print-all.html"><span class="icon">🖨️</span><span>چاپ ټول</span></a>
-<a href="reports.html"><span class="icon">📋</span><span>راپور</span></a>
 <a href="purchases.html"><span class="icon">🛒</span><span>پیرود</span></a>
+<a href="reports.html"><span class="icon">📋</span><span>راپور</span></a>
+<a href="notifications.html"><span class="icon">🔔</span><span>خبرتیاوې</span><span class="badge" id="notifBadge1" style="display:none;">0</span></a>
+<a href="print-all.html"><span class="icon">🖨️</span><span>چاپ ټول</span></a>
 <a href="login.html"><span class="icon">➕</span><span>نوی محصول</span></a>
 <a href="login.html"><span class="icon">⚙️</span><span>تنظیمات</span></a>
 <a href="login.html"><span class="icon">👥</span><span>کاروونکي</span></a>
 <a href="inventory.html"><span class="icon">⚠️</span><span>کم موجودي</span></a>
-<a href="dashboard.html"><span class="icon">📈</span><span>احصایې</span></a>
 </div>
 
 <div class="section-title">
@@ -102,9 +130,9 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <nav class="nav">
 <a href="index.html" class="active"><span class="icon">🏠</span><span>کور</span></a>
 <a href="inventory.html"><span class="icon">📦</span><span>موجودي</span></a>
-<a href="purchases.html"><span class="icon">🛒</span><span>پیرود</span></a>
+<a href="dashboard.html"><span class="icon">📊</span><span>ډشبورډ</span></a>
 <a href="sales.html"><span class="icon">📈</span><span>پلور</span></a>
-<a href="login.html"><span class="icon">⚙️</span><span>مدیر</span></a>
+<a href="notifications.html"><span class="icon">🔔</span><span>خبرتیاوې</span><span class="badge" id="notifBadge2" style="display:none;">0</span></a>
 </nav>
 
 <script>
@@ -175,14 +203,46 @@ document.getElementById("searchInput").addEventListener("keyup", doSearch);
 window.addEventListener('focus', function() {
     products = loadProducts();
     displayProducts(products);
+    updateNotifBadge();
 });
 
 window.addEventListener('pageshow', function() {
     products = loadProducts();
     displayProducts(products);
+    updateNotifBadge();
 });
 
+// ===== د خبرتیاوو بیج =====
+function updateNotifBadge() {
+    var notifs = [];
+    try { notifs = JSON.parse(localStorage.getItem('dmart_notifications') || '[]'); } catch(e) {}
+    var products = loadProducts();
+    
+    // د کم موجودي خبرتیاوې
+    var lowCount = 0;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].stock !== undefined && products[i].stock <= (products[i].minStock || 5)) {
+            lowCount++;
+        }
+    }
+    
+    var total = notifs.length + lowCount;
+    var badge1 = document.getElementById('notifBadge1');
+    var badge2 = document.getElementById('notifBadge2');
+    
+    if (total > 0) {
+        badge1.textContent = total > 99 ? '99+' : total;
+        badge1.style.display = 'block';
+        badge2.textContent = total > 99 ? '99+' : total;
+        badge2.style.display = 'block';
+    } else {
+        badge1.style.display = 'none';
+        badge2.style.display = 'none';
+    }
+}
+
 displayProducts(products);
+updateNotifBadge();
 
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js");
