@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#d9534f">
+<title>خبرتیاوې</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
+body { background: #f0f2f5; padding-bottom: 30px; }
+.header { background: #d9534f; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 18px; }
+.header a { color: white; text-decoration: none; font-size: 13px; padding: 6px 10px; background: rgba(255,255,255,0.15); border-radius: 8px; }
+.container { padding: 15px; }
+
+/* د احصایو کارتونه */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat-card { background: white; border-radius: 12px; padding: 15px 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.stat-card .icon { font-size: 24px; margin-bottom: 6px; }
+.stat-card .value { font-size: 22px; font-weight: bold; color: #d9534f; }
+.stat-card .label { font-size: 11px; color: #666; margin-top: 4px; }
+.stat-card.red .value { color: #e74c3c; }
+.stat-card.orange .value { color: #f39c12; }
+.stat-card.green .value { color: #7bbf6a; }
+
+/* د پرمیشن تڼۍ */
+.perm-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.perm-btn:active { transform: scale(0.98); }
+.perm-btn.granted { background: linear-gradient(135deg, #7bbf6a, #5ea04f); }
+
+/* د خبرتیاوو لیست */
+.section-title { font-size: 15px; color: #333; font-weight: bold; margin: 20px 0 12px; border-right: 4px solid #d9534f; padding-right: 10px; }
+
+.notification {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-right: 4px solid #d9534f;
+}
+.notification.low-stock { border-right-color: #f39c12; background: #fff8e1; }
+.notification.out-stock { border-right-color: #e74c3c; background: #ffebee; }
+.notification.sale { border-right-color: #7bbf6a; background: #f1f8e9; }
+.notification.purchase { border-right-color: #3498db; background: #e3f2fd; }
+.notification .icon { font-size: 28px; }
+.notification .info { flex: 1; }
+.notification .title { font-size: 14px; font-weight: bold; color: #333; }
+.notification .message { font-size: 12px; color: #666; margin-top: 4px; }
+.notification .time { font-size: 10px; color: #999; margin-top: 6px; }
+
+.empty { text-align: center; padding: 40px 20px; color: #999; background: white; border-radius: 12px; font-size: 14px; }
+
+.btn-clear {
+    width: 100%;
+    padding: 14px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
+.nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
+.nav .icon { font-size: 22px; }
+.nav a.active { color: #d9534f; }
+
+/* د خبرتیا بیج */
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #e74c3c;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>🔔 خبرتیاوې</h1>
+<a href="index.html">← بیرته</a>
+</div>
+
+<div class="container">
+
+<!-- د احصایو کارتونه -->
+<div class="stats-grid">
+<div class="stat-card red">
+<div class="icon">⚠️</div>
+<div class="value" id="lowStockCount">0</div>
+<div class="label">کم موجودي</div>
+</div>
+<div class="stat-card orange">
+<div class="icon">❌</div>
+<div class="value" id="outStockCount">0</div>
+<div class="label">خلاص شوي</div>
+</div>
+<div class="stat-card green">
+<div class="icon">🔔</div>
+<div class="value" id="totalNotifications">0</div>
+<div class="label">ټولې</div>
+</div>
+</div>
+
+<!-- د پرمیشن تڼۍ -->
+<button class="perm-btn" id="permBtn" onclick="requestPermission()">
+🔔 د خبرتیاوو اجازه ورکړه
+</button>
+
+<!-- د خبرتیاوو لیست -->
+<div class="section-title">📋 د خبرتیاوو لیست</div>
+<div id="notificationsList"></div>
+
+<button class="btn-clear" onclick="clearNotifications()">🗑️ ټولې خبرتیاوې ړنګ کړه</button>
+
+</div>
+
+<nav class="nav">
+<a href="index.html"><span class="icon">🏠</span><span>کور</span></a>
+<a href="inventory.html"><span class="icon">📦</span><span>موجودي</span></a>
+<a href="dashboard.html"><span class="icon">📊</span><span>ډشبورډ</span></a>
+<a href="notifications.html" class="active"><span class="icon">🔔</span><span>خبرتیاوې</span></a>
+<a href="login.html"><span class="icon">⚙️</span><span>مدیر</span></a>
+</nav>
+
+<script>
+var PRODUCTS_KEY = 'dmart_products';
+var NOTIFICATIONS_KEY = 'dmart_notifications';
+
+function loadProducts() {
+    var data = localStorage.getItem(PRODUCTS_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function loadNotifications() {
+    var data = localStorage.getItem(NOTIFICATIONS_KEY);
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function saveNotifications(list) {
+    localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(list));
+}
+
+// ===== د خبرتیاوو جوړول =====
+function addNotification(type, title, message, icon) {
+    var notifications = loadNotifications();
+    notifications.unshift({
+        id: Date.now(),
+        type: type,
+        title: title,
+        message: message,
+        icon: icon || '🔔',
+        time: new Date().toISOString()
+    });
+    if (notifications.length > 100) notifications = notifications.slice(0, 100);
+    saveNotifications(notifications);
+    sendPushNotification(title, message);
+}
+
+// ===== د Push خبرتیاوې =====
+function requestPermission() {
+    if (!('Notification' in window)) {
+        alert('❌ دا براوزر د خبرتیاوو ملاتړ نه کوي');
+        return;
+    }
+    
+    if (Notification.permission === 'granted') {
+        alert('✅ د خبرتیاوو اجازه دمخه ورکړل شوې');
+        updatePermBtn();
+        return;
+    }
+    
+    Notification.requestPermission().then(function(permission) {
+        if (permission === 'granted') {
+            alert('✅ د خبرتیاوو اجازه ورکړل شوه');
+            updatePermBtn();
+        } else {
+            alert('❌ د خبرتیاوو اجازه ورنکړل شوه');
+        }
+    });
+}
+
+function updatePermBtn() {
+    var btn = document.getElementById('permBtn');
+    if ('Notification' in window && Notification.permission === 'granted') {
+        btn.classList.add('granted');
+        btn.innerHTML = '✅ د خبرتیاوو اجازه ورکړل شوې';
+        btn.disabled = true;
+    }
+}
+
+function sendPushNotification(title, body) {
+    if (!('Notification' in window)) return;
+    if (Notification.permission !== 'granted') return;
+    
+    try {
+        new Notification('دي مارټ - ' + title, {
+            body: body,
+            icon: 'https://zabiaman.github.io/dmart-price-tag/icons/icon-192.png',
+            badge: 'https://zabiaman.github.io/dmart-price-tag/icons/icon-192.png',
+            vibrate: [200, 100, 200]
+        });
+    } catch(e) {
+        console.log('د Push خبرتیا خطا:', e);
+    }
+}
+
+// ===== د خبرتیاوو ښودل =====
+function renderNotifications() {
+    var notifications = loadNotifications();
+    var products = loadProducts();
+    
+    // د کم موجودي/خلاص شوي محصولاتو خبرتیاوې (اتوماتیک)
+    var autoNotifications = [];
+    for (var i = 0; i < products.length; i++) {
+        var p = products[i];
+        if (p.stock === undefined) continue;
+        if (p.stock <= 0) {
+            autoNotifications.push({
+                id: 'auto-out-' + p.id,
+                type: 'out-stock',
+                title: '❌ خلاص شوی محصول',
+                message: p.name + ' — موجودي: 0',
+                icon: '❌',
+                time: new Date().toISOString()
+            });
+        } else if (p.stock <= (p.minStock || 5)) {
+            autoNotifications.push({
+                id: 'auto-low-' + p.id,
+                type: 'low-stock',
+                title: '⚠️ کم موجودي',
+                message: p.name + ' — موجودي: ' + p.stock + ' (حد: ' + (p.minStock || 5) + ')',
+                icon: '⚠️',
+                time: new Date().toISOString()
+            });
+        }
+    }
+    
+    // د احصایو کارتونه
+    var lowCount = 0, outCount = 0;
+    for (var i = 0; i < autoNotifications.length; i++) {
+        if (autoNotifications[i].type === 'low-stock') lowCount++;
+        if (autoNotifications[i].type === 'out-stock') outCount++;
+    }
+    document.getElementById('lowStockCount').textContent = lowCount;
+    document.getElementById('outStockCount').textContent = outCount;
+    document.getElementById('totalNotifications').textContent = notifications.length + autoNotifications.length;
+    
+    // لیست
+    var container = document.getElementById('notificationsList');
+    var allNotifs = autoNotifications.concat(notifications);
+    
+    if (allNotifs.length === 0) {
+        container.innerHTML = '<div class="empty">🔔 هیڅ خبرتیا نشته<br><br>کله چې محصولات اضافه/سم شي، خبرتیاوې به دلته ښکاره شي</div>';
+        return;
+    }
+    
+    var html = '';
+    for (var i = 0; i < allNotifs.length; i++) {
+        var n = allNotifs[i];
+        var d = new Date(n.time);
+        var timeStr = d.getDate() + '/' + (d.getMonth()+1) + ' ' + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+        
+        html += '<div class="notification ' + n.type + '">' +
+            '<div class="icon">' + n.icon + '</div>' +
+            '<div class="info">' +
+            '<div class="title">' + n.title + '</div>' +
+            '<div class="message">' + n.message + '</div>' +
+            '<div class="time">🕐 ' + timeStr + '</div>' +
+            '</div>' +
+            '</div>';
+    }
+    container.innerHTML = html;
+}
+
+function clearNotifications() {
+    if (!confirm('⚠️ ایا ډاډه یې چې ټولې خبرتیاوې ړنګ کړې؟')) return;
+    localStorage.removeItem(NOTIFICATIONS_KEY);
+    alert('🗑️ ټولې خبرتیاوې ړنګ شوې');
+    renderNotifications();
+}
+
+// ===== د نورو پاڼو لپاره د خبرتیاوو فنکشن =====
+window.addNotification = addNotification;
+
+updatePermBtn();
+renderNotifications();
+
+// هر ۵ ثانیې تازه کول (د کم موجودي خبرتیاوو لپاره)
+setInterval(renderNotifications, 5000);
+</script>
+
+</body>
+</html>
