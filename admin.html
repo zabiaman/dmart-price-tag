@@ -19,12 +19,11 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: #333; font-weight: bold; }
 .form-group input, .form-group select { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; }
+.form-group input:focus { outline: none; border-color: #d9534f; }
 .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 .btn-primary { background: #d9534f; color: white; }
 .btn-success { background: #7bbf6a; color: white; }
 .btn-danger { background: #e74c3c; color: white; }
-.btn-warning { background: #f39c12; color: white; }
-.btn-blue { background: #3498db; color: white; }
 .product-item { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; }
 .product-icon { font-size: 32px; }
 .product-info { flex: 1; }
@@ -35,18 +34,12 @@ body { background: #f0f2f5; padding-bottom: 30px; }
 .empty { text-align: center; padding: 40px; color: #999; }
 .hidden { display: none; }
 .stats { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-size: 14px; color: #333; }
-.backup-box { background: #e7f3ff; border: 2px solid #3498db; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-.backup-box h4 { color: #0c5460; font-size: 14px; margin-bottom: 8px; }
-.backup-box p { color: #0c5460; font-size: 12px; margin-top: 5px; }
-.data-line { display: flex; justify-content: space-between; padding: 6px; background: white; border-radius: 6px; margin-top: 5px; font-size: 13px; }
 </style>
 </head>
 <body>
 
 <script>
-if (!localStorage.getItem('dmart_session')) {
-    window.location.href = 'login.html';
-}
+if (!localStorage.getItem('dmart_session')) { window.location.href = 'login.html'; }
 </script>
 
 <div class="header">
@@ -75,78 +68,72 @@ if (!localStorage.getItem('dmart_session')) {
 <div class="form-group"><label>د محصول نوم *</label><input type="text" id="name" placeholder="زعفران"></div>
 <div class="form-group"><label>وزن</label><input type="text" id="weight" placeholder="10 جرام"></div>
 <div class="form-group"><label>د پلور قیمت *</label><input type="number" id="price" step="0.01" placeholder="85"></div>
-<div class="form-group"><label>د عرض سلنه (Discount %)</label><input type="number" id="discount" step="0.01" placeholder="0" value="0"></div>
 <div class="form-group"><label>د پیرود قیمت</label><input type="number" id="costPrice" step="0.01" placeholder="70"></div>
 <div class="form-group"><label>موجودي</label><input type="number" id="stock" value="50"></div>
 <div class="form-group"><label>د کم موجودي حد</label><input type="number" id="minStock" value="5"></div>
+<!-- دا نوی ساحه ده -->
+<div class="form-group"><label>د تاریخ پای (Expiry Date) 📅</label><input type="date" id="expiryDate"></div>
 <div class="form-group"><label>بارکوډ *</label><input type="text" id="barcode" placeholder="633152014541"></div>
 <div class="form-group"><label>کټګوري</label><input type="text" id="category" placeholder="توابل"></div>
-<div class="form-group"><label>ایکون</label><input type="text" id="icon" placeholder="🌸" max:length="4"></div>
-<button document class="btn btn.getElementById-success" onclick="addProduct()">💾 خوند('ي کړه</button>
-<iconbutton class="btn btn-primary" onclick="showTab').('list')">← بیرته</button>
+<div class="form-group"><label>ایکون</label><input type="text" id="icon" placeholder="🌸" maxlength="4"></div>
+<button class="btn btn-success" onclick="addProduct()">💾 خوندي کړه</button>
+<button class="btn btn-primary" onclick="showTab('list')">← بیرته</button>
 </div>
 
 <div id="settingsTab" class="hidden">
-<div class="backup-box">
-<h4>💾 د معلوماتو بیک اپ</h4>
-<p>ټول معلومات (محصولات، پلور، پیرود) خوندي کړه.</p>
-<div id="dataCountBox"></div>
-</div>
+<h3 style="margin-bottom:15px;">⚙️ تنظیمات</h3>
 <button class="btn btn-danger" onclick="exportAll()">📥 د ټولو معلوماتو صادرول</button>
-<button class="btn btn-blue" onclick="document.getElementById('importFile').click()">📤 د ټولو معلوماتو واردول</button>
+<button class="btn btn-primary" onclick="document.getElementById('importFile').click()">📤 د ټولو معلوماتو واردول</button>
 <button class="btn btn-danger" onclick="clearAll()">🗑️ ټول معلومات ړنګول</button>
 <input type="file" id="importFile" accept=".json" style="display:none;" onchange="handleImport(event)">
 </div>
 </div>
 
 <script>
+var STORAGE_KEY = 'dmart_products';
+var SESSION_KEY = 'dmart_session';
+
 function loadProducts() {
-    var data = localStorage.getItem('dmart_products');
+    var data = localStorage.getItem(STORAGE_KEY);
     if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
     return [];
 }
 
 function saveProducts(list) {
-    localStorage.setItem('dmart_products', JSON.stringify(list));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
 }
 
 function renderProducts() {
-    try {
-        var products = loadProducts();
-        var container = document.getElementById('productList');
-        var statsBox = document.getElementById('statsBox');
-        
-        statsBox.innerHTML = '📦 ټول محصولات: <strong>' + products.length + '</strong>';
-        
-        if (products.length === 0) {
-            container.innerHTML = '<div class="empty">😕 هیڅ محصول نشته<br><br>د "➕ نوی محصول" ټب څخه یو اضافه کړه</div>';
-            return;
-        }
-        
-        var html = '';
-        for (var i = 0; i < products.length; i++) {
-            var p = products[i];
-            // د عرض (Discount) ښودل
-            var discountText = (p.discount && p.discount > 0) ? ' <span style="color:red; font-weight:bold;">(عرض: ' + p.discount + '%)</span>' : '';
-            
-            html += '<div class="product-item">' +
-                '<div class="product-icon">' + (p.icon || '📦') + '</div>' +
-                '<div class="product-info">' +
-                '<div class="product-name">' + p.name + '</div>' +
-                '<div class="product-details">' + (p.weight || '') + ' • ' + p.price + ' ' + (p.currency || 'ر.س') + discountText + '</div>' +
-                '<div class="product-details">📦 موجودي: ' + (p.stock || 0) + ' • 💰 پیرود: ' + (p.costPrice || 0) + '</div>' +
-                '<div class="product-details" style="font-family:monospace;">' + (p.barcode || '') + '</div>' +
-                '</div>' +
-                '<div class="product-actions">' +
-                '<button style="background:#7bbf6a;color:white;" onclick="editProduct(' + p.id + ')">✏️</button>' +
-                '<button style="background:#e74c3c;color:white;" onclick="deleteProduct(' + p.id + ')">🗑️</button>' +
-                '</div>' +
-                '</div>';
-        }
-        container.innerHTML = html;
-    } catch(e) {
-        document.getElementById('productList').innerHTML = '<div class="empty">❌ خطا: ' + e.message + '</div>';
+    var products = loadProducts();
+    var container = document.getElementById('productList');
+    
+    document.getElementById('statsBox').innerHTML = '📦 ټول محصولات: <strong>' + products.length + '</strong>';
+    
+    if (products.length === 0) {
+        container.innerHTML = '<div class="empty">😕 هیڅ محصول نشته</div>';
+        return;
     }
+    
+    var html = '';
+    for (var i = 0; i < products.length; i++) {
+        var p = products[i];
+        var expiryText = p.expiryDate ? '📅 ' + p.expiryDate : '📅 نسته';
+        html += '<div class="product-item">' +
+            '<div class="product-icon">' + (p.icon || '📦') + '</div>' +
+            '<div class="product-info">' +
+            '<div class="product-name">' + p.name + '</div>' +
+            '<div class="product-details">' + (p.weight || '') + ' • ' + p.price + ' ' + (p.currency || 'ر.س') + '</div>' +
+            '<div class="product-details">📦 موجودي: ' + (p.stock || 0) + ' • 💰 پیرود: ' + (p.costPrice || 0) + '</div>' +
+            '<div class="product-details" style="color:' + (p.expiryDate ? '#d9534f' : '#999') + ';">' + expiryText + '</div>' +
+            '<div class="product-details" style="font-family:monospace;">' + (p.barcode || '') + '</div>' +
+            '</div>' +
+            '<div class="product-actions">' +
+            '<button style="background:#7bbf6a;color:white;" onclick="editProduct(' + p.id + ')">✏️</button>' +
+            '<button style="background:#e74c3c;color:white;" onclick="deleteProduct(' + p.id + ')">🗑️</button>' +
+            '</div>' +
+            '</div>';
+    }
+    container.innerHTML = html;
 }
 
 function addProduct() {
@@ -154,17 +141,11 @@ function addProduct() {
     var price = parseFloat(document.getElementById('price').value);
     var barcode = document.getElementById('barcode').value.trim();
     
-    if (!name || !price || !barcode) {
-        alert('❌ نوم، قیمت او بارکوډ اړین دي');
-        return;
-    }
+    if (!name || !price || !barcode) { alert('❌ نوم، قیمت او بارکوډ اړین دي'); return; }
     
     var products = loadProducts();
     for (var i = 0; i < products.length; i++) {
-        if (products[i].barcode === barcode) {
-            alert('❌ دا بارکوډ دمخه شتون لري');
-            return;
-        }
+        if (products[i].barcode === barcode) { alert('❌ دا بارکوډ دمخه شتون لري'); return; }
     }
     
     products.unshift({
@@ -172,23 +153,23 @@ function addProduct() {
         name: name,
         weight: document.getElementById('weight').value.trim(),
         price: price,
-        discount: parseFloat(document.getElementById('discount').value) || 0, // د عرض اضافه کول
         costPrice: parseFloat(document.getElementById('costPrice').value) || 0,
         stock: parseInt(document.getElementById('stock').value) || 50,
         minStock: parseInt(document.getElementById('minStock').value) || 5,
+        expiryDate: document.getElementById('expiryDate').value, // نوی ساحه
         currency: 'ر.س',
         barcode: barcode,
         category: document.getElementById('category').value.trim(),
-        iconvalue.trim() || '📦'
+        icon: document.getElementById('icon').value.trim() || '📦'
     });
     
     saveProducts(products);
     alert('✅ محصول اضافه شو');
     document.getElementById('name').value = '';
     document.getElementById('price').value = '';
-    document.getElementById('discount').value = '0'; // پاکول
     document.getElementById('barcode').value = '';
     document.getElementById('costPrice').value = '';
+    document.getElementById('expiryDate').value = ''; // پاکول
     renderProducts();
     showTab('list');
 }
@@ -197,7 +178,7 @@ function editProduct(id) {
     var products = loadProducts();
     var p = null;
     for (var i = 0; i < products.length; i++) {
-        if (products[i].id === id) { p = products[i]; break; }
+        if (products[i].id === id) { p = products ||[i]; break; }
     }
     if (!p) return;
     
@@ -205,16 +186,15 @@ function editProduct(id) {
     if (newName === null) return;
     var newPrice = prompt('قیمت:', p.price);
     if (newPrice === null) return;
-    var newStock = prompt('موجودي:', p.stock || 0);
+    var newStock = prompt('موجودي:', p.stock 0);
     if (newStock === null) return;
-    // د عرض د بدلولو پوښتنه
-    var newDiscount = prompt('د عرض سلنه (Discount %):', p.discount || 0);
-    if (newDiscount === null) return;
+    var newExpiry = prompt('د تاریخ پای (YYYY-MM-DD):', p.expiryDate || '');
+    if (newExpiry === null) return;
     
     p.name = newName || p.name;
     p.price = parseFloat(newPrice) || p.price;
     p.stock = parseInt(newStock) || 0;
-    p.discount = parseFloat(newDiscount) || 0; // د عرض خوندي کول
+    p.expiryDate = newExpiry;
     
     saveProducts(products);
     renderProducts();
@@ -249,76 +229,17 @@ function showTab(tab) {
     } else {
         document.getElementById('settingsTab').classList.remove('hidden');
         document.getElementById('tabSettings').classList.add('active');
-        updateDataCount();
     }
-}
-
-function updateDataCount() {
-    var products = JSON.parse(localStorage.getItem('dmart_products') || '[]');
-    var sales = JSON.parse(localStorage.getItem('dmart_sales') || '[]');
-    var purchases = JSON.parse(localStorage.getItem('dmart_purchases') || '[]');
-    
-    document.getElementById('dataCountBox').innerHTML = 
-        '<div class="data-line"><span>📦 محصولات</span><strong>' + products.length + '</strong></div>' +
-        '<div class="data-line"><span>📈 پلور</span><strong>' + sales.length + '</strong></div>' +
-        '<div class="data-line"><span>🛒 پیرود</span><strong>' + purchases.length + '</strong></div>';
-}
-
-function exportAll() {
-    var backup = {
-        version: '3.0',
-        date: new Date().toISOString(),
-        products: JSON.parse(localStorage.getItem('dmart_products') || '[]'),
-        sales: JSON.parse(localStorage.getItem('dmart_sales') || '[]'),
-        purchases: JSON.parse(localStorage.getItem('dmart_purchases') || '[]')
-    };
-    var dataStr = JSON.stringify(backup, null, 2);
-    var blob = new Blob([dataStr], { type: 'application/json' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = 'dmart-backup-' + new Date().toISOString().slice(0,10) + '.json';
-    a.click();
-    alert('✅ بیک اپ ډاونلوډ شو');
-}
-
-function handleImport(event) {
-    var file = event.target.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            var data = JSON.parse(e.target.result);
-            if (data.products) localStorage.setItem('dmart_products', JSON.stringify(data.products));
-            if (data.sales) localStorage.setItem('dmart_sales', JSON.stringify(data.sales));
-            if (data.purchases) localStorage.setItem('dmart_purchases', JSON.stringify(data.purchases));
-            alert('✅ معلومات وارد شول');
-            renderProducts();
-        } catch(err) {
-            alert('❌ د فایل لوستلو خطا');
-        }
-    };
-    reader.readAsText(file);
-}
-
-function clearAll() {
-    if (!confirm('ټول معلومات ړنګ کړو؟')) return;
-    localStorage.removeItem('dmart_products');
-    localStorage.removeItem('dmart_sales');
-    localStorage.removeItem('dmart_purchases');
-    alert('🗑️ ټول معلومات ړنګ شول');
-    renderProducts();
 }
 
 function doLogout() {
     if (confirm('وتل غواړې؟')) {
-        localStorage.removeItem('dmart_session');
+        localStorage.removeItem(SESSION_KEY);
         window.location.href = 'login.html';
     }
 }
 
 renderProducts();
 </script>
-
 </body>
 </html>
