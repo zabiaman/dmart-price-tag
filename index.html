@@ -10,7 +10,6 @@
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; }
 body { background: #f0f2f5; padding-bottom: 80px; }
 
-/* ===== هیدر ===== */
 .header { background: #d9534f; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
 .header-left { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; cursor: pointer; }
 .header-left:active { opacity: 0.8; }
@@ -18,36 +17,16 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 .title { font-size: 18px; font-weight: bold; }
 .subtitle { font-size: 11px; opacity: 0.9; }
 
-.user-icon {
-    font-size: 28px;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    transition: background 0.2s;
-    position: relative;
-    text-decoration: none;
-    color: white;
-}
+.user-icon { font-size: 28px; cursor: pointer; padding: 8px; border-radius: 50%; transition: background 0.2s; position: relative; text-decoration: none; color: white; }
 .user-icon:active { background: rgba(255,255,255,0.2); }
-
-.user-badge {
-    position: absolute;
-    top: 3px;
-    right: 3px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 2px solid #d9534f;
-}
+.user-badge { position: absolute; top: 3px; right: 3px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #d9534f; }
 .user-badge.online { background: #7bbf6a; }
 .user-badge.offline { background: #999; }
 
-/* ===== لټون ===== */
 .search { padding: 15px 20px; background: white; }
 .search input { width: 100%; padding: 14px 20px; border: 2px solid #e0e0e0; border-radius: 30px; font-size: 15px; background: #f8f9fa; }
 .search input:focus { outline: none; border-color: #d9534f; background: white; }
 
-/* ===== مالیې او زکات ===== */
 .tax-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; background: white; margin-bottom: 15px; }
 .tax-card { background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 12px; border: 2px solid #dee2e6; }
 .tax-icon { font-size: 32px; }
@@ -55,85 +34,46 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 .tax-label { font-size: 11px; color: #666; margin-bottom: 4px; }
 .tax-value { font-size: 20px; font-weight: bold; color: #d9534f; }
 
-/* ===== مینو ۱۸ تڼۍ ===== */
 .menu { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 12px; background: white; margin-bottom: 15px; }
 .menu a { background: #f8f9fa; padding: 12px 3px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; text-decoration: none; color: #333; transition: all 0.2s; }
 .menu a:active { background: #d9534f; color: white; transform: scale(0.95); }
 .menu .icon { font-size: 24px; }
 
-/* ===== برخې سرلیک ===== */
 .section-title { padding: 15px 20px 10px; font-size: 16px; color: #333; font-weight: bold; }
 .products { padding: 0 15px; display: flex; flex-direction: column; gap: 12px; }
-.card { background: white; border-radius: 15px; padding: 15px; display: flex; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: relative; overflow: hidden; }
+.card { background: white; border-radius: 15px; padding: 15px; display: flex; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 2px solid transparent; }
+
+/* 🔴 د تاریخ تیر شوي محصول لپاره سور رنګ */
+.card.expired { border-color: #e74c3c; background: #fff5f5; }
+.card.expired .card-name { color: #e74c3c !important; }
+
+/* 🟡 د کم موجودي محصول لپاره زیړ رنګ */
+.card.low-stock { border-color: #f39c12; background: #fffdf5; }
+.card.low-stock .card-name { color: #f39c12 !important; }
+
 .card-img { width: 70px; height: 70px; border-radius: 12px; background: #f0f2f5; display: flex; justify-content: center; align-items: center; font-size: 32px; flex-shrink: 0; }
 .card-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
 .card-name { color: #b03a3a; font-size: 15px; font-weight: bold; }
 .card-weight { color: #999; font-size: 12px; margin-top: 4px; }
 .card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
-
-/* د بیې برخه */
-.price-box { display: flex; flex-direction: column; align-items: flex-start; }
-.old-price { text-decoration: line-through; color: #999; font-size: 12px; margin-bottom: -2px; }
 .card-price { background: #7bbf6a; color: white; padding: 6px 14px; border-radius: 20px; font-size: 15px; font-weight: bold; }
-.card-price.discount-price { background: #d9534f; } /* د عرض بیه سور رنګ */
-
-/* د عرض لیبل */
-.discount-badge {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: #d9534f;
-    color: white;
-    padding: 4px 10px;
-    font-size: 10px;
-    font-weight: bold;
-    border-bottom-left-radius: 10px;
-}
-
 .card-print { background: #d9534f; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; }
 
-/* ===== ښکته نیویگیشن ===== */
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 100; }
 .nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: #999; font-size: 11px; flex: 1; max-width: 80px; }
 .nav .icon { font-size: 22px; }
 .nav a.active { color: #d9534f; }
-
 .empty { text-align: center; padding: 40px 20px; color: #999; }
 
-/* ===== د کارن مینو (پاپ اپ) ===== */
-.user-menu {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 1000;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
+/* د کارن مینو */
+.user-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 20px; }
 .user-menu.active { display: flex; }
-.user-menu-content {
-    background: white;
-    border-radius: 20px;
-    padding: 25px;
-    max-width: 350px;
-    width: 100%;
-    text-align: center;
-}
+.user-menu-content { background: white; border-radius: 20px; padding: 25px; max-width: 350px; width: 100%; text-align: center; }
 .user-menu-icon { font-size: 60px; margin-bottom: 15px; }
 .user-menu-content h3 { color: #333; font-size: 18px; margin-bottom: 8px; }
 .user-menu-content .user-name { color: #d9534f; font-weight: bold; font-size: 16px; margin-bottom: 5px; }
 .user-menu-content .user-status { color: #666; font-size: 13px; margin-bottom: 20px; }
-.user-menu-content button {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-bottom: 10px;
-}
+.user-menu-content button { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
 .btn-login { background: #7bbf6a; color: white; }
 .btn-logout { background: #e74c3c; color: white; }
 .btn-cancel { background: #95a5a6; color: white; }
@@ -147,7 +87,6 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 </head>
 <body>
 
-<!-- ===== هیدر ===== -->
 <div class="header">
 <a href="index.html" onclick="location.reload(); return false;" class="header-left">
 <div class="logo">D!</div>
@@ -162,30 +101,15 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 </a>
 </div>
 
-<!-- ===== لټون ===== -->
 <div class="search">
 <input type="text" id="searchInput" placeholder="د محصول نوم یا بارکوډ...">
 </div>
 
-<!-- ===== مالیې او زکات ===== -->
 <div class="tax-info">
-<div class="tax-card">
-<div class="tax-icon">💰</div>
-<div class="tax-details">
-<div class="tax-label">ضریبه (VAT)</div>
-<div class="tax-value">۱۵٪</div>
-</div>
-</div>
-<div class="tax-card">
-<div class="tax-icon">🕌</div>
-<div class="tax-details">
-<div class="tax-label">زکات</div>
-<div class="tax-value">۲.۵٪</div>
-</div>
-</div>
+<div class="tax-card"><div class="tax-icon">💰</div><div class="tax-details"><div class="tax-label">ضریبه (VAT)</div><div class="tax-value">۱۵٪</div></div></div>
+<div class="tax-card"><div class="tax-icon">🕌</div><div class="tax-details"><div class="tax-label">زکات</div><div class="tax-value">۲.۵٪</div></div></div>
 </div>
 
-<!-- ===== مینو ۱۸ تڼۍ ===== -->
 <div class="menu">
 <a href="scanner.html"><span class="icon">📷</span><span>سکنر</span></a>
 <a href="inventory.html"><span class="icon">📦</span><span>موجودي</span></a>
@@ -193,14 +117,12 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <a href="sales.html"><span class="icon">📈</span><span>پلور</span></a>
 <a href="purchases.html"><span class="icon">🛒</span><span>پیرود</span></a>
 <a href="invoice.html"><span class="icon">🧾</span><span>پلور فاکتور</span></a>
-
 <a href="purchase-invoice.html"><span class="icon">📥</span><span>پیرود فاکتور</span></a>
 <a href="tax.html"><span class="icon">💰</span><span>مالیه</span></a>
 <a href="reports.html"><span class="icon">📋</span><span>راپور</span></a>
 <a href="notifications.html"><span class="icon">🔔</span><span>خبرتیاوې</span></a>
 <a href="print-all.html"><span class="icon">🖨️</span><span>چاپ ټول</span></a>
 <a href="bluetooth-print.html"><span class="icon">📡</span><span>بلوتوث چاپ</span></a>
-
 <a href="login.html"><span class="icon">➕</span><span>نوی محصول</span></a>
 <a href="login.html"><span class="icon">⚙️</span><span>تنظیمات</span></a>
 <a href="login.html"><span class="icon">👥</span><span>کاروونکي</span></a>
@@ -209,11 +131,9 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <a href="admin.html"><span class="icon">📝</span><span>مدیریت</span></a>
 </div>
 
-<!-- ===== محصولات ===== -->
 <div class="section-title">نوي محصولات</div>
 <div id="productList" class="products"></div>
 
-<!-- ===== ښکته نیویگیشن ===== -->
 <nav class="nav">
 <a href="index.html" class="active"><span class="icon">🏠</span><span>کور</span></a>
 <a href="inventory.html"><span class="icon">📦</span><span>موجودي</span></a>
@@ -222,7 +142,6 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <a href="notifications.html"><span class="icon">🔔</span><span>خبرتیاوې</span></a>
 </nav>
 
-<!-- ===== د کارن مینو ===== -->
 <div class="user-menu" id="userMenu">
 <div class="user-menu-content">
 <div class="user-menu-icon" id="userMenuIcon">👤</div>
@@ -236,20 +155,11 @@ body { background: #f0f2f5; padding-bottom: 80px; }
 <script>
 var STORAGE_KEY = 'dmart_products';
 var SESSION_KEY = 'dmart_session';
-var defaultProducts = [
-{ id: 1, name: "مهران معجون الزنجبيل", weight: "320 جرام", price: 5.95, currency: "ر.س", icon: "🫙", barcode: "633152014535" },
-{ id: 2, name: "زيت الزيتون", weight: "1 لتر", price: 25.50, currency: "ر.س", icon: "🫒", barcode: "633152014536" },
-{ id: 3, name: "عسل طبيعي", weight: "500 جرام", price: 45.00, currency: "ر.س", icon: "🍯", barcode: "633152014537" },
-{ id: 4, name: "تمر مجدول", weight: "1 کیلو", price: 35.00, currency: "ر.س", icon: "🌴", barcode: "633152014538" },
-{ id: 5, name: "مياه معدنية", weight: "1.5 لتر", price: 3.00, currency: "ر.س", icon: "💧", barcode: "633152014539" },
-{ id: 6, name: "شاي أخضر", weight: "250 جرام", price: 18.50, currency: "ر.س", icon: "🍵", barcode: "633152014540" }
-];
 
 function loadProducts() {
     var data = localStorage.getItem(STORAGE_KEY);
-    if (data) { try { return JSON.parse(data); } catch(e) { return defaultProducts; } }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultProducts));
-    return defaultProducts;
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
 }
 
 var products = loadProducts();
@@ -260,28 +170,31 @@ function displayProducts(list) {
         container.innerHTML = '<div class="empty">هیڅ محصول ونه موندل شو</div>';
         return;
     }
+    
     var html = "";
+    var today = new Date();
+    today.setHours(0,0,0,0);
+
     for (var i = 0; i < list.length; i++) {
         var p = list[i];
-        
-        // ====== د عرض محاسبه ======
-        var hasDiscount = p.discount && p.discount > 0;
-        var finalPrice = p.price;
-        var oldPriceHtml = '';
-        var priceClass = 'card-price';
-        var badgeHtml = '';
-        
-        if (hasDiscount) {
-            finalPrice = p.price - (p.price * p.discount / 100);
-            finalPrice = Math.round(finalPrice * 100) / 100; // د 2 عددی اعشاریو لپاره
-            oldPriceHtml = '<div class="old-price">' + p.price + ' ' + (p.currency || 'ر.س') + '</div>';
-            priceClass = 'card-price discount-price';
-            badgeHtml = '<div class="discount-badge">🔥 ' + p.discount + '% عرض</div>';
-        }
-        // ============================
+        var extraClass = '';
 
-        html += '<div class="card">' +
-            badgeHtml +
+        // ۱. د تاریخ پای چک کول (که تیر شوی وي سور کیږي)
+        if (p.expiryDate) {
+            var expiry = new Date(p.expiryDate);
+            expiry.setHours(0,0,0,0);
+            if (expiry <= today) {
+                extraClass = ' expired';
+            }
+        }
+
+        // ۲. د موجودي چک کول (که له ۵ څخه کمه وي زیړ کیږي)
+        // که لا دمخه سور نه وي، نو زیړ رنګ ورکوو
+        if (extraClass === '' && p.stock !== undefined && p.stock <= 5) {
+            extraClass = ' low-stock';
+        }
+
+        html += '<div class="card' + extraClass + '">' +
             '<div class="card-img">' + (p.icon || '📦') + '</div>' +
             '<div class="card-info">' +
             '<div>' +
@@ -289,10 +202,7 @@ function displayProducts(list) {
             '<div class="card-weight">' + (p.weight || '') + '</div>' +
             '</div>' +
             '<div class="card-bottom">' +
-            '<div class="price-box">' +
-            oldPriceHtml +
-            '<div class="' + priceClass + '">' + finalPrice + ' ' + (p.currency || 'ر.س') + '</div>' +
-            '</div>' +
+            '<div class="card-price">' + p.price + ' ' + (p.currency || 'ر.س') + '</div>' +
             '<a href="price-tag.html?barcode=' + p.barcode + '" class="card-print">🖨️ چاپ</a>' +
             '</div>' +
             '</div>' +
@@ -332,7 +242,6 @@ window.addEventListener('pageshow', function() {
     updateUserBadge();
 });
 
-// ===== د کارن حالت =====
 function getSession() {
     var data = localStorage.getItem(SESSION_KEY);
     if (data) { try { return JSON.parse(data); } catch(e) { return null; } }
@@ -349,10 +258,8 @@ function updateUserBadge() {
     }
 }
 
-// ===== د کارن مینو =====
 function openUserMenu(event) {
     event.preventDefault();
-    
     var session = getSession();
     var menu = document.getElementById('userMenu');
     var icon = document.getElementById('userMenuIcon');
@@ -362,48 +269,24 @@ function openUserMenu(event) {
     var buttons = document.getElementById('userMenuButtons');
     
     if (session) {
-        // کاروونکی لاګین دی
         icon.textContent = '👤';
         title.textContent = 'ښه راغلاست!';
         nameEl.textContent = session.name || session.username || 'کاروونکی';
         statusEl.textContent = 'تاسو د مدیر پینل ته لاګین یاست ✅';
-        
-        var loginTime = session.loginTime ? new Date(session.loginTime).toLocaleString('ar-EG') : '';
-        if (loginTime) {
-            statusEl.textContent += '\n\nد ننوتلو وخت: ' + loginTime;
-        }
-        
-        buttons.innerHTML = 
-            '<button class="btn-login" onclick="goToAdmin()">👨‍💼 د مدیر پینل</button>' +
-            '<button class="btn-logout" onclick="doLogout()">🚪 وتل</button>' +
-            '<button class="btn-cancel" onclick="closeUserMenu()">بنده کړه</button>';
+        buttons.innerHTML = '<button class="btn-login" onclick="goToAdmin()">👨‍💼 د مدیر پینل</button><button class="btn-logout" onclick="doLogout()">🚪 وتل</button><button class="btn-cancel" onclick="closeUserMenu()">بنده کړه</button>';
     } else {
-        // کاروونکی لاګین نه دی
         icon.textContent = '👤';
         title.textContent = 'کاروونکی';
         nameEl.textContent = 'تاسو لاګین نه یاست';
         statusEl.textContent = 'د مدیر پینل لپاره ننوځه';
-        
-        buttons.innerHTML = 
-            '<button class="btn-login" onclick="goToLogin()">🔐 ننوتل</button>' +
-            '<button class="btn-cancel" onclick="closeUserMenu()">بنده کړه</button>';
+        buttons.innerHTML = '<button class="btn-login" onclick="goToLogin()">🔐 ننوتل</button><button class="btn-cancel" onclick="closeUserMenu()">بنده کړه</button>';
     }
-    
     menu.classList.add('active');
 }
 
-function closeUserMenu() {
-    document.getElementById('userMenu').classList.remove('active');
-}
-
-function goToLogin() {
-    window.location.href = 'login.html';
-}
-
-function goToAdmin() {
-    window.location.href = 'admin.html';
-}
-
+function closeUserMenu() { document.getElementById('userMenu').classList.remove('active'); }
+function goToLogin() { window.location.href = 'login.html'; }
+function goToAdmin() { window.location.href = 'admin.html'; }
 function doLogout() {
     if (confirm('ایا ډاډه یې چې وتل غواړې؟')) {
         localStorage.removeItem(SESSION_KEY);
@@ -414,14 +297,10 @@ function doLogout() {
     }
 }
 
-// د مینو بندول کله چې د مینو څخه بهر کلیک شي
 document.getElementById('userMenu').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeUserMenu();
-    }
+    if (e.target === this) closeUserMenu();
 });
 
-// ===== پیل =====
 displayProducts(products);
 updateUserBadge();
 
@@ -429,6 +308,5 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js");
 }
 </script>
-
 </body>
 </html>
